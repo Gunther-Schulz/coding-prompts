@@ -1,12 +1,12 @@
 # coding-prompts
 
-## AI Coding Process and Standards Framework
+## 🤖 AI Coding Process and Standards Framework
 
 This repository provides a **framework** of documents outlining a standardized process and specific guidelines intended to govern interactions with an AI coding assistant, **primarily designed for use within the Cursor IDE environment**. The goal is to establish a reusable template that can be adapted for **any project** to ensure consistency, robustness, and adherence to project-specific standards during development.
 
 The framework includes general process definitions (`AI_CODING_PROCESS.md`, `PLAN_WRITING_PROCESS.md`), core principles (`STANDARDS.md`), and an **example** of project-specific technical standards (`code_architecture_standard.md`). The `code_architecture_standard.md` file included here serves as a template and **MUST** be adapted or replaced with guidelines relevant to the specific technology stack and conventions of the target project.
 
-**Key Documents (Templates/Examples):**
+**📄 Key Documents (Templates/Examples):**
 
 *   **`AI_CODING_PROCESS.md`**: Defines the mandatory workflow the AI assistant MUST follow during general coding interactions (analysis, applying edits, verification). **The AI MUST explicitly follow and report on the steps defined in this document.**
 *   **`STANDARDS.md`**: Outlines the core principles, development standards, and a checklist that all code changes must adhere to. This covers aspects like code clarity, robustness, testing, and documentation.
@@ -16,7 +16,7 @@ The framework includes general process definitions (`AI_CODING_PROCESS.md`, `PLA
 *   **`AI_CODING_PROCESS_CHANGELOG.md`**: A collaborative log tracking agreed-upon refinements and version changes made to the main `AI_CODING_PROCESS.md` document based on practical coding experiences.
 *   **`PLAN_WRITING_PROCESS_CHANGELOG.md`**: A collaborative log tracking agreed-upon refinements and version changes made to the `PLAN_WRITING_PROCESS.md` document.
 
-**Usage (Applying the Framework to a Project):**
+**🛠️ Usage (Applying the Framework to a Project):**
 
 When using this framework for a specific project:
 1.  **Customize `code_architecture_standard.md`:** Replace the example content with technical standards, patterns, library choices, and code examples relevant to your project's stack.
@@ -57,4 +57,4 @@ Familiarize yourself with these documents to understand the expected interaction
     *   *Example Prompt (Adding an Entry):* "`We agreed to refine step 2.3 in @PLAN_WRITING_PROCESS.md for dependency checks. Please add an entry to @PLAN_WRITING_PROCESS_CHANGELOG.md for version 1.2 summarizing this change and use today's date.`"
     *   *Example Prompt (Consulting):* "`@PLAN_WRITING_PROCESS_CHANGELOG.md Why was version 1.1 created?`"
 
-**General Recommendation:** When requesting coding work or planning, explicitly mentioning the primary process document (`@AI_CODING_PROCESS.md` or `@PLAN_WRITING_PROCESS.md`) helps reinforce the requirement for the AI to follow the structured workflow.
+**💡 General Recommendation:** When requesting coding work or planning, explicitly mentioning the primary process document (`@AI_CODING_PROCESS.md` or `@PLAN_WRITING_PROCESS.md`) helps reinforce the requirement for the AI to follow the structured workflow.
