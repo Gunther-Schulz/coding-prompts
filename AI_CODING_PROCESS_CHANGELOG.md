@@ -2,6 +2,15 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.28 - 2025-05-04
+
+*   **Formatting Overhaul (Readability & Consistency):**
+    *   Standardized emphasis formatting for keywords (`**MUST**`, `**CRITICAL:**`, `**WARNING:**`, `**NOTE:**`, `**STOP**`) throughout the document.
+    *   Added vertical spacing before major steps (e.g., 3.1-3.4) and complex sub-sections (e.g., 3.4.1.b, 4.1.d) to improve visual separation.
+    *   Restructured dense sections (e.g., 3.4.1 Impact Analysis) using bullet points.
+    *   Reformatted Step 4.7 self-correction triggers into a bulleted list.
+    *   Used Markdown code blocks for summary checklists (3.10, 4.4) for consistency.
+
 ## v1.27 - 2025-05-04
 
 *   **Language-Agnostic Refactoring:**
