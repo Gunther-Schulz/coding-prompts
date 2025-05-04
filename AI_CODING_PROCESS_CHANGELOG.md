@@ -2,6 +2,14 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.27 - 2025-05-04
+
+*   **Language-Agnostic Refactoring:**
+    *   Generalized Python-specific examples and terminology (imports, errors, file conventions, specific library mentions) in `AI_CODING_PROCESS.md` Steps 3 and 4 to make the core workflow applicable across different programming languages.
+    *   Updated references to `code_architecture_standard.md` to emphasize it contains language/framework-specific details.
+    *   Focused descriptions on the *intent* of checks (dependency validation, interface consistency, etc.) rather than specific language mechanisms.
+    *   Kept tool usage (`grep_search`, `read_file`) descriptions as-is, relating them to the AI environment.
+
 ## v1.26 - 2025-05-04
 
 *   **Enhanced Handling of Failed Existing Imports (Steps 3.4.1.b, 3.5):**

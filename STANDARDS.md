@@ -1,17 +1,17 @@
 # Beat the Books - Development Standards and Requirements
 
-**ATTENTION AI ASSISTANT: The following Core Principles are paramount and MUST be adhered to strictly in all circumstances. Violations, especially of the 'Work with Facts' principle (e.g., making assumptions, guessing, or introducing fallbacks based on errors instead of verifying root causes and requirements), are critical failures and must be avoided.**
+**ATTENTION AI ASSISTANT: This document outlines development standards and requirements. The Core Principles are paramount and MUST be adhered to strictly. This document may reference common patterns and tools (potentially using Python examples), but project-specific implementation details (like specific file names or chosen library configurations) are defined in `code_architecture_standard.md`. Violations, especially of the 'Work with Facts' principle, are critical failures.**
 
 ## Quick Reference Guide
 
-| Context / Task                      | Key Standard / Tool Recommendation                                  | Section Reference                |
+| Context / Task                      | Key Standard / Tool Recommendation (Examples may be Python-specific) | Section Reference                |
 | :---------------------------------- | :------------------------------------------------------------------ | :------------------------------- |
-| Debugging Errors                    | Capture full traceback with `logger.exception()` or `exc_info=True` | Debugging & Analysis             |
+| Debugging Errors                    | Capture full traceback with standard logging (`logger.exception()` or `exc_info=True`) | Debugging & Analysis             |
 | Inspecting Large Files (esp. JSON)  | Use command-line tools (`jq`, `grep`, `cat`, etc.)                  | Debugging & Analysis             |
 | Defining Types (Enums, Models)      | Use central Domain Models                                           | Code Quality - Domain Models     |
-| Creating/Wiring Components          | Use Dependency Injection (DI) container (`di.py`)                   | Patterns & Practices - DI        |
-| Handling Configuration              | Load `AppConfig` via DI at startup                                  | Architecture - Configuration     |
-| Interface Definitions               | Use `typing.Protocol`                                               | Code Quality - Typing            |
+| Creating/Wiring Components          | Use Dependency Injection (DI) container (configured in central DI module) | Patterns & Practices - DI        |
+| Handling Configuration              | Load central config object (e.g., `AppConfig`) via DI at startup    | Architecture - Configuration     |
+| Interface Definitions               | Use language's interface/protocol features (e.g., `typing.Protocol`) | Code Quality - Typing            |
 | Implementing Cross-Cutting Logic    | Consider Decorator Pattern                                          | Patterns & Practices - Decorator |
 | CLI Command Implementation          | Use Command Pattern via DI                                          | Patterns & Practices - Command   |
 | Adding Common Pure Functions        | Place in dedicated utility modules                                  | Code Quality - Stateless Utils   |
@@ -36,11 +36,11 @@
 - **Review Focus:**
     - When reviewing code: Focus on problematic issues rather than listing what's correct.
 
-# NOTE: This document provides a concise checklist. Refer to code_architecture_standard.md for detailed explanations and examples.
+# NOTE: This document provides principles and a checklist, potentially with language-relevant examples (e.g., Python). Refer to the project-specific `code_architecture_standard.md` for detailed implementation choices, configurations, and concrete examples for this project.
 
 ## Debugging & Analysis
-- **Traceback Analysis:** Prioritize obtaining and analyzing the full traceback when diagnosing errors. Leverage the existing logging setup, specifically using `logger.error(message, exc_info=True)` or its shorthand `logger.exception(message)`, to capture tracebacks effectively within `except` blocks and minimize guesswork.
-- **Large File Handling:** When analyzing large files (especially JSON), prefer using command-line tools (e.g., `jq`, `cat`, `grep`, `less`) for inspection and querying rather than attempting to load the entire file into memory or an editor.
+- **Traceback Analysis:** Prioritize obtaining and analyzing the full traceback when diagnosing errors. Leverage the existing logging setup, specifically using standard methods like `logger.error(message, exc_info=True)` or its shorthand `logger.exception(message)`, to capture tracebacks effectively within `except` blocks and minimize guesswork.
+- **Large File Handling:** When analyzing large files (especially structured text like JSON), prefer using command-line tools (e.g., `jq`, `cat`, `grep`, `less`) for inspection and querying rather than attempting to load the entire file into memory or an editor.
 
 ## Code Quality & Correctness
 
@@ -52,15 +52,15 @@
 - **Integration:** Ensure refactors are well integrated and don't leave remnants.
 - **Interface Matching:** Match async/sync method calls to interface definitions precisely. Validate parameter/return types against interfaces.
 - **Typing:**
-    - Strict Pydantic v2 compliance.
-    - Use runtime-checkable Protocol classes for interfaces.
-    - Follow Python typing best practices (use modern type annotations).
+    - Strict compliance with chosen data validation libraries (e.g., Pydantic v2).
+    - Use the language's features for runtime-checkable interfaces/protocols where available (e.g., `typing.Protocol`).
+    - Follow language-specific typing best practices (use modern type annotations).
     - Use domain interfaces for type safety and dependency abstraction.
 - **Error Handling:**
     - Implement proper error hierarchy and contextual error handling per domain context.
     - Use centralized utilities for common operations (including error patterns).
     - Implement comprehensive exception hierarchy.
-- **Logging:** Ensure consistent usage of the logging module (configured and injected via DI).
+- **Logging:** Ensure consistent usage of the standard logging framework (configured and injected via DI).
 - **Stateless Utilities:** Maintain pure, stateless, well-tested functions in dedicated utility modules/files.
 - **Domain Models:** Maintain domain models as the single source of truth for all type definitions (enums, types, constants) used across the application. Import domain types/interfaces rather than redefining.
 
@@ -72,13 +72,13 @@
 - **Single Source of Truth:** Domain models must define all type definitions used across the application.
 - **Facade Pattern:** Follow facade pattern for orchestration components.
 - **Component Lifecycles:** Utilize the Dependency Injection (DI) container to manage component lifecycles (including Singleton scope where appropriate) instead of manual singletons.
-- **Configuration:** Implement Upfront Configuration loading pattern (loading AppConfig once at startup via DI). (See `code_architecture_standard.md` Config Module section)
+- **Configuration:** Implement Upfront Configuration loading pattern (loading a central configuration object, e.g., `AppConfig`, once at startup via DI). (See `code_architecture_standard.md` Config Module section)
 
 ## Patterns & Practices
 
 - **Dependency Injection (DI):**
     - Ensure proper DI as the primary mechanism for object creation and wiring. (See `code_architecture_standard.md` DI section).
-    - Rely on DI container configuration (e.g., `providers.Dict`) for component mapping where possible, avoiding dedicated registries.
+    - Rely on DI container configuration (e.g., using the container's mapping features) for component mapping where possible, avoiding dedicated registries.
 - **Factory/Registry:** Use dedicated Factory or Registry patterns **only** when the specific, stringent conditions outlined in `code_architecture_standard.md` are met.
 - **Command Pattern:** Apply command pattern for CLI interactions (with commands resolved via DI).
 - **Decorator Pattern:** Use decorator pattern judiciously for cross-cutting concerns (e.g., error handling, logging context).
@@ -87,22 +87,22 @@
 
 ## Module & File Structure
 
-- **Standard Structure:** Maintain consistent standardized module structure (See `code_architecture_standard.md`).
+- **Standard Structure:** Maintain consistent standardized module structure (See project-specific `code_architecture_standard.md`).
 - **Separation:** Ensure proper separation of base classes and implementations.
 - **Domain Modules:** Follow domain module structure for core interfaces.
 - **Component Folders:** Implement component-specific folder structure in each module (e.g., `strategies/`, `implementations/`).
 
 ## Testing
 
-- **Contract Testing:** Test interface implementations against their defined contracts (`Protocol`s).
+- **Contract Testing:** Test interface implementations against their defined contracts (e.g., `Protocol`s).
 - **Comprehensive Tests:** Add appropriate tests (unit, integration, container tests verifying DI wiring).
 
 ## Implementation Workflow (Guide, Not Standard)
 
 *Note: This workflow describes how to implement features, not strictly audit standards.*
 1. Define necessary domain interfaces or use existing ones.
-2. Implement components, ensuring they declare dependencies clearly in `__init__` for DI.
-3. Register new components explicitly within the main DI container (`di.py`).
+2. Implement components, ensuring they declare dependencies clearly (e.g., in constructor/`__init__`) for DI.
+3. Register new components explicitly within the main DI container configuration (defined in the project's central DI module).
 4. Import domain types/interfaces rather than redefining.
 5. Cross-reference interfaces before implementing methods.
 6. Add appropriate tests.
