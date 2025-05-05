@@ -2,6 +2,17 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.43 - 2025-05-05
+
+*   **Major Structural Refactor for Flow Clarity:**
+    *   Added Table of Contents (Section 1).
+    *   Renamed "Handling Blockers & Deviations" to "Exception Handling Procedures" (Section 5) and explicitly framed them as off-ramps from the main workflow.
+    *   Added explicit "STOP and execute Procedure X (Section 5)" instructions in Step 3 triggers.
+    *   Restructured Step 4 ("Edit Generation & Verification Cycle") into clearer phases: 4.1 Generate, 4.2 Pre-Apply Verify, 4.3 Apply Edit, 4.4 Post-Apply Verify, 4.5 Generate Summary.
+    *   Updated cross-references throughout to include relevant section numbers.
+    *   Moved Glossary (Section 6) and References (Section 7) to the end.
+    *   Goal: Improve overall document structure, navigation, and flow distinction between standard path and exception handling for AI processing.
+
 ## v1.42 - 2025-05-05
 
 *   **Increased Granularity & Negative Checks:**

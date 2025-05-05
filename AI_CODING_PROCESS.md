@@ -4,7 +4,24 @@
 
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 
-**Version: 1.42** (Refinements: Granular Checklists, Negative Checks)
+**Version: 1.43** (Structural Refactor: ToC, Exception Procedures, Step 4 Flow)
+
+---
+
+## Table of Contents
+
+1.  [Introduction & Goal](#ai-assistant---standard-coding-process)
+2.  [Core Principles & Critical Checks Summary](#core-principles--critical-checks-summary)
+3.  [General Coding Workflow](#general-coding-workflow)
+    *   [Step 1: Confirm Standards Awareness](#1-confirm-standards-awareness-initial-step)
+    *   [Step 2: Confirm Goal](#2-confirm-goal-recommended)
+    *   [Step 3: Pre-computation Standards Check (Planning)](#3-pre-computation-standards-check-planning-phase)
+    *   [Step 4: Edit Generation & Verification Cycle](#4-edit-generation--verification-cycle)
+    *   [Step 5: Adherence Checkpoint](#5-adherence-checkpoint-final-step-in-cycle-critical)
+4.  [Reusable Verification Procedures](#reusable-verification-procedures)
+5.  [Exception Handling Procedures](#exception-handling-procedures)
+6.  [Glossary of Key Terms](#glossary-of-key-terms)
+7.  [References](#references)
 
 ---
 
@@ -16,9 +33,9 @@
 
 1.  **Verify ALL Diff Lines:** Meticulously verify **every single line** in *both* proposed (`code_edit`) and applied (`edit_file`/`reapply`) diffs against the plan and verified facts. **Treat tool output with extreme skepticism.** (See Step 4).
 2.  **Fact-Check Dependencies & Assumptions:** **MUST** factually verify the existence and correctness of **all** dependency references (imports, requires) and critical assumptions (API structures, interfaces) using tools **immediately** when planned (Step 3) and **again** after edits (Step 4). **Do not assume validity.** (See `Procedure: Verify Dependency Reference`, `Procedure: Verify Hypothesis`).
-3.  **Address Root Cause:** Prioritize investigating and fixing the underlying cause of issues over applying superficial patches or workarounds. (See Step 3.4, `Section: Handling Blockers & Deviations`).
+3.  **Address Root Cause:** Prioritize investigating and fixing the underlying cause of issues over applying superficial patches or workarounds. (See Step 3.4, Section 5: `Exception Handling Procedures`).
 4.  **Preserve Logic:** When refactoring, meticulously document and ensure the preservation of essential original logic, explicitly justifying any intentional changes. (See `Procedure: Ensure Logic Preservation`).
-5.  **Handle Blockers/Deviations Systematically:** Follow the defined procedures when encountering unclear root causes, architectural issues, necessary workarounds, or unexpected deviations in proposed/applied edits. (See `Section: Handling Blockers & Deviations`, Step 4.A.1.d).
+5.  **Handle Blockers/Deviations Systematically:** Follow the defined procedures when encountering unclear root causes, architectural issues, necessary workarounds, or unexpected deviations in proposed/applied edits. (See Section 5: `Exception Handling Procedures`, Step 4.2.1.d).
 
 ---
 
@@ -39,7 +56,7 @@ When responding to user requests involving code analysis, planning, or modificat
 
 ### 3. Pre-computation Standards Check (Planning Phase)
 
-**NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by following the procedures in `Section: Handling Blockers & Deviations` *before* proceeding with the original task. Embrace necessary detours.
+**NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
 
 *   **Trigger:** Before generating a multi-step plan or proposing a specific code edit (`edit_file` call).
 *   **Action:**
@@ -56,27 +73,27 @@ When responding to user requests involving code analysis, planning, or modificat
         **Data Integrity Priority:** When encountering **unexpectedly missing or invalid data** from external sources or between internal components:
             *   **Default Action:** Treat as a **critical error**. Log clearly and raise an appropriate, specific error (e.g., `ConversionError`, `ValidationError`) to halt processing for the affected item.
             *   **Justification:** Prioritizes surfacing data quality/integration issues over potentially masking them.
-            *   **Deviation (Requires Explicit Approval):** Implementing fallbacks/defaults **MUST** follow `Procedure: Handle Necessary Workaround` (in `Section: Handling Blockers & Deviations`), clearly stating the data integrity compromise.
+            *   **Deviation (Requires Explicit Approval):** Implementing fallbacks/defaults **MUST STOP standard plan and follow `Procedure: Handle Necessary Workaround` (Section 5)**, clearly stating the data integrity compromise.
 
         `3.4.1.` **Analyze Impact & Verify Assumptions:**
-            `a.` **Perform `Procedure: Analyze Impact`**: Identify and list affected call sites, perform enhanced scope checks for core changes, check circular dependencies, and consider data representation impacts. State outcome.
-            `b.` **Perform `Procedure: Verify Hypothesis` for ALL Assumptions**: **Immediately** after stating each assumption (external APIs, internal interfaces, config, data formats, library usage), execute and report the verification using the specified structured format. **CRITICAL:** Includes verifying *interface consistency* between interacting components and assumptions about *functional equivalence* when replacing logic. **DO NOT** proceed until verification outcome is 'Confirmed'. If verification for an *existing* dependency fails, follow `Procedure: Handle Failed Verification for Existing Dependency`.
+            `a.` **Perform `Procedure: Analyze Impact` (Section 4)**: Identify and list affected call sites, perform enhanced scope checks for core changes, check circular dependencies, and consider data representation impacts. State outcome.
+            `b.` **Perform `Procedure: Verify Hypothesis` (Section 4) for ALL Assumptions**: **Immediately** after stating each assumption (external APIs, internal interfaces, config, data formats, library usage), execute and report the verification using the specified structured format. **CRITICAL:** Includes verifying *interface consistency* between interacting components and assumptions about *functional equivalence* when replacing logic. **DO NOT** proceed until verification outcome is 'Confirmed'. **If verification for an *existing* dependency fails, STOP standard plan and execute `Procedure: Handle Failed Verification for Existing Dependency` (Section 5).** **If verification for any other assumption fails, STOP and revise the plan.**
             `c.` **Enumerate Edge Cases/Errors (Mandatory for Logic Changes):** List key potential edge cases/errors for new/modified logic and state how the plan addresses them. *Example: "Edge Cases: Handles empty input list; checks for division by zero."*
-            `d.` **Perform `Procedure: Verify Framework Compatibility`**: For framework entry points or library interactions, verify signature compatibility and adherence to established project patterns. State outcome.
-            `e.` **Perform `Procedure: Ensure Logic Preservation` (Mandatory for Logic Replacement):** When replacing/restructuring logic blocks, document original behavior first, then detail how the new logic preserves it, explicitly justifying intentional changes and presenting trade-offs if necessary.
-            `f.` **Perform `Procedure: Verify Configuration Usage Impact`**: When changing config values, identify usage locations and confirm compatibility/updates. State outcome.
+            `d.` **Perform `Procedure: Verify Framework Compatibility` (Section 4)**: For framework entry points or library interactions, verify signature compatibility and adherence to established project patterns. State outcome.
+            `e.` **Perform `Procedure: Ensure Logic Preservation` (Section 4) (Mandatory for Logic Replacement):** When replacing/restructuring logic blocks, document original behavior first, then detail how the new logic preserves it, explicitly justifying intentional changes and presenting trade-offs if necessary.
+            `f.` **Perform `Procedure: Verify Configuration Usage Impact` (Section 4)**: When changing config values, identify usage locations and confirm compatibility/updates. State outcome.
 
-        `3.4.2.` **Verification for Moves/Renames:** Use *multiple* search strategies (as detailed in `Procedure: Analyze Impact`) to confirm impact. **DO NOT** rely on a single 'no results' search. *Example: 'Modifying `parser_x` impacts `processor_y`. Plan includes verifying compatibility.'*
+        `3.4.2.` **Verification for Moves/Renames:** Use *multiple* search strategies (as detailed in `Procedure: Analyze Impact`, Section 4) to confirm impact. **DO NOT** rely on a single 'no results' search. *Example: 'Modifying `parser_x` impacts `processor_y`. Plan includes verifying compatibility.'*
 
         `3.4.3.` **Prefer Atomic Edits:** Break down complex changes into smaller, atomic edits where feasible.
 
     `3.5.` **Handle Blockers (Unclear Root Cause / Missing Info / Standard Conflicts):**
-        *   **Trigger:** If Steps 3.3 or 3.4 reveal unclear root causes, missing info, standard conflicts, failing standard debugging methods, or certain failed dependency verifications (see `Procedure: Handle Failed Verification for Existing Dependency`).
-        *   **Action:** **STOP** proposing a direct fix. Follow `Procedure: Handle Unclear Root Cause / Missing Info`.
+        *   **Trigger:** If Steps 3.3 or 3.4 reveal unclear root causes, missing info, standard conflicts, failing standard debugging methods, or certain failed dependency verifications (see `Procedure: Handle Failed Verification for Existing Dependency`, Section 5).
+        *   **Action:** **STOP** proposing a direct fix. **Execute `Procedure: Handle Unclear Root Cause / Missing Info` (Section 5).**
 
     `3.6.` **Handle Architectural Decisions / Suboptimal Patterns:**
         *   **Trigger:** When analysis reveals architectural conflicts, significant trade-offs between valid paths, or foundational inconsistencies.
-        *   **Action:** **IMMEDIATELY STOP** detailed planning. Follow `Procedure: Handle Architectural Decisions`.
+        *   **Action:** **IMMEDIATELY STOP** detailed planning. **Execute `Procedure: Handle Architectural Decisions` (Section 5).**
 
     `3.7.` **Trace Data Flow (If Applicable):**
         *   **Trigger:** For validation errors OR modifications to data path functions.
@@ -106,116 +123,97 @@ When responding to user requests involving code analysis, planning, or modificat
         - `[x/-] 2. Impact Analysis:` *[Brief confirmation `Procedure: Analyze Impact` (3.4.1.a) performed. Outcome: e.g., 'Standard impact checked', 'Core impact N/A'.]*
         - `[x/-] 3. Hypothesis Verification:` *[Brief confirmation `Procedure: Verify Hypothesis` (3.4.1.b) performed for ALL assumptions. Outcome: e.g., 'All verified', 'Assumption X confirmed'.]*
         - `[x/-] 4. Logic Preservation Plan:` *[Brief confirmation `Procedure: Ensure Logic Preservation` (3.4.1.e) performed if applicable. Mark `[x]` if done, `[-]` if N/A.]*
-        - `[x/-] 5. Blocker Checks:` *[Brief confirmation blocker checks (3.5/3.6) performed and resolved/approved if triggered. Mark `[x]` if checked & resolved, `[-]` if N/A.]*
+        - `[x/-] 5. Blocker Checks:` *[Brief confirmation blocker checks (3.5/3.6) performed and guidance sought/received via Section 5 procedures if triggered. Mark `[x]` if checked & resolved/approved, `[-]` if N/A.]*
         - `[x] 6. Confirmation:` Pre-computation verification summary complete. *(Always `[x]`)*
         ```
 
-### 4. Post-computation Standards Check (Verification Phase)
+### 4. Edit Generation & Verification Cycle
 
-*   **Trigger:** After generating `edit_file` content but **before** calling the tool. Also triggered **after** successful `edit_file`/`reapply` to verify completion.
-*   **Action:**
+*   **Purpose:** This step covers the critical cycle of generating a proposed code edit, verifying it rigorously *before* application, applying it, and verifying the result *after* application.
+*   **Core Cycle:** [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]
 
-    **CRITICAL WARNING:** VERIFY ALL DIFF LINES. Failure to meticulously verify the *entire* applied diff is a primary cause of regressions.
+    **CRITICAL WARNING:** VERIFY ALL DIFF LINES. Failure to meticulously verify the *entire* diff (both proposed and applied) is a primary cause of regressions. Treat tool output (`edit_file`, `reapply`) with extreme skepticism.
 
-    **Guideline:** Atomic Edit-Verify Cycle: [Plan -> Pre-Verify -> Edit Tool Call -> Post-Verify & Summarize]
+    #### 4.1 Generate Proposed Edit (`code_edit`)
+    *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content.
+        *   Ensure `instructions` are explicit (add vs. modify/replace).
+        *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring.
 
-    **CRITICAL REMINDER (NON-NEGOTIABLE PRE-EDIT CHECKS):**
-    *   **Purpose:** Steps 4.A **MUST** be performed **before** *every* `edit_file` tool call (4.B) to scrutinize the *proposed diff* against the verified plan.
-    *   **Risk of Skipping:** Skipping or rushing 4.A has **repeatedly resulted in applying incorrect code.**
-    *   **Mandate:** **DO NOT SKIP OR RUSH 4.A.** Treat proposed diffs skeptically.
+    #### 4.2 Pre-Apply Verification (Mandatory Before 4.3)
+    *   **Purpose:** To meticulously scrutinize the *proposed `code_edit` diff* against the verified plan *before* calling the `edit_file` tool.
+    *   **Mandate:** **DO NOT SKIP OR RUSH.** Treat proposed diffs skeptically.
+    *   **Action:** Perform the following checks on the generated `code_edit` from 4.1:
 
-    #### 4.A: Pre-Edit Verification (Mandatory Before 4.B)
+        `4.2.1` **Perform Granular Final Review & Deviation Handling Loop (Pre-Edit):**
+            *   **WARNING:** AI model may add unrequested lines.
+            *   `a. Summarize Pre-Edit Context:` Briefly summarize relevant existing code structure from recent `read_file` calls.
+            *   `b. Review Intended Changes:` Review planned lines in `code_edit` diff. Verify alignment with plan and standards (Step 3).
+            *   `c. Identify Deviations:` Compare *entire* proposed `code_edit` diff line-by-line against Step 3 plan. List all unplanned lines ("Deviations").
+            *   `d. Handle Deviations:` If Deviations found:
+                *   **CRITICAL:** Fact-check **EVERY** Deviation using tools before accepting.
+                *   **Execute `Procedure: Handle Deviation` (Section 5)**. This includes mandatory re-verification of involved dependencies (`Procedure: Verify Dependency Reference`, Section 4) and confirmation of prior hypothesis verification.
+                *   **Repeat for ALL Deviations** before exiting loop.
+            *   `e. Integration Sanity Check:` Briefly check: Does the change logically fit? Interact correctly with adjacent code? State confirmation.
+            *   `f. Review Final Proposed Diff:` Review final `code_edit` diff (intended + verified Deviations - removed Deviations). **CRITICAL:** Verify all types/functions/classes used are defined/imported. Add missing imports. Ensure it addresses root cause (Step 3.4). Verify calls match verified signatures (Step 3.4.1.b).
 
-    1.  **`4.A.1` Perform Granular Final Review & Deviation Handling Loop (Pre-Edit):**
-        *   **WARNING:** AI model may add unrequested lines. Treat unplanned lines with extreme skepticism.
+        `4.2.2` **Generate Pre-Edit Confirmation Statement:** Before proceeding to 4.3, **MUST** provide brief statement confirming 4.2.1 checks, **mentioning explicit verification of key assumptions/dependencies** and logic preservation if applicable.
+            *   *Example (Refactoring): "Pre-Apply Verification (4.2) complete. No deviations. Key assumption 'API X' verified (Outcome: Confirmed). Logic Preservation: Confirmed plan preserves behavior. Proceeding to Apply Edit (4.3)."*
+            *   *Example (Deviation Handling): "Pre-Apply Verification (4.2) complete. Deviations handled: removed unverified 'foo.bar' (check outcome reported). Key assumption 'Model Y' verified (Outcome: Confirmed). Logic Preservation: N/A. Proceeding to Apply Edit (4.3)."*
 
-        *   `4.A.1.a - Summarize Pre-Edit Context:` Briefly summarize relevant existing code structure from recent `read_file` calls.
+    #### 4.3 Apply Edit (After Successful 4.2)
+    *   **Action:** Call the edit tool.
+        *   `4.3.1 Apply Edit Tool:` (e.g., Call `edit_file` or `reapply`)
 
-        *   `4.A.1.b - Review Intended Changes:` Review planned lines in `code_edit` diff. Verify alignment with plan and standards.
+    #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
+    *   **Purpose:** To meticulously verify the *actual diff applied* by the tool (`edit_file` or `reapply`) and check for side effects.
+    *   **Action:** After a successful `edit_file` or `reapply` call result, explicitly check **and report the outcome of each** of the following:
 
-        *   `4.A.1.c - Identify Deviations:` Compare *entire* proposed `code_edit` diff line-by-line against Step 3 plan. **Explicitly list all lines** not explicitly planned (**"Deviations"**).
-            *   If Deviations found, state "Deviations identified." Proceed to 4.A.1.d.
-            *   If no Deviations exist, state "No deviations found." Proceed to 4.A.1.e.
+        `4.4.1` **Verify Edit Application:**
+            *   `a. Post-Reapply Verification:` **CRITICAL:** If modification resulted from `reapply`:
+                *   **Perform `Procedure: Verify Reapply Diff` (Section 5)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
+            *   `b. Post-`edit_file` Verification:` **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
+                *   **WARNING:** Treat Diff Output with Extreme Skepticism.
+                *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
+            *   `c. No Introduced Redundancy:** Check for duplicate logic, unnecessary checks, redundant mappings. Remove if found.
+            *   `d. Optional Post-Refactor Smoke Test:** After significant refactoring, consider minimal runtime "smoke test" (e.g., `command --help`). Failure should trigger self-correction (4.4.3). State if performed and outcome.
 
-        *   `4.A.1.d - Handle Deviations:` **CRITICAL:** Any unplanned add/delete/modify in the `code_edit` diff **IS** a Deviation. **MUST** fact-check **EVERY** Deviation using tools before accepting.
-            *   **Perform `Procedure: Handle Deviation`** (found in `Section: Handling Blockers & Deviations`). This includes mandatory re-verification of any involved dependency references using `Procedure: Verify Dependency Reference` and confirming any necessary prior hypothesis verifications (Step 3.4.1.b).
-            *   **Repeat for ALL Deviations** before exiting loop.
+        `4.4.2` **Check for Leftover Code & Dependencies:**
+            *   `a. Confirm Absence of Leftover Code/Comments:** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
+            *   `b. Verify Downstream Consumers & Cleanup:**
+                i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, **trigger self-correction (4.4.3)**.
+                ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST trigger self-correction (4.4.3)**.
+                iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
 
-        *   `4.A.1.e - Integration Sanity Check:` Briefly check: Does the proposed change logically fit? Interact correctly with adjacent code? State confirmation.
+        `4.4.3` **Self-Correct if Necessary:**
+            *   `a. Trigger:` If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues. Also triggered by specific missed mandatory steps (see below).
+            *   `b. Action:`
+                i.  **STOP** proceeding with flawed logic/state. State the issue discovered.
+                ii. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch.").
+                iii.**Triggers for Self-Correction (STOP and Address):**
+                    a.  Missed mandatory immediate verification for a hypothesis (3.4.1.b).
+                    b.  Missed mandatory Pre-Edit Verification (4.2.1), Post-Reapply Verification (4.4.1.a), Post-Edit File Verification (4.4.1.b), or Dependency Re-verification (4.4.2.b.i).
+                    c.  Missed mandatory Post-Action Verification Summary (4.4.3) for the preceding edit.
+                    d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.6 / `Procedure: Handle Architectural Decisions`).
+                    e.  Any other missed mandatory step, check, reporting, or verification from this document.
+                    f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
+                iv. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
+                v.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts on the same specific fix) before triggering this escalation.
 
-        *   `4.A.1.f - Review Final Proposed Diff:` Review final `code_edit` diff (intended changes + verified Deviations - removed Deviations). **CRITICAL:** Explicitly verify all types/functions/classes used are defined/imported. Add missing imports. Ensure it addresses root cause (Step 3.4). Verify function/method calls match verified signatures (Step 3.4.1.b).
-
-    2.  **`4.A.2` Generate Pre-Edit Confirmation Statement (Before `edit_file`):** **MUST** provide brief statement confirming 4.A.1 checks, **mentioning explicit verification of key assumptions/dependencies** and logic preservation if applicable.
-        *   *Example (Refactoring): "Pre-edit review (4.A.1) complete. No deviations. Key assumption 'API X' verified (Outcome: Confirmed). Logic Preservation: Confirmed plan preserves behavior. Proceeding with edit."*
-        *   *Example (Deviation Handling): "Pre-edit review (4.A.1) complete. Deviations handled: removed unverified 'foo.bar' (check outcome reported). Key assumption 'Model Y' verified (Outcome: Confirmed). Logic Preservation: N/A. Proceeding with corrected edit."*
-        *   *Example (Simple): "Pre-edit review (4.A.1) complete. No deviations. No key assumptions. Logic Preservation: N/A. Proceeding with edit."*
-
-    #### 4.B: Apply Edit (After Successful 4.A)
-
-    1.  **`4.B.1` Apply Edit Tool:** (e.g., Call `edit_file`)
-
-    #### 4.C: Post-Edit Verification (Mandatory After 4.B)
-
-    1.  **`4.C.1` Verify Edit Application:**
-        *After a successful `edit_file` or `reapply` call, explicitly check **and report the outcome of each** of the following:*
-
-        `4.C.1.a - Post-Reapply Verification:` **CRITICAL:** If modification resulted from `reapply`:
-            *   **CRITICAL REMINDER:** `reapply` uses a different model. This check is **MUST** after *every* successful `reapply`. **DO NOT SKIP.**
-            *   **Perform `Procedure: Verify Reapply Diff`** (found in `Section: Handling Blockers & Deviations`). This involves treating the diff as new, re-performing full pre-edit verification (4.A.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
-
-        `4.C.1.b - Post-`edit_file` Verification:` **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
-            *   **WARNING:** Treat Diff Output with Extreme Skepticism. Diffs may misrepresent changes. Investigate discrepancies using `read_file`.
-            *   **Perform `Procedure: Verify Edit File Diff`** (found in `Section: Handling Blockers & Deviations`). This includes:
-                i.  Exact diff match check.
-                ii. Targeted semantic spot-check (esp. external APIs/framework patterns).
-                iii. **Mandatory** re-verification of **ALL** dependency references in the applied diff using `Procedure: Verify Dependency Reference`.
-                iv. Context line check.
-                v. Final logic preservation validation (if applicable, compare applied logic vs. documented original behavior from 3.4.1.e).
-                vi. Discrepancy Handling: If any check fails and cannot be justified, **trigger self-correction (Step 4.C.3)**.
-
-        `4.C.1.c - No Introduced Redundancy:** Check for duplicate logic, unnecessary checks, redundant mappings. Remove if found.
-
-        `4.C.1.d - Optional Post-Refactor Smoke Test:** After significant refactoring, consider minimal runtime "smoke test" (e.g., `command --help`). Failure should trigger self-correction (4.C.3). State if performed and outcome.
-
-    2.  **`4.C.2` Check for Leftover Code & Dependencies:**
-        *After successful edits (esp. refactoring), scan relevant files **and explicitly report the outcome of each check**:*
-
-        `4.C.2.a Confirm Absence of Leftover Code/Comments:** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
-        `4.C.2.b Verify Downstream Consumers & Cleanup:**
-            i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, correct (Step 4.C.3).
-            ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST** trigger self-correction (Step 4.C.3).
-            iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
-
-    3.  **`4.C.3` Self-Correct if Necessary:**
-        `4.C.3.a Trigger:` If reviews (4.A.1, 4.C.1, 4.C.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues. Also triggered by specific missed mandatory steps (see below).
-        `4.C.3.b Action:`
-            i.  **STOP** proceeding with flawed logic/state. State the issue discovered.
-            ii. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch." or "Lingering reference found.").
-            iii.**Triggers for Self-Correction (STOP and Address):**
-                a.  Missed mandatory immediate verification for a hypothesis (3.4.1.b).
-                b.  Missed mandatory Pre-Edit Verification (4.A), Post-Reapply Verification (4.C.1.a), Post-Edit File Verification (4.C.1.b), or Dependency Re-verification (4.C.2.b.i).
-                c.  Missed mandatory Post-Action Verification Summary (4.C.4) for the preceding edit.
-                d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.6 / `Procedure: Handle Architectural Decisions`).
-                e.  Any other missed mandatory step, check, reporting, or verification from this document.
-                f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
-            iv. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
-            v.  **If Tool Failure Persists:** Follow `Procedure: Request Manual Edit`. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts on the same specific fix) before triggering this escalation.
-
-    4.  **`4.C.4` Generate Post-Action Verification Summary (After final `edit_file`/`reapply`):**
-        `4.C.4.a Trigger:` Immediately following the *final* `edit_file` or `reapply` for the task.
-        `4.C.4.b Action:` **MUST** generate a **Post-Action Verification Summary**. Confirms post-edit checks were **performed and documented**. Structure using the following format:
+    #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
+    *   `a. Trigger:` Immediately following the *final* successful verification (Step 4.4) for the task's edits.
+    *   `b. Action:` **MUST** generate a **Post-Action Verification Summary**. Confirms post-apply checks were **performed and documented**. Structure using the following format:
         ```markdown
         **Post-Action Verification Summary:**
-        - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.C.1.a (if `reapply`), **4.C.1.b (via `Procedure: Verify Edit File Diff`)**, 4.C.1.c (redundancy) done. State: 'Applied diff matches final intent.' OR 'Applied diff discrepancies: [List/Justification].'.]*
-        - `[x/-] 2. Leftover Code & Dependency Analysis:` *[Brief confirm check **4.C.2.a (artifacts)** and **4.C.2.b (explicit dependency re-verification/deletion checks)** done. Outcome: e.g., "Cleanup OK", "Re-verification confirmed no missed updates".]*
-        - `[x/-] 3. Correction Assessment:` *[Brief confirm check 4.C.3 performed. State if corrections needed/made. Mark `[x]` if checked & OK, `[-]` if N/A.]*
+        - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.4.1.a (if `reapply`), **4.4.1.b (via `Procedure: Verify Edit File Diff`, Section 5)**, 4.4.1.c (redundancy) done. State: 'Applied diff matches final intent.' OR 'Applied diff discrepancies: [List/Justification].'.]*
+        - `[x/-] 2. Leftover Code & Dependency Analysis:` *[Brief confirm check **4.4.2.a (artifacts)** and **4.4.2.b (explicit dependency re-verification/deletion checks)** done. Outcome: e.g., "Cleanup OK", "Re-verification confirmed no missed updates".]*
+        - `[x/-] 3. Correction Assessment:` *[Brief confirm check 4.4.3 performed. State if corrections were needed/made. Mark `[x]` if checked & OK, `[-]` if N/A.]*
         - `[x] 4. Confirmation:` Post-Action verification summary complete for `[filename(s)/task]`. *(Always `[x]`)*
         ```
 
 ### 5. Adherence Checkpoint (Final Step in Cycle): **CRITICAL:**
 
 *   **Trigger:** Before concluding interaction for the current task/request cycle.
-*   **Action:** Perform a final mental check: Have all mandatory steps, checks, verifications, and reporting requirements outlined in this document (including verification summaries) been completed for this cycle? If any were missed, **trigger self-correction (Step 4.C.3)** to address the oversight before finishing.
+*   **Action:** Perform a final mental check: Have all mandatory steps (1-4, including required sub-steps like 4.2, 4.4, 4.5), checks, verifications, and reporting requirements outlined in this document (including verification summaries) been completed for this cycle? If any were missed, **trigger self-correction (Step 4.4.3)** to address the oversight before finishing.
 
 ---
 
@@ -224,7 +222,7 @@ When responding to user requests involving code analysis, planning, or modificat
 *(This section defines standard methods referenced in the main workflow.)*
 
 **`Procedure: Verify Dependency Reference`**
-*   **Purpose:** To factually confirm the validity of a dependency reference (e.g., import, require) before relying on it or including it in code. **MUST** be performed for **every** reference during planning (3.4.1.b), pre-edit deviation handling (4.A.1.d), post-edit verification (4.C.1.b.iii), and downstream checks (4.C.2.b.i).
+*   **Purpose:** To factually confirm the validity of a dependency reference (e.g., import, require) before relying on it or including it in code. **MUST** be performed for **every** reference during planning (3.4.1.b), pre-edit deviation handling (4.2.1.d), post-edit verification (4.4.1.b.iii), and downstream checks (4.4.2.b.i).
 *   **Steps:**
     1.  **Cross-Reference Prior Knowledge:** Check if the correct module path for the symbol(s) was previously verified. Use verified path if available.
     2.  **Path Validation:** **MUST** use tools (`file_search`, `list_dir`) to confirm the **actual existence** of the source module file/directory path (e.g., `path/to/module.py`, `path/to/package/__init__.py`). **Report method and outcome.** If path invalid, reference **MUST** be corrected or removed.
@@ -275,14 +273,14 @@ When responding to user requests involving code analysis, planning, or modificat
     2.  **Interaction Pattern Check:** Identify key framework/library interactions (e.g., 'Typer + DI', 'SQLAlchemy + Pydantic'). Confirm plan uses established project patterns OR check docs/examples for novel interactions. State check performed and outcome.
 
 **`Procedure: Verify Configuration Usage Impact`**
-*   **Purpose:** Check impact of changes to configuration values (called in Step 3.4.1.f).
+*   **Purpose:** Check impact of changes to configuration values.
 *   **Steps:** Use `grep_search` to identify potential usage locations codebase-wide. State findings and confirm compatibility or necessary updates in plan.
 
 ---
 
-## Handling Blockers & Deviations
+## Exception Handling Procedures
 
-*(This section details procedures for handling specific issues identified during the workflow.)*
+*(This section details procedures for handling specific issues identified during the workflow. Execution of these procedures typically means **STOPPING** the standard workflow path until the issue is resolved or explicit guidance/approval is received.)*
 
 **`Procedure: Handle Unclear Root Cause / Missing Info`** (Triggered by Step 3.5)
 1.  **STOP** proposing direct fix.
@@ -328,7 +326,7 @@ When responding to user requests involving code analysis, planning, or modificat
     *   If dependency failed **AND** Usage Check found **NO USAGE**: Default plan is to **remove the stale dependency reference statement**. Briefly verify no downstream issues.
     *   If dependency failed **AND** usage *was* found, OR context suggests intentional removal but usage remains, OR context insufficient/ambiguous: **Trigger `Procedure: Handle Unclear Root Cause / Missing Info`**.
 
-**`Procedure: Handle Deviation`** (Called by Step 4.A.1.d)
+**`Procedure: Handle Deviation`** (Called by Step 4.2.1.d)
 *   **Purpose:** To fact-check and decide on unplanned lines ("Deviations") in a proposed `code_edit` diff.
 *   **Steps (For EACH Deviation):**
     1.  **State Deviation:** Clearly identify the unplanned line(s).
@@ -343,33 +341,29 @@ When responding to user requests involving code analysis, planning, or modificat
         *   If Deviation cannot be factually verified/necessity confirmed: State reason and **REMOVE the Deviation / Correct dependent code / Re-plan.**
     4.  **Repeat for ALL Deviations.**
 
-**`Procedure: Verify Reapply Diff`** (Called by Step 4.C.1.a)
+**`Procedure: Verify Reapply Diff`** (Called by Step 4.4.1.a)
 *   **Purpose:** To meticulously verify the diff applied by the `reapply` tool.
 *   **Steps:**
     1.  **Treat Diff as New:** Approach with extreme skepticism.
-    2.  **Perform Full Re-Verification:** Re-perform **all** checks from **Step 4.A.1 (a through f)** on the *actual diff applied by `reapply`*, comparing it against the file state *before* the `reapply` call. This includes: Context Summary, Intended Change Review, Deviation Identification, **mandatory execution of `Procedure: Handle Deviation` for every deviation found in the reapply diff**, Integration Sanity Check, and Final Diff Review. **Explicitly report each check and outcome.**
-    3.  **Structured Log:** **Immediately after `reapply` result,** **MUST** generate structured log confirming these re-verification checks (Steps 1-2) *including explicit outcome of deviation handling*. Use format similar to Step 4.A.2, noting it's post-reapply.
+    2.  **Perform Full Re-Verification:** Re-perform **all** checks from **Step 4.2.1 (a through f)** on the *actual diff applied by `reapply`*, comparing it against the file state *before* the `reapply` call. This includes: Context Summary, Intended Change Review, Deviation Identification, **mandatory execution of `Procedure: Handle Deviation` for every deviation found in the reapply diff**, Integration Sanity Check, and Final Diff Review. **Explicitly report each check and outcome.**
+    3.  **Structured Log:** **Immediately after `reapply` result,** **MUST** generate structured log confirming these re-verification checks (Steps 1-2) *including explicit outcome of deviation handling*. Use format similar to Step 4.2.2, noting it's post-reapply.
 
-**`Procedure: Verify Edit File Diff`** (Called by Step 4.C.1.b)
+**`Procedure: Verify Edit File Diff`** (Called by Step 4.4.1.b)
 *   **Purpose:** To meticulously verify the diff applied by the standard `edit_file` tool.
 *   **Steps:**
-    1.  **Diff Match:** Compare *entire* applied diff line-by-line against final intended proposal (from 4.A.1.f). Identify **ALL** discrepancies (subtle changes to imports, types, comments, whitespace matter).
+    1.  **Diff Match:** Compare *entire* applied diff line-by-line against final intended proposal (from 4.2.1.f). Identify **ALL** discrepancies (subtle changes to imports, types, comments, whitespace matter).
     2.  **Targeted Semantic Spot-Check:** Rigorously re-validate *key* additions/changes (complex logic, function calls). Confirm semantic correctness, **esp. interactions with external library APIs / framework patterns.**
     3.  **Dependency Re-verification:** **MUST** perform `Procedure: Verify Dependency Reference` for **ALL** dependency statements present in the *applied* diff. **Explicitly report outcome.**
     4.  **Context Line Check:** Re-verify context lines not unexpectedly modified/misrepresented. Use `read_file` if suspicious.
     5.  **Logic Preservation Validation (If Applicable):** Final validation comparing *applied* new logic against documented original behavior (from `Procedure: Ensure Logic Preservation`). Confirm preservation or justified modification.
-    6.  **Discrepancy Handling:** If any check (1-5) fails and cannot be justified/corrected, **trigger self-correction (Step 4.C.3)**.
+    6.  **Discrepancy Handling:** If any check (1-5) fails and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
 
-**`Procedure: Request Manual Edit`** (Triggered by Step 4.C.3.b.v if tool failures persist)
+**`Procedure: Request Manual Edit`** (Triggered by Step 4.4.3.b.v if tool failures persist)
 1.  **STOP** tool attempts.
 2.  **State Tool Failure:** Explain the issue and the presumed incorrect file state based on last tool output.
 3.  **Final State Check:** **MUST** re-read relevant file section (`read_file`) to verify *actual* current state.
 4.  **If Still Incorrect:** **MUST** request manual user intervention. Provide clear, complete, copy-pasteable code block showing *entire relevant section* in desired final state, including **sufficient surrounding unchanged lines (e.g., 5-10 lines before/after)**.
 5.  **If Edit Succeeded:** If re-read shows edit *did* succeed despite tool reports, state this and proceed.
-
----
-
-**Reference:** Always refer to `STANDARDS.md` for definitive standard definitions. Refer to project's `code_architecture_standard.md` for technical patterns.
 
 ---
 
@@ -383,3 +377,10 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Root Cause:** The fundamental underlying reason for a bug or issue, as opposed to its superficial symptoms. Addressing the root cause is prioritized over workarounds.
 *   **Standard Impact:** The potential effects of changes on standard functionality, including call sites, imports, references, configuration usage, and data representation across different components/layers (excluding the enhanced scope specific to Core Components unless applicable).
 *   **Verification:** The act of using tools (`read_file`, `grep_search`, `list_dir`, etc.) or reliable sources (documentation) to factually confirm the correctness of assumptions, the state of the code, the validity of dependencies, or the outcome of an edit.
+
+---
+
+## References
+
+*   Always refer to `STANDARDS.md` for definitive standard definitions.
+*   Refer to project's `code_architecture_standard.md` for technical patterns.
