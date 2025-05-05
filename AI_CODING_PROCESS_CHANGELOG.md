@@ -2,6 +2,15 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.32 - 2025-05-05
+
+*   **Improved Structure/Readability (Step 4.C):**
+    *   Restructured section `4.C` (Post-Edit Verification) for better clarity.
+    *   Broke down `4.C.1`, `4.C.2`, and `4.C.3` into clearly numbered/lettered sub-points.
+    *   Nested the specific checks within `4.C.1.a` and `4.C.1.b` using Roman numerals (i, ii, ...).
+    *   Moved critical reminders/warnings closer to the relevant sub-steps.
+    *   Aimed for a more hierarchical and scannable structure similar to Step 3 and 4.A/B.
+
 ## v1.31 - 2025-05-05
 
 *   **Improved Numbering/Structure Consistency (Step 3):**
