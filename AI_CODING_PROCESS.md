@@ -363,7 +363,8 @@ When responding to user requests involving code analysis, planning, or modificat
 2.  **State Tool Failure:** Explain the issue and the presumed incorrect file state based on last tool output.
 3.  **Final State Check:** **MUST** re-read relevant file section (`read_file`) to verify *actual* current state.
 4.  **If Still Incorrect:** **MUST** request manual user intervention. Provide clear, complete, copy-pasteable code block showing *entire relevant section* in desired final state, including **sufficient surrounding unchanged lines (e.g., 5-10 lines before/after)**.
-5.  **If Edit Succeeded:** If re-read shows edit *did* succeed despite tool reports, state this and proceed.
+   **After requesting the manual edit, STOP processing and await explicit user confirmation that the edit has been applied before proceeding with Step 4.4 (Post-Apply Verification).**
+5.  If Edit Succeeded: If re-read shows edit *did* succeed despite tool reports, state this and proceed.
 
 ---
 

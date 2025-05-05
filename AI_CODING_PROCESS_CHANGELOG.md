@@ -2,6 +2,10 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.46 - 2025-05-05
+
+*   **Enhanced Manual Edit Procedure:** Modified `Procedure: Request Manual Edit` (Step 4) to explicitly require the AI assistant to **STOP** processing and await user confirmation after requesting a manual edit, before proceeding with verification steps (4.4). Addresses issue where AI incorrectly assumed manual edits were performed.
+
 ## v1.45 - 2025-05-05
 
 *   **Renamed External Standard Doc References:**
