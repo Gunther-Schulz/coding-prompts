@@ -2,6 +2,13 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.30 - 2025-05-05
+
+*   **Corrected Sub-Step Numbering:**
+    *   Renumbered sub-steps under `3.4.1` (Analyze Impact) to use a consistent `a` through `i` lettering (`3.4.1.a`, `3.4.1.b`, ...).
+    *   Renumbered sub-steps under `4.A.1` (Granular Final Review) from `4.1.x` to `4.A.1.x` (`4.A.1.a`, `4.A.1.b`, ...).
+    *   Improved hierarchical clarity and consistency in these sections.
+
 ## v1.29 - 2025-05-05
 
 *   **Restructured Step 4 (Post-computation Checks):**
