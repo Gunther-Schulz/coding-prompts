@@ -4,7 +4,7 @@
 
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 
-**Version: 1.40** (Refactored for AI Readability: Reusable Procedures, Blocker Handling Section)
+**Version: 1.41** (Refinements: Glossary, Examples, Hints, Loop Reminder)
 
 ---
 
@@ -199,7 +199,7 @@ When responding to user requests involving code analysis, planning, or modificat
                 e.  Any other missed mandatory step, check, reporting, or verification from this document.
                 f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
             iv. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
-            v.  **If Tool Failure Persists:** If repeated attempts (>3 loops on same correction) fail, follow `Procedure: Request Manual Edit`.
+            v.  **If Tool Failure Persists:** Follow `Procedure: Request Manual Edit`. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts on the same specific fix) before triggering this escalation.
 
     4.  **`4.C.4` Generate Post-Action Verification Summary (After final `edit_file`/`reapply`):**
         `4.C.4.a Trigger:` Immediately following the *final* `edit_file` or `reapply` for the task.
@@ -249,6 +249,13 @@ When responding to user requests involving code analysis, planning, or modificat
         **Verification Method:** [Tool/Method]
         **Verification Execution:** [Action, e.g., Performing `read_file`...]
         **Verification Outcome:** [Confirmed: [Details] / Failed: [Details]]
+        ```
+        *Example Outcome Report:*
+        ```markdown
+        **Hypothesis:** External API `GET /items/{id}` returns `itemName` field.
+        **Verification Method:** `read_file` on `docs/api_spec.v2.json`
+        **Verification Execution:** Reading API spec file...
+        **Verification Outcome:** Confirmed: Spec shows `itemName` present in response schema.
         ```
     3.  **Proceed or Halt:** Only proceed if Outcome is 'Confirmed'. If 'Failed', plan **MUST** be revised/halted.
 
@@ -325,14 +332,14 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Purpose:** To fact-check and decide on unplanned lines ("Deviations") in a proposed `code_edit` diff.
 *   **Steps (For EACH Deviation):**
     1.  **State Deviation:** Clearly identify the unplanned line(s).
-    2.  **Fact-Check:** **MUST** perform tool-based verification.
+    2.  **Fact-Check:** **MUST** perform tool-based verification. **Hint:** Often prioritize checking dependency references first.
         *   *Dependencies/Imports:* **CRITICAL:** Perform `Procedure: Verify Dependency Reference` for the specific reference involved in the deviation. **Explicitly report outcome.**
         *   *Modifying Dependencies:* If modifying existing import, re-verify necessity of *all* remaining symbols on that line using `grep_search`/`read_file`. Remove unused. State outcome.
         *   *Variables/Logic/Defaults/Deletions:* Confirm requirement based *only* on verified state/requirements. Justify unexpected deletions.
         *   *Context Line Discrepancies:* Check if context lines shown incorrectly (+/-). If so, **STOP**. Re-read file (`read_file`) to confirm state before correcting/proceeding.
         *   *Confirm Prior Hypothesis Verification:* Before accepting code dependent on prior assumption (Step 3.4.1.b), **explicitly confirm** the documented outcome was 'Confirmed'. If not, **STOP**, state violation, fix/remove code.
     3.  **Decision & Action:**
-        *   If Deviation verified & necessary: State justification (including **reported verification outcome**) and keep it.
+        *   If Deviation verified & necessary: State justification (including **reported verification outcome**) and keep it. *(Example: "Deviation: Added import `x.y`. Check: `Procedure: Verify Dependency Reference`. Outcome: Confirmed. Keeping.")*
         *   If Deviation cannot be factually verified/necessity confirmed: State reason and **REMOVE the Deviation / Correct dependent code / Re-plan.**
     4.  **Repeat for ALL Deviations.**
 
@@ -363,3 +370,16 @@ When responding to user requests involving code analysis, planning, or modificat
 ---
 
 **Reference:** Always refer to `STANDARDS.md` for definitive standard definitions. Refer to project's `code_architecture_standard.md` for technical patterns.
+
+---
+
+## Glossary of Key Terms
+
+*   **Atomic Edit:** An edit designed to address a single, verifiable change, minimizing verification scope.
+*   **Assumption (Hypothesis):** A statement about the state of the codebase, external systems, or requirements that *must* be factually verified using tools before proceeding with dependent actions. Treated purely as a hypothesis until proven.
+*   **Core Component:** Foundational elements like base classes, core domain interfaces, widely used utilities/helpers, the DI container, or base configurations, changes to which require enhanced impact analysis.
+*   **Core Component Impact:** The specific potential effects of changes on core components and their direct/indirect consumers across all application layers.
+*   **Deviation:** Any line added, deleted, or modified in a proposed (`code_edit`) or applied (`edit_file`/`reapply`) diff that was *not* part of the explicit, verified plan. Requires mandatory fact-checking.
+*   **Root Cause:** The fundamental underlying reason for a bug or issue, as opposed to its superficial symptoms. Addressing the root cause is prioritized over workarounds.
+*   **Standard Impact:** The potential effects of changes on standard functionality, including call sites, imports, references, configuration usage, and data representation across different components/layers (excluding the enhanced scope specific to Core Components unless applicable).
+*   **Verification:** The act of using tools (`read_file`, `grep_search`, `list_dir`, etc.) or reliable sources (documentation) to factually confirm the correctness of assumptions, the state of the code, the validity of dependencies, or the outcome of an edit.

@@ -2,6 +2,15 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.41 - 2025-05-05
+
+*   **Minor Refinements for Clarity/Robustness:**
+    *   Added `## Glossary of Key Terms` section to centralize definitions (Deviation, Hypothesis, Root Cause, etc.).
+    *   Added concise examples within `Procedure: Verify Hypothesis` and `Procedure: Handle Deviation`.
+    *   Added a hint within `Procedure: Handle Deviation` to prioritize dependency checks.
+    *   Added an explicit reminder to the main Self-Correction step (4.C.3) about avoiding excessive loops before escalating (`Procedure: Request Manual Edit`).
+    *   Goal: Further enhance clarity and usability for AI processing.
+
 ## v1.40 - 2025-05-05
 
 *   **Refactored for AI Readability/Processability:**
