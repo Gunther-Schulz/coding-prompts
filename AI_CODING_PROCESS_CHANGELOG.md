@@ -2,6 +2,13 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.31 - 2025-05-05
+
+*   **Improved Numbering/Structure Consistency (Step 3):**
+    *   Updated sections `3.5` through `3.10` to use consistent numbered sub-points (`3.x.1 Trigger:`, `3.x.2 Action:`) instead of bullet points.
+    *   Adjusted nested numbering within these sections accordingly (e.g., `3.5.2.a`, `3.6.2.a`).
+    *   Enhanced overall structural consistency of Step 3.
+
 ## v1.30 - 2025-05-05
 
 *   **Corrected Sub-Step Numbering:**

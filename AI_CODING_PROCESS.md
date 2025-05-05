@@ -4,7 +4,7 @@
 
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 
-**Version: 1.30** (Corrected numbering in 3.4.1 & 4.A.1)
+**Version: 1.31** (Improved numbering consistency in Step 3.5-3.10)
 
 **Key Principle:** While this process provides structure, the primary takeaway is that **strict adherence to the existing verification and checking steps is the most crucial factor** in preventing errors and ensuring robust, maintainable code.
 
@@ -53,7 +53,7 @@ When responding to user requests involving code analysis, planning, or modificat
             `3.4.1.c Circular Dependency Check:` **MUST** When adding a new dependency reference between modules (e.g., module `B` referencing symbol `X` from module `A`), explicitly state that you are checking for circular dependencies, perform the check (examining dependencies in module `A`), and report the outcome (e.g., "Checking for circular dependency between `module_b` and `module_a`... Confirmed: `module_a` does not depend on `module_b`.") before proceeding. State the outcome of dependency checks in the plan.
             `3.4.1.d Data Representation Impact:` **NOTE:** For changes affecting data representation (e.g., ID vs Name, format changes) or core interfaces/models, impact analysis **MUST** explicitly consider potentially related components across different layers (e.g., ORM definitions, Mappers, Exporters, Consumers, Tests).
 
-        `3.4.1.e - Mandatory Hypothesis Identification & Immediate Verification:` **CRITICAL:** The plan **MUST** explicitly identify *all* necessary hypotheses (termed 'Assumptions' for this process) the proposed change relies upon (e.g., structure of external API responses, existence/interface of other internal modules/classes/functions, configuration values, data formats). **For each assumption, the following steps are **MUST** occur *immediately* after the assumption is stated, *before* any subsequent plan step relies on the assumption's outcome:**
+        `3.4.1.e - Mandatory Hypothesis Identification & Immediate Verification:** **CRITICAL:** The plan **MUST** explicitly identify *all* necessary hypotheses (termed 'Assumptions' for this process) the proposed change relies upon (e.g., structure of external API responses, existence/interface of other internal modules/classes/functions, configuration values, data formats). **For each assumption, the following steps are **MUST** occur *immediately* after the assumption is stated, *before* any subsequent plan step relies on the assumption's outcome:**
             1.  **Detail Verification Method:** The plan **MUST** detail the specific verification method(s) to be used (`read_file`, `grep_search`, etc.).
             2.  **Execute Verification & Report:** The verification **MUST** be performed immediately using the specified tool/method. The outcome **MUST** be explicitly reported in a structured format directly following the hypothesis statement:
                 ```markdown
@@ -95,64 +95,71 @@ When responding to user requests involving code analysis, planning, or modificat
         `3.4.3.` **Prefer Atomic Edits:** Where feasible, break down complex changes into smaller, atomic edits. Each edit should ideally address a single, verifiable change to minimize verification scope and complexity.
 
     `3.5.` **Handle Unclear Root Cause / Missing Info / Debugging Blockers:**
-        *   **Trigger:** If Steps 3.3 or 3.4 reveal unclear root cause, missing info, standard conflicts, **or failing standard debugging methods.** Also triggered if Step 3.4.1.b verification for an existing dependency fails and usage *is* found, or context suggests intentional removal/ambiguity.
-        *   **Action:** **STOP** proposing a direct fix.
+        `3.5.1 Trigger:` If Steps 3.3 or 3.4 reveal unclear root cause, missing info, standard conflicts, **or failing standard debugging methods.** Also triggered if Step 3.4.1.b verification for an existing dependency fails and usage *is* found, or context suggests intentional removal/ambiguity.
+        `3.5.2 Action:` **STOP** proposing a direct fix.
 
-            `3.5.1.` **Prioritize Investigation:** State the issue and that investigation is the next step.
+            `3.5.2.a Prioritize Investigation:` State the issue and that investigation is the next step.
 
-            `3.5.2.` **Formulate Investigation Plan:** Outline steps to investigate the root cause *or* debugging blocker (e.g., "Investigate traceback suppression", "Investigate `func_a` for missing data"). **For failed existing dependencies with usage:** Investigation plan **MUST** include assessing whether the *referencing code itself* (e.g., the dependency reference statement and its usage in the DI config) is stale and should be removed, rather than assuming the missing module needs creation.
+            `3.5.2.b Formulate Investigation Plan:` Outline steps to investigate the root cause *or* debugging blocker (e.g., "Investigate traceback suppression", "Investigate `func_a` for missing data"). **For failed existing dependencies with usage:** Investigation plan **MUST** include assessing whether the *referencing code itself* (e.g., the dependency reference statement and its usage in the DI config) is stale and should be removed, rather than assuming the missing module needs creation.
 
-            `3.5.3.` **Seek Confirmation/Clarification (if needed):** Confirm investigation plan if broad or based on assumptions. *Example: "Traceback suppressed. Plan: 1. Examine logger. 2. Check system exception hook mechanism. Proceed?"* or *"Dependency reference to used symbol `X` fails from `missing_module`. Plan: Read usages in DI config, search context for `missing_module`. Proceeding."*
+            `3.5.2.c Seek Confirmation/Clarification (if needed):` Confirm investigation plan if broad or based on assumptions. *Example: "Traceback suppressed. Plan: 1. Examine logger. 2. Check system exception hook mechanism. Proceed?"* or *"Dependency reference to used symbol `X` fails from `missing_module`. Plan: Read usages in DI config, search context for `missing_module`. Proceeding."*
 
-            `3.5.4.` **Handle Necessary Workarounds (Requires Explicit User Approval - Use Sparingly):**
-                *   **Trigger:** Only when root cause investigation (Step 3.5.2) is confirmed to be **blocked** (e.g., requires external information/access unavailable), **impractical** in the immediate context (e.g., requires disproportionate effort/time diverting significantly from the primary goal), **AND** a temporary workaround appears to be the *only* viable path to proceed *at this moment*.
-                *   **Action:** **STOP** all implementation planning or proposing fixes.
-                    1.  **State the Blockage & Need:** Clearly explain *why* the root cause cannot be addressed robustly *right now* (citing the specific blocker or impracticality) and state explicitly that proceeding requires a temporary workaround that **violates standard principles**.
-                    2.  **Propose Workaround Concept:** Briefly describe the *intended effect* and *nature* of the proposed workaround conceptually (e.g., "Propose temporarily ignoring specific benign error X during initialization", "Propose temporarily using hardcoded value Y for configuration"). **Do NOT** provide detailed implementation steps yet.
-                    3.  **Justify & Warn:** Briefly explain why this specific workaround seems the only *temporary* path forward. **CRITICAL:** Explicitly state the risks and technical debt** introduced (e.g., "Risk: This will mask the underlying library issue Z.", "Debt: This requires adding tracking and mandatory future refactoring to address the root cause properly.").
-                    4.  **Request Explicit Approval:** **MUST** ask the user directly: *"Do you approve implementing this specific temporary workaround to proceed, acknowledging the stated risks and the requirement for future cleanup?"*
-                    5.  **Await Approval:** **DO NOT** proceed with planning or implementing the workaround unless **explicit user approval** is received for *this specific instance*. If approval is granted, any subsequent plan **MUST** include steps for tracking the workaround (e.g., adding `TODO` comments, linking to an issue) and eventually removing/replacing it with a robust solution. If approval is denied, remain **STOP**ped and await alternative direction from the user.
+            `3.5.2.d Handle Necessary Workarounds (Requires Explicit User Approval - Use Sparingly):`
+                `i. Trigger:` Only when root cause investigation (Step 3.5.2.b) is confirmed to be **blocked** (e.g., requires external information/access unavailable), **impractical** in the immediate context (e.g., requires disproportionate effort/time diverting significantly from the primary goal), **AND** a temporary workaround appears to be the *only* viable path to proceed *at this moment*.
+                `ii. Action:` **STOP** all implementation planning or proposing fixes.
+                    a.  **State the Blockage & Need:** Clearly explain *why* the root cause cannot be addressed robustly *right now* (citing the specific blocker or impracticality) and state explicitly that proceeding requires a temporary workaround that **violates standard principles**.
+                    b.  **Propose Workaround Concept:** Briefly describe the *intended effect* and *nature* of the proposed workaround conceptually (e.g., "Propose temporarily ignoring specific benign error X during initialization", "Propose temporarily using hardcoded value Y for configuration"). **Do NOT** provide detailed implementation steps yet.
+                    c.  **Justify & Warn:** Briefly explain why this specific workaround seems the only *temporary* path forward. **CRITICAL:** Explicitly state the risks and technical debt** introduced (e.g., "Risk: This will mask the underlying library issue Z.", "Debt: This requires adding tracking and mandatory future refactoring to address the root cause properly.").
+                    d.  **Request Explicit Approval:** **MUST** ask the user directly: *"Do you approve implementing this specific temporary workaround to proceed, acknowledging the stated risks and the requirement for future cleanup?"*
+                    e.  **Await Approval:** **DO NOT** proceed with planning or implementing the workaround unless **explicit user approval** is received for *this specific instance*. If approval is granted, any subsequent plan **MUST** include steps for tracking the workaround (e.g., adding `TODO` comments, linking to an issue) and eventually removing/replacing it with a robust solution. If approval is denied, remain **STOP**ped and await alternative direction from the user.
 
-            `3.5.5.` **Consult User on Ambiguous Missing Dependencies:**
-                *   **Trigger:** Halt and request guidance if the **only viable path** to resolve a dependency/module resolution error appears to be **creating significant new structures** (e.g., entire modules, core interfaces) based *solely* on references found in potentially old/established code (like DI setup), especially when broader context search (per Step 3.4.1.b-3) doesn't strongly corroborate the need for this structure.
-                *   **Action:** **STOP** implementation planning.
-                    1.  **State the Situation:** Clearly explain the failed dependency resolution, the lack of context, and the implication (e.g., "DI config references `X` from missing module `Y`. Standard checks failed to find `Y` or strong context for its necessity. Resolving this requires creating module `Y` and interface `X`.").
-                    2.  **Present Options:** Describe the choices: "Option A: Create missing module/interface `Y`/`X` based on the reference in DI config (Risk: Might recreate obsolete code). Option B: Assume the reference in DI config is stale and plan to remove it and its usages (Requires verifying this cleanup won't break active components)."
-                    3.  **Request Guidance:** Ask explicitly: "How should I proceed?"
-                    4.  **Await Direction:** **Do NOT** proceed until user provides direction.
+            `3.5.2.e Consult User on Ambiguous Missing Dependencies:`
+                `i. Trigger:` Halt and request guidance if the **only viable path** to resolve a dependency/module resolution error appears to be **creating significant new structures** (e.g., entire modules, core interfaces) based *solely* on references found in potentially old/established code (like DI setup), especially when broader context search (per Step 3.4.1.b-3) doesn't strongly corroborate the need for this structure.
+                `ii. Action:` **STOP** implementation planning.
+                    a.  **State the Situation:** Clearly explain the failed dependency resolution, the lack of context, and the implication (e.g., "DI config references `X` from missing module `Y`. Standard checks failed to find `Y` or strong context for its necessity. Resolving this requires creating module `Y` and interface `X`.").
+                    b.  **Present Options:** Describe the choices: "Option A: Create missing module/interface `Y`/`X` based on the reference in DI config (Risk: Might recreate obsolete code). Option B: Assume the reference in DI config is stale and plan to remove it and its usages (Requires verifying this cleanup won't break active components)."
+                    c.  **Request Guidance:** Ask explicitly: "How should I proceed?"
+                    d.  **Await Direction:** **Do NOT** proceed until user provides direction.
 
     `3.6.` **Handle Architectural Decisions / Suboptimal Patterns:** **CRITICAL:**
-        *   **Trigger:** When analysis (Step 3) reveals:
-            *   An existing architectural pattern that conflicts with `code_architecture_standard.md` or project standards.
-            *   Multiple valid implementation paths exist for the core request, each with significant architectural trade-offs (e.g., performance vs. maintainability, complexity vs. explicitness, changes impacting multiple core components).
-            *   **Foundational inconsistencies** (e.g., conflicting type definitions vs. usage, data representation mismatches between layers).
-        *   **Action:** **IMMEDIATELY STOP** detailed implementation planning or proposing fixes for the original, narrower task. **Treat this as a mandatory blocker.**
+        `3.6.1 Trigger:` When analysis (Step 3) reveals:
+            a.  An existing architectural pattern that conflicts with `code_architecture_standard.md` or project standards.
+            b.  Multiple valid implementation paths exist for the core request, each with significant architectural trade-offs (e.g., performance vs. maintainability, complexity vs. explicitness, changes impacting multiple core components).
+            c.  **Foundational inconsistencies** (e.g., conflicting type definitions vs. usage, data representation mismatches between layers).
+        `3.6.2 Action:` **IMMEDIATELY STOP** detailed implementation planning or proposing fixes for the original, narrower task. **Treat this as a mandatory blocker.**
 
-            `3.6.1.` **State the Issue/Choice:** Clearly describe the suboptimal pattern, architectural decision point, or foundational inconsistency identified.
+            `3.6.2.a State the Issue/Choice:` Clearly describe the suboptimal pattern, architectural decision point, or foundational inconsistency identified.
 
-            `3.6.2.` **Outline Options:** Present the potential solution paths or refactoring options to address the *underlying issue*.
+            `3.6.2.b Outline Options:` Present the potential solution paths or refactoring options to address the *underlying issue*.
 
-            `3.6.3.` **Analyze Options:** Briefly discuss the pros and cons of each option, explicitly referencing relevant sections of `STANDARDS.md` and `code_architecture_standard.md`.
+            `3.6.2.c Analyze Options:** Briefly discuss the pros and cons of each option, explicitly referencing relevant sections of `STANDARDS.md` and `code_architecture_standard.md`.
 
-            `3.6.4.` **Request Guidance:** Explicitly ask the user for direction on which path to proceed with *to resolve the foundational issue*. *Example: "Identified that module X uses global state, violating standards. Option 1: Refactor using DI (preferred by standards, more effort). Option 2: Keep global state (simpler now, maintains tech debt). Which approach should I plan for?"* or *"The request can be implemented by modifying Interface A or creating New Interface B. Modifying A is simpler but broadens its responsibility. Creating B adheres better to SRP but adds complexity. How should I proceed?"* or *"Identified `ItemID` defined as `integer` but used as `string`. Option A: Change alias/model/usage to `string`. Option B: Keep `integer` and enforce conversion. How should we resolve this type inconsistency?"*
+            `3.6.2.d Request Guidance:` Explicitly ask the user for direction on which path to proceed with *to resolve the foundational issue*. *Example: "Identified that module X uses global state, violating standards. Option 1: Refactor using DI (preferred by standards, more effort). Option 2: Keep global state (simpler now, maintains tech debt). Which approach should I plan for?"* or *"The request can be implemented by modifying Interface A or creating New Interface B. Modifying A is simpler but broadens its responsibility. Creating B adheres better to SRP but adds complexity. How should I proceed?"* or *"Identified `ItemID` defined as `integer` but used as `string`. Option A: Change alias/model/usage to `string`. Option B: Keep `integer` and enforce conversion. How should we resolve this type inconsistency?"*
 
-            `3.6.5.` **Await Direction:** **Do NOT** proceed with implementation planning for *any* specific option (neither the original task nor the foundational fix) until the user provides clear direction on how to address the **identified architectural/consistency issue**.
+            `3.6.2.e Await Direction:` **Do NOT** proceed with implementation planning for *any* specific option (neither the original task nor the foundational fix) until the user provides clear direction on how to address the **identified architectural/consistency issue**.
 
-    `3.7.` **Trace Data Flow:** For validation errors OR modifications to data path functions, trace data from origin to consumption/validation, reading relevant intermediate functions.
+    `3.7.` **Trace Data Flow:**
+        `3.7.1 Trigger:` For validation errors OR modifications to data path functions.
+        `3.7.2 Action:` Trace data from origin to consumption/validation, reading relevant intermediate functions.
 
     `3.8.` **Improve Edit Tool Reliability (Before `edit_file` Call):**
-        *   **Explicit Instructions:** Be explicit in `instructions` (add vs. modify/replace). *Example: "Replace `foo` method..." or "Insert new `bar` function..."*
-        *   **Sufficient Context:** Ensure `code_edit` includes enough unchanged lines for anchoring.
-        *   **F-String Quoting:** *(This seems Python-specific, removing for now)* Use appropriate outer quotes in code strings to avoid escaping issues with inner quotes.
+        `3.8.1 Trigger:` Before calling `edit_file`.
+        `3.8.2 Action:`
+            `a. Explicit Instructions:` Be explicit in `instructions` (add vs. modify/replace). *Example: "Replace `foo` method..." or "Insert new `bar` function..."*
+            `b. Sufficient Context:` Ensure `code_edit` includes enough unchanged lines for anchoring.
 
-    `3.9.` **Exception for Diagnostics:** For temporary deviations (e.g., print statements/temporary logging):
-        *   **MAY** implement directly.
-        *   **MUST** state: **"Applying TEMPORARY change for diagnostics."**
-        *   **MUST** justify necessity.
-        *   **MUST** include marker: **"REMINDER: Temporary code MUST be reverted/fixed."**
-        *   Plan **MUST** include reverting/fixing it later.
+    `3.9.` **Exception for Diagnostics:**
+        `3.9.1 Trigger:` For temporary deviations (e.g., print statements/temporary logging).
+        `3.9.2 Action:`
+            `a. MAY` implement directly.
+            `b. MUST` state: **"Applying TEMPORARY change for diagnostics."**
+            `c. MUST` justify necessity.
+            `d. MUST` include marker: **"REMINDER: Temporary code MUST be reverted/fixed."**
+            `e. Plan MUST` include reverting/fixing it later.
 
-    `3.10.` **Perform Pre-computation Verification Summary (Before Step 4):** Before proceeding to Step 4 (Post-computation/Edit Phase), **MUST** generate a **Pre-computation Verification Summary**. This confirms key checks from Step 3 were performed. Structure using the following format:
+    `3.10.` **Perform Pre-computation Verification Summary (Before Step 4):**
+        `3.10.1 Trigger:` Before proceeding to Step 4.
+        `3.10.2 Action:` **MUST** generate a **Pre-computation Verification Summary**. This confirms key checks from Step 3 were performed. Structure using the following format:
         ```markdown
         **Pre-computation Verification Summary:**
         - `[x/-] 1. Standards Alignment:` *[Narrative confirming 3.2 performed. Mark `[x]` if done.]*
