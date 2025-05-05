@@ -2,6 +2,14 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.29 - 2025-05-05
+
+*   **Restructured Step 4 (Post-computation Checks):**
+    *   Grouped Step 4 checks into distinct phases: 4.A (Pre-Edit Verification), 4.B (Apply Edit), 4.C (Post-Edit Verification).
+    *   Preserved all original detailed checks within the new sub-phases.
+    *   Added a `CRITICAL REMINDER` before 4.A emphasizing the mandatory nature and historical importance of pre-edit diff verification.
+    *   Aimed at increasing clarity and reinforcing adherence to the verify-apply-verify cycle.
+
 ## v1.28 - 2025-05-04
 
 *   **Formatting Overhaul (Readability & Consistency):**
