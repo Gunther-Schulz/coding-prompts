@@ -2,6 +2,14 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.34 - 2025-05-05
+
+*   **Strengthened External API & Integration Checks:**
+    *   Enhanced Step `3.4.1.e` (Hypothesis Verification) to explicitly require treating external library API specifics (types, functions, class names) as assumptions needing verification (e.g., via documentation or existing usage patterns), especially when fixing related errors.
+    *   Enhanced Step `3.4.1.g` (Verify Framework Compatibility) to require more explicitly identifying key framework/library interactions (e.g., "Typer + DI") and verifying the planned approach uses established patterns or checking for known integration issues.
+    *   Enhanced Step `4.C.1.b` (Post-`edit_file` Verification) semantic spot-check to include explicitly verifying the correctness of interactions with external library APIs or framework-specific patterns introduced/modified by the edit.
+    *   Aimed at preventing errors arising from unverified assumptions about external libraries or subtle framework integration issues.
+
 ## v1.33 - 2025-05-05
 
 *   **Enhanced Core Component Refactoring Checks:**
