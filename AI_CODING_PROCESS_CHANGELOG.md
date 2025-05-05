@@ -2,6 +2,13 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.47 - 2025-05-05
+
+*   **Strengthened Blocker Handling Procedures:**
+    *   Added explicit `STOP` and `await confirmation/guidance` requirement to `Procedure: Handle Unclear Root Cause / Missing Info` (Step 4) after seeking confirmation on investigation plans.
+    *   Added explicit `STOP` and `await guidance` requirement to `Procedure: Ensure Logic Preservation` (Step 3) after presenting trade-offs for intentional logic changes.
+    *   Goal: Ensure AI assistant explicitly pauses for user input in procedures where confirmation or guidance is requested before proceeding.
+
 ## v1.46 - 2025-05-05
 
 *   **Enhanced Manual Edit Procedure:** Modified `Procedure: Request Manual Edit` (Step 4) to explicitly require the AI assistant to **STOP** processing and await user confirmation after requesting a manual edit, before proceeding with verification steps (4.4). Addresses issue where AI incorrectly assumed manual edits were performed.
