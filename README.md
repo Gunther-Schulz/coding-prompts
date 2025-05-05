@@ -23,8 +23,6 @@ The core idea is the **`AI_CODING_PROCESS.md`**: a mandatory checklist the AI **
     *   *Use:* `@PLAN_WRITING_PROCESS.md Create a plan to add OAuth...`
 *   **`PROJECT_STANDARDS.md` (❗ MUST CUSTOMIZE)**: Defines *your* project's core principles, coding style, testing approach, etc. The AI **must** follow these. (Usually referenced automatically by the process documents). **See `example_supporting_documents/` for a template.**
 *   **`PROJECT_ARCHITECTURE.md` (❗ MUST CUSTOMIZE)**: Describes *your* project's specific architecture, patterns, libraries, and directory structure. The AI **must** follow this. (Usually referenced automatically by the process documents). **See `example_supporting_documents/` for a template.**
-*   **(Optional) `AI_CODING_PROCESS_CONFIRM_ADDENDUM.md`**: Adds an extra "Are you sure?" step before the AI applies edits or runs commands.
-    *   *Use:* `@AI_CODING_PROCESS.md @AI_CODING_PROCESS_CONFIRM_ADDENDUM.md Update dependencies...`
 *   **`FRAMEWORK_CHANGELOG.md`**: Tracks updates made to the process documents themselves.
 
 ## Getting Started
