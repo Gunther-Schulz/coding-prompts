@@ -1,14 +1,26 @@
 # coding-prompts
 
-## 🤖 AI Coding Process and Standards Framework
+## 🤖 AI Coding Process and Standards Framework - Focused on Failure Mitigation
 
-This repository provides a **framework** of documents outlining a standardized process and specific guidelines intended to govern interactions with an AI coding assistant, **primarily designed for use within the Cursor IDE environment**. The goal is to establish a reusable template that can be adapted for **any project** to ensure consistency, robustness, and adherence to project-specific standards during development.
+The primary goal of this repository is to provide a **framework for mitigating common AI assistant failure modes** encountered during software development, particularly within the Cursor IDE environment. It centers around the mandatory workflow defined in `AI_CODING_PROCESS.md`, which is specifically designed to counteract numerous pitfalls, such as those documented in `ai_failure_modes.md`. Some of the most impactful failure modes addressed include:
+
+*   **Code Generation Verification Failures:**
+    *   AI proactively adding unverified code (e.g., imports, defaults) based on flawed assumptions ("Helpful" Additions).
+    *   AI skipping rigorous verification of its *own* generated additions against the actual codebase context.
+*   **Implementation Planning Failures:**
+    *   Designing plans based on idealized states or generic patterns instead of deep analysis of the *current* system (Goal Fixation / Pattern Matching Over Specific Analysis).
+    *   Performing shallow verification (e.g., checking component existence without understanding relationships) and failing to synthesize how components work together.
+    *   Incomplete tracing of dependencies and their full implications.
+
+While not foolproof, adhering to this framework significantly mitigates the likelihood of these common failures.
+
+To achieve this, the framework provides standardized processes and guidelines intended to govern interactions with an AI coding assistant. It establishes a reusable template adaptable for **any project** that enforces consistency, robustness, and adherence to project-specific standards through rigorous verification and analysis steps.
 
 The framework includes general process definitions (`AI_CODING_PROCESS.md`, `PLAN_WRITING_PROCESS.md`), core principles (`STANDARDS.md`), and an **example** of project-specific technical standards (`code_architecture_standard.md`). The `code_architecture_standard.md` file included here serves as a template and **MUST** be adapted or replaced with guidelines relevant to the specific technology stack and conventions of the target project.
 
 **📄 Key Documents (Templates/Examples):**
 
-*   **`AI_CODING_PROCESS.md`**: Defines the mandatory workflow the AI assistant MUST follow during general coding interactions (analysis, applying edits, verification). **The AI MUST explicitly follow and report on the steps defined in this document.**
+*   **`AI_CODING_PROCESS.md`**: Defines the mandatory workflow the AI assistant MUST follow during general coding interactions (analysis, applying edits, verification). **The AI MUST explicitly follow and report on the steps defined in this document.** This process is specifically designed to mitigate common AI failure modes like those detailed in `ai_failure_modes.md`.
 *   **`STANDARDS.md`**: Outlines the core principles, development standards, and a checklist that all code changes must adhere to. This covers aspects like code clarity, robustness, testing, and documentation.
 *   **`code_architecture_standard.md`**: **(Example/Template)** Provides an *example* set of concrete technical guidelines, preferred architectural patterns, specific library usage conventions, and code examples (Python-focused in this template) that complement `STANDARDS.md`. **This file MUST be customized for the specific project.**
 *   **`PLAN_WRITING_PROCESS.md`**: Outlines the mandatory process the AI assistant MUST follow specifically when asked to *generate an implementation plan*. It ensures plans are based on deep code analysis and verification before execution begins.
