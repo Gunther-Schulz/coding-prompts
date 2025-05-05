@@ -1,10 +1,10 @@
 # AI Assistant - Standard Coding Process
 
-**ATTENTION AI ASSISTANT: This document outlines the mandatory process you **MUST** follow during general coding interactions to ensure consistent adherence to the project's standards. This process requires adherence to `STANDARDS.md` (Core Principles & Checklist) and the detailed guidelines in the project's specific `code_architecture_standard.md` (Patterns, Structures, Examples for the relevant language/framework). This process complements, but does not replace, the detailed standards themselves. You **MUST** explicitly report the performance and outcome of mandatory checks as specified below.**
+**ATTENTION AI ASSISTANT: This document outlines the mandatory process you **MUST** follow during general coding interactions to ensure consistent adherence to the project's standards. This process requires adherence to `PROJECT_STANDARDS.md` (Core Principles & Checklist) and the detailed guidelines in the project's specific `PROJECT_ARCHITECTURE.md` (Patterns, Structures, Examples for the relevant language/framework). This process complements, but does not replace, the detailed standards themselves. You **MUST** explicitly report the performance and outcome of mandatory checks as specified below.**
 
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 
-**Version: 1.44** (Structural Refactor: ToC, Exception Procedures, Step 4 Flow)
+**Version: 1.45** (Rename External Docs: PROJECT_STANDARDS, PROJECT_ARCHITECTURE)
 
 ---
 
@@ -46,7 +46,7 @@ When responding to user requests involving code analysis, planning, or modificat
 ### 1. Confirm Standards Awareness (Initial Step)
 
 *   **Trigger:** At the very beginning of handling any coding-related request.
-*   **Action:** Explicitly state that you have read and understood the requirements outlined in `STANDARDS.md` and the project's specific `code_architecture_standard.md`. *Example: "Acknowledged. I have reviewed and will adhere to the principles in `STANDARDS.md` and the detailed guidelines in `code_architecture_standard.md`."*
+*   **Action:** Explicitly state that you have read and understood the requirements outlined in `PROJECT_STANDARDS.md` and the project's specific `PROJECT_ARCHITECTURE.md`. *Example: "Acknowledged. I have reviewed and will adhere to the principles in `PROJECT_STANDARDS.md` and the detailed guidelines in `PROJECT_ARCHITECTURE.md`."*
 
 ### 2. Confirm Goal (Recommended)
 
@@ -63,9 +63,9 @@ When responding to user requests involving code analysis, planning, or modificat
 
     `3.1.` **Search for Existing Logic:** Before planning implementation details (especially for utilities, validation, calculations), perform a preliminary search (`grep_search`, `codebase_search`) for existing implementations of the required functionality (referencing Audit Sections 1.B, 1.C). Briefly document findings (e.g., "Found existing utility `utils.format_date`, will reuse." or "No existing specific validator found, planning new implementation.").
 
-    `3.2.` **Identify Standards & Verify Alignment:** Explicitly identify the Core Principles or specific sections from `STANDARDS.md` **and relevant technical patterns/structures from the project's `code_architecture_standard.md`** that are most pertinent to the request. Briefly state how the proposed plan/edit aligns with these standards. **Confirm the plan prioritizes the simplest, clearest solution that fully meets requirements and adheres to all standards.**
-        *   *Example 1 (DI Focus): "Planning to add component X. This requires adhering to the Dependency Injection principles (`STANDARDS.md`) and specific DI configuration guidelines (`code_architecture_standard.md`). Plan involves updating the DI config module per standard practice."*
-        *   *Example 2 (Error Handling Focus): "Plan includes error handling for Y, following Error Handling guidelines (`STANDARDS.md`) and hierarchy examples (`code_architecture_standard.md`), using standard logging."*
+    `3.2.` **Identify Standards & Verify Alignment:** Explicitly identify the Core Principles or specific sections from `PROJECT_STANDARDS.md` **and relevant technical patterns/structures from the project's `PROJECT_ARCHITECTURE.md`** that are most pertinent to the request. Briefly state how the proposed plan/edit aligns with these standards. **Confirm the plan prioritizes the simplest, clearest solution that fully meets requirements and adheres to all standards.**
+        *   *Example 1 (DI Focus): "Planning to add component X. This requires adhering to the Dependency Injection principles (`PROJECT_STANDARDS.md`) and specific DI configuration guidelines (`PROJECT_ARCHITECTURE.md`). Plan involves updating the DI config module per standard practice."*
+        *   *Example 2 (Error Handling Focus): "Plan includes error handling for Y, following Error Handling guidelines (`PROJECT_STANDARDS.md`) and hierarchy examples (`PROJECT_ARCHITECTURE.md`), using standard logging."*
 
     `3.3.` **Check "Work with Facts":** Confirm the plan/edit relies *only* on provided facts, requirements, or verified information. State if clarification is needed. *Example: "Proceeding based on requirement Z. Clarify if other factors apply."*
 
@@ -294,7 +294,7 @@ When responding to user requests involving code analysis, planning, or modificat
 1.  **IMMEDIATELY STOP** detailed planning for original task. **Treat as mandatory blocker.**
 2.  **State Issue/Choice:** Clearly describe the suboptimal pattern, architectural decision point, or foundational inconsistency (e.g., global state use, SRP violation choice, type mismatch).
 3.  **Outline Options:** Present potential solution paths or refactoring options for the *underlying issue*.
-4.  **Analyze Options:** Briefly discuss pros/cons, referencing `STANDARDS.md` and `code_architecture_standard.md`.
+4.  **Analyze Options:** Briefly discuss pros/cons, referencing `PROJECT_STANDARDS.md` and `PROJECT_ARCHITECTURE.md`.
 5.  **Request Guidance:** Explicitly ask user for direction on resolving the *foundational issue*. *Example: "Identified module X uses global state. Option 1: Refactor using DI (standard). Option 2: Keep global state (debt). Which approach?"* or *"Inconsistent `ItemID` type (int vs str). Option A: Change all to `string`. Option B: Keep `integer` + enforce conversion. How to resolve?"*
 6.  **Await Direction:** **Do NOT** proceed with *any* implementation planning until user provides clear direction on the architectural/consistency issue.
 
@@ -382,5 +382,5 @@ When responding to user requests involving code analysis, planning, or modificat
 
 ## References
 
-*   Consult `STANDARDS.md` (if available) for definitive standard definitions.
-*   Consult the project's `code_architecture_standard.md` (if available) for language/framework-specific technical patterns.
+*   Consult `PROJECT_STANDARDS.md` (if available) for definitive standard definitions.
+*   Consult the project's `PROJECT_ARCHITECTURE.md` (if available) for language/framework-specific technical patterns.

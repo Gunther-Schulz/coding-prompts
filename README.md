@@ -23,15 +23,15 @@ The core idea is the **`AI_CODING_PROCESS.md`**: a mandatory checklist the AI **
     *   *Use:* `@AI_CODING_PROCESS.md Refactor this function...`
 *   **`PLAN_WRITING_PROCESS.md`**: A specific process for when you ask the AI to *create a plan* before coding.
     *   *Use:* `@PLAN_WRITING_PROCESS.md Create a plan to add OAuth...`
-*   **`STANDARDS.md`**: Core principles (clarity, robustness, etc.) the AI must always follow. (Usually referenced automatically by the processes).
-*   **`code_architecture_standard.md` (❗ EXAMPLE - MUST CUSTOMIZE)**: *Your* project's specific rules, patterns, libraries. **Replace this with your own.** (Also usually referenced automatically).
+*   **`PROJECT_STANDARDS.md`**: Core principles (clarity, robustness, etc.) the AI must always follow. (Usually referenced automatically by the processes).
+*   **`PROJECT_ARCHITECTURE.md` (❗ EXAMPLE - MUST CUSTOMIZE)**: *Your* project's specific rules, patterns, libraries. **Replace this with your own.** (Also usually referenced automatically).
 *   **(Optional) `AI_CODING_PROCESS_CONFIRM_ADDENDUM.md`**: Adds an extra "Are you sure?" step before the AI applies edits or runs commands.
     *   *Use:* `@AI_CODING_PROCESS.md @AI_CODING_PROCESS_CONFIRM_ADDENDUM.md Update dependencies...`
 *   **Changelogs (`*_CHANGELOG.md`)**: Track updates made to the process documents themselves.
 
 ## Getting Started
 
-1.  **❗ Customize `code_architecture_standard.md`:** Replace the example content with your project's specific technical standards, patterns, library choices, etc. This is crucial for the AI to follow *your* rules.
+1.  **❗ Customize `PROJECT_ARCHITECTURE.md`:** Replace the example content with your project's specific technical standards, patterns, library choices, etc. This is crucial for the AI to follow *your* rules.
 2.  **Reference the Process:** When asking the AI to code or plan, include the relevant process document (`@AI_CODING_PROCESS.md` or `@PLAN_WRITING_PROCESS.md`) in your prompt.
 3.  **Ensure AI Access:** Make sure the AI can see these key documents.
 

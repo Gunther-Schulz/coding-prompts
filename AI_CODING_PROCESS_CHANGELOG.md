@@ -2,6 +2,13 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.45 - 2025-05-05
+
+*   **Renamed External Standard Doc References:**
+    *   Replaced all instances of `STANDARDS.md` with `PROJECT_STANDARDS.md`.
+    *   Replaced all instances of `code_architecture_standard.md` with `PROJECT_ARCHITECTURE.md`.
+    *   Goal: Use more descriptive and consistent names, reduce potential for conflicts with generic filenames.
+
 ## v1.44 - 2025-05-05
 
 *   **Made External Standard References Optional:**
