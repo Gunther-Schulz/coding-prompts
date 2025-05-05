@@ -2,6 +2,17 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.40 - 2025-05-05
+
+*   **Refactored for AI Readability/Processability:**
+    *   Introduced new section `## Reusable Verification Procedures` to define common checks (e.g., dependency verification, impact analysis, hypothesis verification, logic preservation) once.
+    *   Introduced new section `## Handling Blockers & Deviations` to consolidate procedures for handling issues like unclear root causes, architectural decisions, necessary workarounds, and edit deviations.
+    *   Streamlined main workflow (Steps 3 & 4) by replacing detailed inline descriptions with references to the new reusable procedures.
+    *   Added `## Core Principles & Critical Checks Summary` section to highlight key principles and non-negotiable actions.
+    *   Simplified Pre/Post-Action Verification Summary templates (3.10, 4.C.4) focusing on confirming procedure execution.
+    *   Added final Adherence Checkpoint (Step 5).
+    *   Goal: Improve structural clarity and modularity for AI processing while preserving the timing and rigor of all original checks.
+
 ## v1.34 - 2025-05-05
 
 *   **Strengthened External API & Integration Checks:**
