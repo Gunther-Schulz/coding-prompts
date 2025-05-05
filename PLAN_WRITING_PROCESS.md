@@ -11,7 +11,7 @@
 *   The **roles and relationships** between different components (classes, functions, modules).
 *   The **full execution paths and side effects** of existing logic being considered for modification (as detailed in Step 1.3).
 
-**Known Planning Pitfalls (derived from `resources/ai_plan_writing_pitfalls.md`):**
+**Known Planning Pitfalls (derived from `resources/ai_failure_modes.md`):**
 
 Past failures in planning have often stemmed from:
 
