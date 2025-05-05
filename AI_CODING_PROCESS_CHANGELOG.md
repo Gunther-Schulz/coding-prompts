@@ -2,6 +2,12 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.44 - 2025-05-05
+
+*   **Made External Standard References Optional:**
+    *   Modified Section 7 ("References") to use "Consult (if available)" instead of "Always refer".
+    *   Allows `AI_CODING_PROCESS.md` to function standalone if `STANDARDS.md` or `code_architecture_standard.md` are not present.
+
 ## v1.43 - 2025-05-05
 
 *   **Major Structural Refactor for Flow Clarity:**

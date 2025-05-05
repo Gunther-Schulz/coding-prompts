@@ -4,7 +4,7 @@
 
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 
-**Version: 1.43** (Structural Refactor: ToC, Exception Procedures, Step 4 Flow)
+**Version: 1.44** (Structural Refactor: ToC, Exception Procedures, Step 4 Flow)
 
 ---
 
@@ -382,5 +382,5 @@ When responding to user requests involving code analysis, planning, or modificat
 
 ## References
 
-*   Always refer to `STANDARDS.md` for definitive standard definitions.
-*   Refer to project's `code_architecture_standard.md` for technical patterns.
+*   Consult `STANDARDS.md` (if available) for definitive standard definitions.
+*   Consult the project's `code_architecture_standard.md` (if available) for language/framework-specific technical patterns.
