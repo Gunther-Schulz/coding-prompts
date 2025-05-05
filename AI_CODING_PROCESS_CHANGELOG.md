@@ -2,6 +2,15 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.33 - 2025-05-05
+
+*   **Enhanced Core Component Refactoring Checks:**
+    *   Added explicit trigger warning to Step `3.4.1.b` (Enhanced Scope for Core Refactoring) when modifying base classes/core interfaces.
+    *   Mandated searching for and listing inheritors/consumers as part of the `3.4.1.b` analysis.
+    *   Updated Step `3.10` (Pre-computation Verification Summary) checklist to include a specific item (`2b`) for confirming the enhanced scope check (3.4.1.b) was performed when applicable.
+    *   Added a new self-correction trigger (`f`) to Step `4.C.3.b.iii` to explicitly catch missed enhanced scope checks (3.4.1.b) during post-edit verification.
+    *   Aimed to improve adherence and prevent errors caused by overlooking the impact of core component changes on inheriting classes.
+
 ## v1.32 - 2025-05-05
 
 *   **Improved Structure/Readability (Step 4.C):**

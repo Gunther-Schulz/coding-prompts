@@ -4,7 +4,7 @@
 
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 
-**Version: 1.32** (Improved structure and readability of Step 4.C)
+**Version: 1.33** (Enhanced core component refactoring checks)
 
 **Key Principle:** While this process provides structure, the primary takeaway is that **strict adherence to the existing verification and checking steps is the most crucial factor** in preventing errors and ensuring robust, maintainable code.
 
@@ -49,7 +49,7 @@ When responding to user requests involving code analysis, planning, or modificat
         `3.4.1.` **Analyze Impact:** Identify potential impacts on existing functionality.
 
             `3.4.1.a Identify Affected Call Sites:` For changes modifying interfaces, paths, or symbol names, **MUST** use tools (`grep_search`) to identify *all* potentially affected call sites/imports/references codebase-wide; list these in the plan.
-            `3.4.1.b Enhanced Scope for Core Refactoring:` When refactoring core components (DI container, base configurations, widely used services/models), impact analysis **MUST** explicitly consider potential consumers across *all* application layers (e.g., CLI commands, helpers, other services) even if not directly imported/referenced. Broader search strategies (`grep` for specific attribute access patterns, semantic search for conceptual usage) **MUST** be employed beyond simple import/reference checks.
+            `3.4.1.b Enhanced Scope for Core Refactoring:` **CRITICAL TRIGGER:** This enhanced scope check **MUST** be performed whenever modifying base classes (like `ConfigurableComponent`), core domain interfaces, or widely used utility/helper functions. When refactoring core components (DI container, base configurations, widely used services/models), impact analysis **MUST** explicitly consider potential consumers across *all* application layers (e.g., CLI commands, helpers, other services) even if not directly imported/referenced. Broader search strategies (`grep` for specific attribute access patterns, semantic search for conceptual usage) **MUST** be employed beyond simple import/reference checks. The analysis **MUST** include a search (e.g., using `grep_search 'class .*(.*BaseClassName.*):'` or `codebase_search`) to identify direct and indirect inheritors/consumers. Key findings **MUST** be listed.
             `3.4.1.c Circular Dependency Check:` **MUST** When adding a new dependency reference between modules (e.g., module `B` referencing symbol `X` from module `A`), explicitly state that you are checking for circular dependencies, perform the check (examining dependencies in module `A`), and report the outcome (e.g., "Checking for circular dependency between `module_b` and `module_a`... Confirmed: `module_a` does not depend on `module_b`.") before proceeding. State the outcome of dependency checks in the plan.
             `3.4.1.d Data Representation Impact:` **NOTE:** For changes affecting data representation (e.g., ID vs Name, format changes) or core interfaces/models, impact analysis **MUST** explicitly consider potentially related components across different layers (e.g., ORM definitions, Mappers, Exporters, Consumers, Tests).
 
@@ -163,9 +163,11 @@ When responding to user requests involving code analysis, planning, or modificat
         ```markdown
         **Pre-computation Verification Summary:**
         - `[x/-] 1. Standards Alignment:` *[Narrative confirming 3.2 performed. Mark `[x]` if done.]*
-        - `[x/-] 2. Impact Analysis:` *[Narrative confirming 3.4.1 performed, including dependency search outcomes. Mark `[x]` if done.]*
-        - `[x/-] 3. Hypothesis Verification:` *[Narrative confirming **all** hypotheses stated in 3.4.1.b were explicitly verified using the mandatory reporting format (Verification Method/Execution/Outcome) **immediately** after being stated. List key hypotheses verified or state 'N/A'. Mark `[x]` only if all stated hypotheses were verified.]*
-        - `[x/-] 4. Logic Preservation Plan:` *[Narrative confirming 3.4.1.e performed if applicable (logic documented, preservation plan detailed). Mark `[x]` if done, `[-]` if N/A.]*
+        - `[x/-] 2. Impact Analysis:`
+          - `[x/-] 2a. Standard Impact:` *[Narrative confirming 3.4.1.a,c,d,i performed, including dependency search outcomes. Mark `[x]` if done.]*
+          - `[x/-] 2b. Core Component Impact:` *[Narrative confirming enhanced scope check (3.4.1.b) performed if applicable (e.g., modifying base class/core interface), listing key inheritors/consumers checked. Mark `[x]` if done, `[-]` if N/A.]*
+        - `[x/-] 3. Hypothesis Verification:` *[Narrative confirming **all** hypotheses stated in 3.4.1.e were explicitly verified using the mandatory reporting format (Verification Method/Execution/Outcome) **immediately** after being stated. List key hypotheses verified or state 'N/A'. Mark `[x]` only if all stated hypotheses were verified.]*
+        - `[x/-] 4. Logic Preservation Plan:` *[Narrative confirming 3.4.1.h performed if applicable (logic documented, preservation plan detailed). Mark `[x]` if done, `[-]` if N/A.]*
         - `[x/-] 5. Architectural/Root Cause Blocks Handled:` *[Narrative confirming 3.5/3.6 checks performed and guidance sought/received if necessary. Mark `[x]` if checks done and blocks resolved/approved, `[-]` if N/A.]*
         - `[x] 6. Confirmation:` Pre-computation verification summary complete. *(This point is always marked `[x]` when the summary is generated).*
         ```
@@ -271,6 +273,7 @@ When responding to user requests involving code analysis, planning, or modificat
                 c.  The mandatory **Post-Action Verification Summary (Step 4.C.4)** for the immediately preceding `edit_file`/`reapply` was missed. (State oversight, perform missed post-edit checks (4.C.1, 4.C.2), generate summary, proceed).
                 d.  Analysis reveals that a **mandatory halt and request for guidance under Step 3.6 was previously missed**. (State oversight, perform required 3.6 actions, await direction).
                 e.  Analysis at *any point* reveals that *any* mandatory step, check, reporting requirement, or explicit verification outlined in this document was missed, skipped, or incompletely performed in the preceding actions. (State violation, perform missed steps, document outcome, re-evaluate, correct course).
+                f.  **Analysis reveals that a required Enhanced Scope Impact Analysis (3.4.1.b) for a core component modification was missed during Step 3.** (State oversight, perform missed steps including search for inheritors/consumers, document outcome, re-evaluate, correct course).
             iv. **MUST** revise plan/next step for investigation, correction, or cleanup.
             v.  Explain correction/next step.
             vi. **Requesting Manual Edits:** If repeated attempts (e.g., >3 loops on the same correction for a file) with available tools fail to apply a necessary correction correctly, **STOP**. State the tool failure and the presumed incorrect state of the file based on the last tool output. **Then, perform a final check: re-read the relevant section of the target file (`read_file`) to verify its *actual* current state.** If the file state is confirmed to still be incorrect after the re-read, **then** **MUST** request manual user intervention by providing a clear, complete, copy-pasteable code block showing the *entire relevant section* of the file in its desired final state, including **sufficient surrounding unchanged lines (e.g., 5-10 lines before and after)** for context. If the re-read shows the edit *did* succeed despite tool reports, state this and proceed accordingly.
