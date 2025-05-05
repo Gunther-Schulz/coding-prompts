@@ -4,7 +4,7 @@
 
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 
-**Version: 1.41** (Refinements: Glossary, Examples, Hints, Loop Reminder)
+**Version: 1.42** (Refinements: Granular Checklists, Negative Checks)
 
 ---
 
@@ -95,7 +95,7 @@ When responding to user requests involving code analysis, planning, or modificat
             `b. MUST` state: **"Applying TEMPORARY change for diagnostics."**
             `c. MUST` justify necessity.
             `d. MUST` include marker: **"REMINDER: Temporary code MUST be reverted/fixed."**
-            `e. Plan MUST` include reverting/fixing it later.
+            `e. Plan MUST` include reverting/fixing it later **and explicitly verifying its complete removal.**
 
     `3.10.` **Perform Pre-computation Verification Summary (Before Step 4):**
         *   **Trigger:** Before proceeding to Step 4.
@@ -180,7 +180,7 @@ When responding to user requests involving code analysis, planning, or modificat
     2.  **`4.C.2` Check for Leftover Code & Dependencies:**
         *After successful edits (esp. refactoring), scan relevant files **and explicitly report the outcome of each check**:*
 
-        `4.C.2.a No Commented-Out Code/Comments:** Ensure old code/comments fully deleted. Remove AI process comments.
+        `4.C.2.a Confirm Absence of Leftover Code/Comments:** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
         `4.C.2.b Verify Downstream Consumers & Cleanup:**
             i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, correct (Step 4.C.3).
             ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST** trigger self-correction (Step 4.C.3).
@@ -232,11 +232,11 @@ When responding to user requests involving code analysis, planning, or modificat
 
 **`Procedure: Analyze Impact`**
 *   **Purpose:** To identify potential effects of proposed changes on existing functionality (called in Step 3.4.1.a).
-*   **Steps:**
-    `a.` **Identify Affected Call Sites/References:** For interface/path/symbol changes, **MUST** use tools (`grep_search`) to find *all* potential call sites/imports/references codebase-wide. List findings.
-    `b.` **Enhanced Scope for Core Refactoring:** **CRITICAL TRIGGER:** If modifying base classes, core domain interfaces, widely used utilities, DI container, core configs: **MUST** explicitly consider consumers across *all* layers (CLI, helpers, services). Employ broader search strategies (`grep` for attribute access, semantic search). **MUST** search for inheritors/consumers (e.g., `grep_search 'class .*(.*BaseClassName.*):'`, `codebase_search`). List key findings.
-    `c.` **Circular Dependency Check:** When adding a new module dependency (B needs A), explicitly state check, examine dependencies in module A, report outcome (e.g., "Circular Check: `module_a` does not import `module_b`. OK.").
-    `d.` **Data Representation Impact:** For changes affecting data representation (ID vs Name, format) or core models, explicitly consider impacts across layers (ORM, Mappers, Exporters, Consumers, Tests).
+*   **Steps Checklist:**
+    1.  **Identify Affected Call Sites/References:** For interface/path/symbol changes, **MUST** use tools (`grep_search`) to find *all* potential call sites/imports/references codebase-wide. List findings.
+    2.  **Enhanced Scope for Core Refactoring:** **CRITICAL TRIGGER:** If modifying base classes, core domain interfaces, widely used utilities, DI container, core configs: **MUST** explicitly consider consumers across *all* layers (CLI, helpers, services). Employ broader search strategies (`grep` for attribute access, semantic search). **MUST** search for inheritors/consumers (e.g., `grep_search 'class .*(.*BaseClassName.*):'`, `codebase_search`). List key findings.
+    3.  **Circular Dependency Check:** When adding a new module dependency (B needs A), explicitly state check, examine dependencies in module A, report outcome (e.g., "Circular Check: `module_a` does not import `module_b`. OK.").
+    4.  **Data Representation Impact:** For changes affecting data representation (ID vs Name, format) or core models, explicitly consider impacts across layers (ORM, Mappers, Exporters, Consumers, Tests).
 
 **`Procedure: Verify Hypothesis`**
 *   **Purpose:** To factually verify assumptions made during planning before proceeding (called in Step 3.4.1.b).

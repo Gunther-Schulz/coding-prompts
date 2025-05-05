@@ -2,6 +2,14 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.42 - 2025-05-05
+
+*   **Increased Granularity & Negative Checks:**
+    *   Restructured `Procedure: Analyze Impact` into an explicit numbered checklist for clarity.
+    *   Added requirement to step 3.9.e (Diagnostics) to explicitly verify the removal of temporary code.
+    *   Rephrased step 4.C.2.a (Leftover Code) as an explicit confirmation of *absence* of leftover artifacts.
+    *   Goal: Enhance rigor in impact analysis and cleanup verification.
+
 ## v1.41 - 2025-05-05
 
 *   **Minor Refinements for Clarity/Robustness:**
