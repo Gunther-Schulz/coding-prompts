@@ -2,6 +2,19 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.49 - 2025-05-06
+
+*   **Strengthened Protection Against Superficiality:**
+    *   Mandated **inline checklist reporting** during execution of `Procedure: Verify Diff` to ensure granular sub-step verification.
+    *   Strengthened **"Show Your Work" / Reporting Requirements** for key planning steps:
+        *   Step 3.1 (Search Existing Logic): Require reporting tool, query, specific findings.
+        *   Step 3.2 (Standards Alignment): Require citing specific standard/pattern name(s).
+        *   Step 3.4.1.a (Impact Analysis): Require reporting specific consumers/inheritors found during enhanced scope checks.
+        *   Step 3.4.1.c (Edge Cases): Require reporting *how* each case is addressed.
+        *   Step 3.4.1.e (Logic Preservation): Require citing specific original conditions/paths.
+    *   Added explicit **Failure Mode Reminders** within `Procedure: Verify Hypothesis` and `Procedure: Verify Diff`.
+    *   Goal: Combat superficial execution by requiring more detailed proof of work during analysis and maximum transparency during critical diff verification.
+
 ## v1.48 - 2025-05-06
 
 *   **Strengthened Skip Prevention Measures:**

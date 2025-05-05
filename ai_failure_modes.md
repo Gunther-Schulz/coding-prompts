@@ -73,11 +73,13 @@ Both failure modes share common characteristics:
 1. **Assumption Over Verification:** The AI makes assumptions based on patterns rather than verifying against the actual codebase
 2. **Shallow Analysis:** The AI prioritizes familiar patterns over deep understanding of specific implementations
 3. **Process Shortcuts:** Critical verification steps are skipped or performed superficially
+4. **Superficial Adherence / 'Checking Boxes':** The AI performs mandated process steps (like verification) but without sufficient depth, critical evaluation, or consideration of side-effects, merely fulfilling the requirement formally.
 
 ### Unified Mitigation Strategy
 
 1. **Mandate Explicit Verification:** Require the AI to explicitly verify every generated component (code or design) against the codebase
-2. **"Show Your Work" Principle:** The AI must demonstrate how it traced dependencies and reached conclusions
+2. **"Show Your Work" Principle:** The AI must demonstrate how it traced dependencies and reached conclusions, citing specific evidence from the code or documentation.
 3. **Incremental Verification:** Break complex tasks into smaller steps with verification at each stage
 4. **Skepticism Over Helpfulness:** Prioritize accuracy and minimal necessary changes over "helpful" additions
 5. **Reality Checks:** Periodically force the AI to compare its mental model with the actual codebase state
+6. **Emphasize Critical Evaluation:** Procedures must explicitly require not just performing checks, but confirming critical evaluation beyond surface-level execution, including considering potential side-effects and unintended consequences.
