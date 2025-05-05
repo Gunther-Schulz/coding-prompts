@@ -2,6 +2,14 @@
 
 **(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
 
+## v1.48 - 2025-05-06
+
+*   **Strengthened Skip Prevention Measures:**
+    *   Modified summary formats (Steps 3.10, 4.5) to require explicit justification (`[-] N/A: [justification]`) when marking steps as Not Applicable.
+    *   Added explicit `Applicability:` or `Trigger:` lines to key procedures (Sections 4, 5) to clarify when they MUST be executed.
+    *   Modified Step 5 (Adherence Checkpoint) to require an explicit concluding statement confirming the self-assessment was performed.
+    *   Goal: Further reduce the likelihood of applicable steps being skipped unintentionally by enforcing conscious justification and clarifying trigger conditions.
+
 ## v1.47 - 2025-05-05
 
 *   **Strengthened Blocker Handling Procedures:**
