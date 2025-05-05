@@ -1,10 +1,17 @@
-# AI Coding Process Changelog
+# Framework Changelog
 
-**(Note for AI Assistant: When adding a new entry, always use the current date. You can get the correct date in YYYY-MM-DD format by running the command `date +%F` in the terminal.)**
+**(Note for AI Assistant: Use `date +%F` for current date. Always specify affected document and its version.)**
 
-## v1.49 - 2025-05-06
+## 2025-05-06
 
-*   **Strengthened Protection Against Superficiality:**
+*   **[PLAN_WRITING_PROCESS.md v1.3]** Structural improvements & path correction:
+    *   Broke down Step 1.3 (Read/Analyze State) into sub-steps (1.3.a, 1.3.b, 1.3.c).
+    *   Grouped mandate/reminder blocks at the start of Phase 2.
+    *   Corrected step numbering in Phase 2 (2.1-2.10).
+    *   Refined mandatory header titles in Step 3.4 for presented plan clarity.
+    *   Updated reference path for `ai_plan_writing_pitfalls.md`.
+
+*   **[AI_CODING_PROCESS.md v1.49]** Strengthened Protection Against Superficiality:
     *   Mandated **inline checklist reporting** during execution of `Procedure: Verify Diff` to ensure granular sub-step verification.
     *   Strengthened **"Show Your Work" / Reporting Requirements** for key planning steps:
         *   Step 3.1 (Search Existing Logic): Require reporting tool, query, specific findings.
@@ -15,41 +22,33 @@
     *   Added explicit **Failure Mode Reminders** within `Procedure: Verify Hypothesis` and `Procedure: Verify Diff`.
     *   Goal: Combat superficial execution by requiring more detailed proof of work during analysis and maximum transparency during critical diff verification.
 
-## v1.48 - 2025-05-06
-
-*   **Strengthened Skip Prevention Measures:**
+*   **[AI_CODING_PROCESS.md v1.48]** Strengthened Skip Prevention Measures:
     *   Modified summary formats (Steps 3.10, 4.5) to require explicit justification (`[-] N/A: [justification]`) when marking steps as Not Applicable.
     *   Added explicit `Applicability:` or `Trigger:` lines to key procedures (Sections 4, 5) to clarify when they MUST be executed.
     *   Modified Step 5 (Adherence Checkpoint) to require an explicit concluding statement confirming the self-assessment was performed.
     *   Goal: Further reduce the likelihood of applicable steps being skipped unintentionally by enforcing conscious justification and clarifying trigger conditions.
 
-## v1.47 - 2025-05-05
+*   **[README.md]** Updated references after deleting `ai_failure_modes.md` and `AI_CODING_PROCESS_CONFIRM_ADDENDUM.md`, clarified example docs.
 
-*   **Strengthened Blocker Handling Procedures:**
+## 2025-05-05
+
+*   **[AI_CODING_PROCESS.md v1.47]** Strengthened Blocker Handling Procedures:
     *   Added explicit `STOP` and `await confirmation/guidance` requirement to `Procedure: Handle Unclear Root Cause / Missing Info` (Step 4) after seeking confirmation on investigation plans.
     *   Added explicit `STOP` and `await guidance` requirement to `Procedure: Ensure Logic Preservation` (Step 3) after presenting trade-offs for intentional logic changes.
     *   Goal: Ensure AI assistant explicitly pauses for user input in procedures where confirmation or guidance is requested before proceeding.
 
-## v1.46 - 2025-05-05
+*   **[AI_CODING_PROCESS.md v1.46]** Enhanced Manual Edit Procedure: Modified `Procedure: Request Manual Edit` (Step 4) to explicitly require the AI assistant to **STOP** processing and await user confirmation after requesting a manual edit, before proceeding with verification steps (4.4). Addresses issue where AI incorrectly assumed manual edits were performed.
 
-*   **Enhanced Manual Edit Procedure:** Modified `Procedure: Request Manual Edit` (Step 4) to explicitly require the AI assistant to **STOP** processing and await user confirmation after requesting a manual edit, before proceeding with verification steps (4.4). Addresses issue where AI incorrectly assumed manual edits were performed.
-
-## v1.45 - 2025-05-05
-
-*   **Renamed External Standard Doc References:**
+*   **[AI_CODING_PROCESS.md v1.45]** Renamed External Standard Doc References:
     *   Replaced all instances of `STANDARDS.md` with `PROJECT_STANDARDS.md`.
     *   Replaced all instances of `code_architecture_standard.md` with `PROJECT_ARCHITECTURE.md`.
     *   Goal: Use more descriptive and consistent names, reduce potential for conflicts with generic filenames.
 
-## v1.44 - 2025-05-05
-
-*   **Made External Standard References Optional:**
+*   **[AI_CODING_PROCESS.md v1.44]** Made External Standard References Optional:
     *   Modified Section 7 ("References") to use "Consult (if available)" instead of "Always refer".
     *   Allows `AI_CODING_PROCESS.md` to function standalone if `STANDARDS.md` or `code_architecture_standard.md` are not present.
 
-## v1.43 - 2025-05-05
-
-*   **Major Structural Refactor for Flow Clarity:**
+*   **[AI_CODING_PROCESS.md v1.43]** Major Structural Refactor for Flow Clarity:
     *   Added Table of Contents (Section 1).
     *   Renamed "Handling Blockers & Deviations" to "Exception Handling Procedures" (Section 5) and explicitly framed them as off-ramps from the main workflow.
     *   Added explicit "STOP and execute Procedure X (Section 5)" instructions in Step 3 triggers.
@@ -58,26 +57,20 @@
     *   Moved Glossary (Section 6) and References (Section 7) to the end.
     *   Goal: Improve overall document structure, navigation, and flow distinction between standard path and exception handling for AI processing.
 
-## v1.42 - 2025-05-05
-
-*   **Increased Granularity & Negative Checks:**
+*   **[AI_CODING_PROCESS.md v1.42]** Increased Granularity & Negative Checks:
     *   Restructured `Procedure: Analyze Impact` into an explicit numbered checklist for clarity.
     *   Added requirement to step 3.9.e (Diagnostics) to explicitly verify the removal of temporary code.
     *   Rephrased step 4.C.2.a (Leftover Code) as an explicit confirmation of *absence* of leftover artifacts.
     *   Goal: Enhance rigor in impact analysis and cleanup verification.
 
-## v1.41 - 2025-05-05
-
-*   **Minor Refinements for Clarity/Robustness:**
+*   **[AI_CODING_PROCESS.md v1.41]** Minor Refinements for Clarity/Robustness:
     *   Added `## Glossary of Key Terms` section to centralize definitions (Deviation, Hypothesis, Root Cause, etc.).
     *   Added concise examples within `Procedure: Verify Hypothesis` and `Procedure: Handle Deviation`.
     *   Added a hint within `Procedure: Handle Deviation` to prioritize dependency checks.
     *   Added an explicit reminder to the main Self-Correction step (4.C.3) about avoiding excessive loops before escalating (`Procedure: Request Manual Edit`).
     *   Goal: Further enhance clarity and usability for AI processing.
 
-## v1.40 - 2025-05-05
-
-*   **Refactored for AI Readability/Processability:**
+*   **[AI_CODING_PROCESS.md v1.40]** Refactored for AI Readability/Processability:
     *   Introduced new section `## Reusable Verification Procedures` to define common checks (e.g., dependency verification, impact analysis, hypothesis verification, logic preservation) once.
     *   Introduced new section `## Handling Blockers & Deviations` to consolidate procedures for handling issues like unclear root causes, architectural decisions, necessary workarounds, and edit deviations.
     *   Streamlined main workflow (Steps 3 & 4) by replacing detailed inline descriptions with references to the new reusable procedures.
@@ -86,165 +79,108 @@
     *   Added final Adherence Checkpoint (Step 5).
     *   Goal: Improve structural clarity and modularity for AI processing while preserving the timing and rigor of all original checks.
 
-## v1.34 - 2025-05-05
-
-*   **Strengthened External API & Integration Checks:**
+*   **[AI_CODING_PROCESS.md v1.34]** Strengthened External API & Integration Checks:
     *   Enhanced Step `3.4.1.e` (Hypothesis Verification) to explicitly require treating external library API specifics (types, functions, class names) as assumptions needing verification (e.g., via documentation or existing usage patterns), especially when fixing related errors.
     *   Enhanced Step `3.4.1.g` (Verify Framework Compatibility) to require more explicitly identifying key framework/library interactions (e.g., "Typer + DI") and verifying the planned approach uses established patterns or checking for known integration issues.
     *   Enhanced Step `4.C.1.b` (Post-`edit_file` Verification) semantic spot-check to include explicitly verifying the correctness of interactions with external library APIs or framework-specific patterns introduced/modified by the edit.
     *   Aimed at preventing errors arising from unverified assumptions about external libraries or subtle framework integration issues.
 
-## v1.33 - 2025-05-05
-
-*   **Enhanced Core Component Refactoring Checks:**
+*   **[AI_CODING_PROCESS.md v1.33]** Enhanced Core Component Refactoring Checks:
     *   Added explicit trigger warning to Step `3.4.1.b` (Enhanced Scope for Core Refactoring) when modifying base classes/core interfaces.
     *   Mandated searching for and listing inheritors/consumers as part of the `3.4.1.b` analysis.
     *   Updated Step `3.10` (Pre-computation Verification Summary) checklist to include a specific item (`2b`) for confirming the enhanced scope check (3.4.1.b) was performed when applicable.
     *   Added a new self-correction trigger (`f`) to Step `4.C.3.b.iii` to explicitly catch missed enhanced scope checks (3.4.1.b) during post-edit verification.
     *   Aimed to improve adherence and prevent errors caused by overlooking the impact of core component changes on inheriting classes.
 
-## v1.32 - 2025-05-05
-
-*   **Improved Structure/Readability (Step 4.C):**
+*   **[AI_CODING_PROCESS.md v1.32]** Improved Structure/Readability (Step 4.C):
     *   Restructured section `4.C` (Post-Edit Verification) for better clarity.
     *   Broke down `4.C.1`, `4.C.2`, and `4.C.3` into clearly numbered/lettered sub-points.
     *   Nested the specific checks within `4.C.1.a` and `4.C.1.b` using Roman numerals (i, ii, ...).
     *   Moved critical reminders/warnings closer to the relevant sub-steps.
     *   Aimed for a more hierarchical and scannable structure similar to Step 3 and 4.A/B.
 
-## v1.31 - 2025-05-05
-
-*   **Improved Numbering/Structure Consistency (Step 3):**
+*   **[AI_CODING_PROCESS.md v1.31]** Improved Numbering/Structure Consistency (Step 3):
     *   Updated sections `3.5` through `3.10` to use consistent numbered sub-points (`3.x.1 Trigger:`, `3.x.2 Action:`) instead of bullet points.
     *   Adjusted nested numbering within these sections accordingly (e.g., `3.5.2.a`, `3.6.2.a`).
     *   Enhanced overall structural consistency of Step 3.
 
-## v1.30 - 2025-05-05
-
-*   **Corrected Sub-Step Numbering:**
+*   **[AI_CODING_PROCESS.md v1.30]** Corrected Sub-Step Numbering:
     *   Renumbered sub-steps under `3.4.1` (Analyze Impact) to use a consistent `a` through `i` lettering (`3.4.1.a`, `3.4.1.b`, ...).
     *   Renumbered sub-steps under `4.A.1` (Granular Final Review) from `4.1.x` to `4.A.1.x` (`4.A.1.a`, `4.A.1.b`, ...).
     *   Improved hierarchical clarity and consistency in these sections.
 
-## v1.29 - 2025-05-05
-
-*   **Restructured Step 4 (Post-computation Checks):**
+*   **[AI_CODING_PROCESS.md v1.29]** Restructured Step 4 (Post-computation Checks):
     *   Grouped Step 4 checks into distinct phases: 4.A (Pre-Edit Verification), 4.B (Apply Edit), 4.C (Post-Edit Verification).
     *   Preserved all original detailed checks within the new sub-phases.
     *   Added a `CRITICAL REMINDER` before 4.A emphasizing the mandatory nature and historical importance of pre-edit diff verification.
     *   Aimed at increasing clarity and reinforcing adherence to the verify-apply-verify cycle.
 
-## v1.28 - 2025-05-04
+## 2025-05-04
 
-*   **Formatting Overhaul (Readability & Consistency):**
+*   **[PLAN_WRITING_PROCESS.md v1.1]** Language-Agnostic Refactoring:
+    *   Generalized language-specific examples and terminology (imports/dependencies, errors, file conventions, specific model/library mentions) throughout the document.
+    *   Updated references to `code_architecture_standard.md` to emphasize it contains language/framework-specific details.
+    *   Focused descriptions on the *intent* of checks (dependency validation, interface consistency, logic preservation, etc.) rather than specific language mechanisms.
+    *   Set initial version number.
+
+*   **[AI_CODING_PROCESS.md v1.28]** Formatting Overhaul (Readability & Consistency):
     *   Standardized emphasis formatting for keywords (`**MUST**`, `**CRITICAL:**`, `**WARNING:**`, `**NOTE:**`, `**STOP**`) throughout the document.
     *   Added vertical spacing before major steps (e.g., 3.1-3.4) and complex sub-sections (e.g., 3.4.1.b, 4.1.d) to improve visual separation.
     *   Restructured dense sections (e.g., 3.4.1 Impact Analysis) using bullet points.
     *   Reformatted Step 4.7 self-correction triggers into a bulleted list.
     *   Used Markdown code blocks for summary checklists (3.10, 4.4) for consistency.
 
-## v1.27 - 2025-05-04
-
-*   **Language-Agnostic Refactoring:**
+*   **[AI_CODING_PROCESS.md v1.27]** Language-Agnostic Refactoring:
     *   Generalized Python-specific examples and terminology (imports, errors, file conventions, specific library mentions) in `AI_CODING_PROCESS.md` Steps 3 and 4 to make the core workflow applicable across different programming languages.
     *   Updated references to `code_architecture_standard.md` to emphasize it contains language/framework-specific details.
     *   Focused descriptions on the *intent* of checks (dependency validation, interface consistency, etc.) rather than specific language mechanisms.
     *   Kept tool usage (`grep_search`, `read_file`) descriptions as-is, relating them to the AI environment.
 
-## v1.26 - 2025-05-04
-
-*   **Enhanced Handling of Failed Existing Imports (Steps 3.4.1.b, 3.5):**
+*   **[AI_CODING_PROCESS.md v1.26]** Enhanced Handling of Failed Existing Imports (Steps 3.4.1.b, 3.5):
     *   Added mandatory "Usage Check" (within the importing file) when an existing import fails verification (Step 3.4.1.b).
     *   Prioritized removing the stale import if no usage is found.
     *   Updated Step 3.5 triggers and investigation plan to explicitly consider removing the referencing code (stale import/usage) instead of always recreating the missing dependency.
     *   Added Step 3.5.5 to mandate consultation with the user if creating significant new structures (modules/interfaces) seems the only fix based solely on potentially stale references.
     *   (Addresses specific failure where AI recreated a deleted module based on a stale import in `di.py`).
 
-## v1.25 - 2025-05-04
-
-*   **Enhanced Hypothesis Verification Enforcement (Steps 3.4.1.b, 3.10, 4.7):**
+*   **[AI_CODING_PROCESS.md v1.25]** Enhanced Hypothesis Verification Enforcement (Steps 3.4.1.b, 3.10, 4.7):
     *   Strengthened Step 3.4.1.b to mandate immediate, structured reporting of verification execution and outcome directly after stating any hypothesis.
     *   Added new Step 3.10 requiring a Pre-computation Verification Summary checklist, including explicit confirmation that all stated hypotheses were verified as required by 3.4.1.b before proceeding to edits.
     *   Added an explicit self-correction trigger in Step 4.7 to STOP if the mandatory verification reporting for a hypothesis was missed.
     *   (Addresses specific failure where AI acted on an unverified hypothesis regarding code location, leading to persistent errors).
 
-## v1.24 - 2025-05-04
+*   **[AI_CODING_PROCESS.md v1.24]** Added Configuration Usage Impact Check (Step 3.4.1.f): Mandated searching for and verifying usage locations when configuration values are added, removed, or changed.
 
-*   **Added Configuration Usage Impact Check (Step 3.4.1.f):** Mandated searching for and verifying usage locations when configuration values are added, removed, or changed.
+*   **[AI_CODING_PROCESS.md v1.23]** Added Explicit Trade-off Presentation for Logic Changes (Step 3.4.1.e): Mandated that when simplification/unification alters execution conditions, the AI must explicitly present the trade-off between the simpler/altered plan and a potentially more complex/preserving plan, requesting user guidance before proceeding.
 
-## v1.23 - 2025-05-04
+*   **[AI_CODING_PROCESS.md v1.22]** Clarified Justification for Logic Changes (Step 3.4.1.e): Enhanced requirement to explicitly justify changes where refactoring (e.g., simplification/unification) alters the *conditions* under which logic executes, even if the core behavior seems preserved. Added AI responsibility to proactively identify and report these subtle shifts.
 
-*   **Added Explicit Trade-off Presentation for Logic Changes (Step 3.4.1.e):** Mandated that when simplification/unification alters execution conditions, the AI must explicitly present the trade-off between the simpler/altered plan and a potentially more complex/preserving plan, requesting user guidance before proceeding.
+*   **[AI_CODING_PROCESS.md v1.21]** Refined Pre-Edit Confirmation Examples (Step 4.2): Updated the example Pre-Edit Confirmation Statements to explicitly include reporting the outcome of the Logic Preservation check (Step 3.4.1.e) when applicable, improving visibility of this check before applying edits.
 
-## v1.22 - 2025-05-04
+*   **[AI_CODING_PROCESS.md v1.20]** Enhanced Emphasis (Step 3.4.1.e), removed redundant changelog: Changed prefix from `MANDATORY` to `CRITICAL MANDATORY` for the logic preservation step to underscore its importance. Removed the embedded changelog from `AI_CODING_PROCESS.md`.
 
-*   **Clarified Justification for Logic Changes (Step 3.4.1.e):** Enhanced requirement to explicitly justify changes where refactoring (e.g., simplification/unification) alters the *conditions* under which logic executes, even if the core behavior seems preserved. Added AI responsibility to proactively identify and report these subtle shifts.
+*   **[AI_CODING_PROCESS.md v1.19]** Added Logic Preservation Checks: Added step `3.4.1.e` and enhanced steps `3.4.1.b` and `4.5.b` in `AI_CODING_PROCESS.md` to explicitly require documenting existing logic and planning/verifying its preservation during refactoring/replacement tasks.
 
-## v1.21 - 2025-05-04
+## 2025-05-03
 
-*   **Refined Pre-Edit Confirmation Examples (Step 4.2):** Updated the example Pre-Edit Confirmation Statements to explicitly include reporting the outcome of the Logic Preservation check (Step 3.4.1.e) when applicable, improving visibility of this check before applying edits.
+*   **[AI_CODING_PROCESS.md v1.18]** Refined manual edit request procedure: Updated the logic for requesting manual edits after repeated tool failures. Now requires performing a final `read_file` check to confirm the file's *actual* state before generating the manual edit request, addressing cases where the tool might incorrectly report failure.
 
-## v1.20 - 2025-05-04
+*   **[AI_CODING_PROCESS.md v1.17]** Strengthened impact analysis, added framework check, etc.: Mandated broader codebase search and consideration of all layers when refactoring core components. Added new requirement to verify signature/invocation compatibility with frameworks. Emphasized verifying interface consistency. Modified pre-deletion check logic. Added optional smoke test.
 
-*   **Enhanced Emphasis (Step 3.4.1.e):** Changed prefix from `MANDATORY` to `CRITICAL MANDATORY` for the logic preservation step to underscore its importance.
-*   **Removed Redundant Changelog:** Removed the embedded changelog from `AI_CODING_PROCESS.md` as this file is the canonical source.
+*   **[AI_CODING_PROCESS.md v1.16]** Increased context for manual edits: Updated the manual edit request procedure to explicitly require including sufficient surrounding context (e.g., 5-10 lines before and after).
 
-## v1.19 - 2025-05-04
+*   **[AI_CODING_PROCESS.md v1.15]** Added manual edit request procedure detail: Clarified that manual edit requests MUST include a complete copy-paste code block.
 
-*   **Added Logic Preservation Checks:** Added step `3.4.1.e` and enhanced steps `3.4.1.b` and `4.5.b` in `AI_CODING_PROCESS.md` to explicitly require documenting existing logic and planning/verifying its preservation during refactoring/replacement tasks.
+*   **[AI_CODING_PROCESS.md v1.14]** Added key principle note: Included prominent note emphasizing strict adherence to verification steps.
 
-## v1.18 - 2025-05-03
+*   **[AI_CODING_PROCESS.md v1.13]** Added mandatory adherence checkpoint (Step 5): Introduced final checkpoint requiring confirmation that all steps were executed.
 
-*   **Refined Manual Edit Request Procedure (Step 4.7):** Updated the logic for requesting manual edits after repeated tool failures. Now requires performing a final `read_file` check to confirm the file's *actual* state before generating the manual edit request, addressing cases where the tool might incorrectly report failure.
+*   **[AI_CODING_PROCESS.md v1.12]** Suggested library doc check: Added suggestion to check library docs when verifying assumptions.
 
-## v1.17 - 2025-05-03
+*   **[AI_CODING_PROCESS.md v1.11]** Added numbering to Step 3: Introduced explicit numbering to sub-points for clarity.
 
-*   **Strengthened Impact Analysis Scope (Step 3.4.1):** Mandated broader codebase search (beyond imports) and consideration of all layers when refactoring core components (DI, base config, etc.).
-*   **Added Framework Compatibility Check (Step 3.4.1.d):** Added new requirement to verify signature/invocation compatibility with frameworks (Typer, etc.) for entry point functions.
-*   **Emphasized Caller/Callee Verification (Step 3.4.1.b):** Added emphasis on verifying interface consistency (types, access methods) from both perspectives, especially post-refactoring.
-*   **Modified Pre-Deletion Check Logic (Step 4.6.2):** Removed the separate pre-deletion check (old 4.6.3). Enhanced the post-move/rename/delete verification (4.6.2) to mandate searching for dangling references *after* deletion and trigger self-correction if found, prioritizing deletion over blocking.
-*   **Added Optional Smoke Test (Step 4.5.d):** Added suggestion to perform minimal runtime check (smoke test) after significant refactoring to catch immediate integration errors.
+*   **[AI_CODING_PROCESS.md v1.10]** Strengthened import validation: Mandated explicit reporting of path/symbol validation outcome for imports pre-edit and re-verification post-edit.
 
-## v1.16 - 2025-05-03
+*   **[AI_CODING_PROCESS.md v1.9]** Mandated explicit reporting for checks: Updated process to require AI assistant to explicitly state performance and outcome of mandatory checks.
 
-*   **Increased Context for Manual Edits (Step 4.7):** Updated the manual edit request procedure to explicitly require including sufficient surrounding context (e.g., 5-10 lines before and after) in the provided copy-paste block.
-
-## v1.15 - 2025-05-03
-
-*   **Added Manual Edit Request Procedure (Step 4.7):** Clarified that when requesting manual user edits after repeated tool failures, the request MUST include a complete copy-paste code block showing the desired state of the relevant code section.
-
-## v1.14 - 2025-05-03
-
-*   **Added Key Principle Note:** Included a prominent note near the beginning emphasizing that strict adherence to the verification and checking steps is the most crucial factor for success.
-
-## v1.13 - 2025-05-03
-
-*   **Added Mandatory Adherence Checkpoint (Step 5):** Introduced a final checkpoint step requiring explicit confirmation that all mandatory process steps (1-4) were executed and reported within the response cycle.
-*   **Strengthened Process Self-Correction Trigger (Step 4.7):** Added an explicit trigger to STOP and self-correct if *any* mandatory process step (check, reporting, verification) was missed, skipped, or incompletely performed.
-
-## v1.12 - 2025-05-03
-
-*   **Suggest Library Doc Check (Step 3.4.1.b):**
-    *   Added a suggestion to explicitly consider checking library documentation or examples when formulating assumptions about the usage of library functions/classes, especially for less common patterns, to verify API contracts.
-
-## v1.11 - 2025-05-03
-
-*   **Added Numbering to Step 3 (Pre-computation):**
-    *   Introduced explicit numbering (3.1, 3.2, 3.4.1, etc.) to sub-points within Step 3 for improved clarity and referencing, mirroring the structure of Step 4.
-
-## v1.10 - 2025-05-03
-
-*   **Strengthened Import Validation (Steps 4.1.d & 4.5.b):**
-    *   Enhanced pre-edit check (4.1.d) to mandate cross-referencing prior knowledge for import paths and explicitly reporting path/symbol validation outcome for *every* import in the diff context.
-    *   Enhanced post-edit check (4.5.b) to mandate re-verification of path existence and symbol existence for *all* imports present in the *applied* diff, explicitly reporting the outcome.
-    *   (Addresses specific failure where an incorrect import path was assumed based on naming conventions and not caught by validation).
-
-## v1.9 - 2025-05-03
-
-*   **Mandated Explicit Reporting for Checks (Steps 3 & 4):**
-    *   Updated process to require the AI assistant to explicitly state the performance and outcome of mandatory verification and analysis checks (e.g., dependency checks, assumption verification, deviation handling, post-edit validation) in the conversation log.
-    *   Aimed at increasing transparency and reducing errors caused by skipped or implicitly performed checks.
-
-## v1.8 - 2025-05-03
-
-*   **Strengthened Post-`
+*   **[AI_CODING_PROCESS.md v1.8]** Strengthened post-edit diff verification logic.
