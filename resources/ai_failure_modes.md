@@ -73,11 +73,25 @@ Both failure modes share common characteristics:
 1. **Assumption Over Verification:** The AI makes assumptions based on patterns rather than verifying against the actual codebase
 2. **Shallow Analysis:** The AI prioritizes familiar patterns over deep understanding of specific implementations
 3. **Process Shortcuts:** Critical verification steps are skipped or performed superficially
+4. **Superficial Adherence / 'Checking Boxes':** The AI performs mandated process steps (like verification) but without sufficient depth, critical evaluation, or consideration of side-effects, merely fulfilling the requirement formally.
 
 ### Unified Mitigation Strategy
 
 1. **Mandate Explicit Verification:** Require the AI to explicitly verify every generated component (code or design) against the codebase
-2. **"Show Your Work" Principle:** The AI must demonstrate how it traced dependencies and reached conclusions
+2. **"Show Your Work" Principle:** The AI must demonstrate how it traced dependencies and reached conclusions, citing specific evidence from the code or documentation.
 3. **Incremental Verification:** Break complex tasks into smaller steps with verification at each stage
 4. **Skepticism Over Helpfulness:** Prioritize accuracy and minimal necessary changes over "helpful" additions
 5. **Reality Checks:** Periodically force the AI to compare its mental model with the actual codebase state
+6. **Emphasize Critical Evaluation:** Procedures must explicitly require not just performing checks, but confirming critical evaluation beyond surface-level execution, including considering potential side-effects and unintended consequences.
+
+## Failure Modes
+
+1. **Risk of Superficiality:** Completing steps or checks without the necessary depth or critical analysis, potentially missing subtle errors or edge cases. This can be exacerbated by overly simplistic process adherence or insufficient justification for skipping steps.
+
+2. **Failure to Halt/Incorrect Autonomy:** Proceeding with execution when ambiguity, error, or a `**BLOCKER:**` condition requires halting for user input or clarification. Misjudging the boundaries of autonomous operation.
+
+3. **Misinterpretation of External State/Action:** Incorrectly assessing the outcome of an action (e.g., a file edit, tool execution) or the current state of the external environment (e.g., codebase, file system), leading to incorrect subsequent steps.
+
+4. **Insufficient Handling of Legacy/Existing Complexity:** Over-simplifying or failing to account for historical context, existing complexities, or the nuances of legacy code/processes during refactoring, consolidation, or enhancement tasks.
+
+5. **Implicit Requirement Alteration:** Executing steps based on an earlier version of requirements or process understanding, which are later implicitly or explicitly changed, leading to outcomes that don't meet the final, evolved expectations.
