@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for explicit `**BLOCKER:**` points identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Version: 1.49** (Combat Superficial Execution)
+**Version: 1.50** (Incorporate Process Improvements from Refactoring Attempt)
 
 ---
 
@@ -168,10 +168,10 @@ When responding to user requests involving code analysis, planning, or modificat
 
         `4.4.1` **Verify Edit Application:**
             *   `a. Post-Reapply Verification:** **CRITICAL:** If modification resulted from `reapply`:
-                *   **Perform `Procedure: Verify Reapply Diff` (Section 5)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
+                *   **Perform `Procedure: Verify Reapply Diff` (Section 4)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
             *   `b. Post-`edit_file` Verification:** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
                 *   **WARNING:** Treat Diff Output with Extreme Skepticism.
-                *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
+                *   **Perform `Procedure: Verify Edit File Diff` (Section 4)**. This includes: diff interpretation, diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
             *   `c. No Introduced Redundancy:** Check for duplicate logic, unnecessary checks, redundant mappings. Remove if found.
             *   `d. Optional Post-Refactor Smoke Test:** After significant refactoring, consider minimal runtime "smoke test" (e.g., `command --help`). Failure should trigger self-correction (4.4.3). State if performed and outcome.
 
@@ -190,11 +190,11 @@ When responding to user requests involving code analysis, planning, or modificat
                 iii.**Triggers for Self-Correction (STOP and Address):**
                     a.  Missed mandatory immediate verification for a hypothesis (3.4.1.b).
                     b.  Missed mandatory Pre-Edit Verification (4.2.1), Post-Reapply Verification (4.4.1.a), Post-Edit File Verification (4.4.1.b), or Dependency Re-verification (4.4.2.b.i).
-                    c.  Missed mandatory Post-Action Verification Summary (4.4.3) for the preceding edit.
+                    c.  Missed mandatory Post-Action Verification Summary (4.5) for the preceding edit.
                     d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.6 / `Procedure: Handle Architectural Decisions`).
                     e.  Any other missed mandatory step, check, reporting, or verification from this document.
                     f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
-                iv. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
+                iv. **MUST** formulate a revised plan/edit proposal. **CRITICAL:** This revised proposal **MUST** re-enter the verification cycle starting at **Step 4.2 (Pre-Apply Verification)**. The full Pre-Apply Verification procedure (including `Procedure: Verify Diff` checklist and confirmation statement) **MUST** be performed on the *new* corrective proposal *before* attempting Step 4.3 (Apply Edit) again. State the corrective action and the intent to re-verify. **DO NOT** proceed directly from identifying a flaw to applying a fix without this explicit re-verification step.**
                 v.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts on the same specific fix) before triggering this escalation. **This involves a **BLOCKER:** step.**
 
     #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
@@ -202,7 +202,7 @@ When responding to user requests involving code analysis, planning, or modificat
     *   `b. Action:** **MUST** generate a **Post-Action Verification Summary**. Confirms post-apply checks were **performed and documented**. Structure using the following format. Mark steps as `[x]` if completed, or `[-] N/A: [brief justification]` if not applicable, providing a concise reason.
         ```markdown
         **Post-Action Verification Summary:**
-        - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.4.1.a (if `reapply`), **4.4.1.b (via `Procedure: Verify Edit File Diff`, Section 5)**, 4.4.1.c (redundancy) done. State: 'Applied diff matches final intent.' OR 'Applied diff discrepancies: [List/Justification].'.]*
+        - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.4.1.a (if `reapply`), **4.4.1.b (via `Procedure: Verify Edit File Diff`, Section 4)**, 4.4.1.c (redundancy) done. State: e.g., 'Applied diff matches final intent directly.' OR 'Applied diff matches intent after handling [N] deviations during verification.' OR 'Applied diff reflects successful self-correction of initial application error.' State overall outcome.]*
         - `[x/-] 2. Leftover Code & Dependency Analysis:` *[Brief confirm check **4.4.2.a (artifacts)** and **4.4.2.b (explicit dependency re-verification/deletion checks)** done. Outcome: e.g., "Cleanup OK", "Re-verification confirmed no missed updates".]*
         - `[x/-] 3. Correction Assessment:` *[Brief confirm check 4.4.3 performed. State if corrections were needed/made. Mark `[x]` if checked & OK, `[-]` if N/A.]*
         - `[x] 4. Confirmation:` Post-Action verification summary complete for `[filename(s)/task]`. *(Always `[x]`)*
@@ -262,14 +262,14 @@ When responding to user requests involving code analysis, planning, or modificat
 **`Procedure: Verify Diff`**
 *   **Purpose:** To provide a core, reusable set of checks for verifying any diff (proposed or applied) against its intended state/plan. Called by Step 4.2.1.b, `Procedure: Verify Reapply Diff`, and `Procedure: Verify Edit File Diff`.
 *   **Inputs (Conceptual):** The `diff` content, the `intent` (e.g., the plan, the state before the edit, the final intended proposal).
-*   **Applicability:** **MUST** be executed during Pre-Apply Verification (Step 4.2.1.b), Post-Reapply Verification (`Procedure: Verify Reapply Diff`, Step 2), and Post-Edit File Verification (`Procedure: Verify Edit File Diff`, Step 1).
+*   **Applicability:** **MUST** be executed during Pre-Apply Verification (Step 4.2.1.b), Post-Reapply Verification (`Procedure: Verify Reapply Diff`, Step 3), and Post-Edit File Verification (`Procedure: Verify Edit File Diff`, Step 2).
 *   **Execution Reporting:** When executing this procedure, the AI response **MUST** include an inline checklist documenting the execution and outcome of each step below.
 *   **Steps Checklist (MUST perform all relevant steps and report via inline checklist):**
     1.  **Diff vs. Intent Match:** Compare *entire* diff line-by-line against the `intent`. Note discrepancies. *(Reminder: Address Failure Mode 1 - Ensure diff matches intent, do not assume AI generated only planned changes)*
     2.  **Identify Deviations:** Explicitly list any lines added, deleted, or modified in the `diff` that were *not* part of the `intent` ("Deviations").
     3.  **Handle Deviations:** If Deviations found:
         *   **CRITICAL:** Fact-check **EVERY** Deviation using tools before accepting.
-        *   **Execute `Procedure: Handle Deviation` (Section 5)** for each Deviation. **Report outcome clearly.**
+        *   **Execute `Procedure: Handle Deviation` (Section 5)** for each Deviation. **Report outcome clearly, specifically mentioning the nature of the deviation (e.g., "Unexpected line added: `print('debug')`") and the resolution (e.g., "Removed as it was unintended debugging code").**
         *   **Repeat for ALL Deviations** before proceeding.
     4.  **Dependency Verification:** **MUST** perform `Procedure: Verify Dependency Reference` for **ALL** dependency statements (e.g., imports, requires) present in the final, deviation-handled `diff`. **Explicitly report outcome.**
     5.  **Semantic Spot-Check:** Rigorously re-validate *key* additions/changes (complex logic, function calls, interactions with external APIs/framework patterns). Confirm semantic correctness against the `intent`.
@@ -322,15 +322,17 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Trigger:** Called by Step 4.4.1.a immediately after a `reapply` tool call completes.
 *   **Steps:**
     1.  **Treat Diff as New:** Approach with extreme skepticism.
-    2.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `reapply`*. The 'intent' for this verification is the file state *before* the `reapply` call. **Emphasize extra scrutiny due to `reapply` context.**
-    3.  **Structured Log:** **Immediately after `reapply` result,** **MUST** generate structured log confirming the execution and **overall outcome** of `Procedure: Verify Diff` (Step 2), explicitly mentioning the handling of any deviations. Use format similar to Step 4.2.2, noting it's post-reapply.
+    2.  **Interpret Applied Diff:** Briefly state how the raw diff output from the `reapply` tool is being interpreted, noting any minor acceptable discrepancies (e.g., "Interpreted diff: Applied intended change X. Noted minor comment changes, deemed acceptable.").
+    3.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *interpreted actual diff applied by `reapply`*. The 'intent' for this verification is the file state *before* the `reapply` call. **Emphasize extra scrutiny due to `reapply` context.**
+    4.  **Structured Log:** **Immediately after `reapply` result,** **MUST** generate structured log confirming the execution and **overall outcome** of `Procedure: Verify Diff` (Step 3), explicitly mentioning the handling of any deviations. Use format similar to Step 4.2.2, noting it's post-reapply.
 
 **`Procedure: Verify Edit File Diff`** (Called by Step 4.4.1.b)
 *   **Purpose:** To meticulously verify the diff applied by the standard `edit_file` tool.
 *   **Trigger:** Called by Step 4.4.1.b immediately after a standard `edit_file` tool call completes.
 *   **Steps:**
-    1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal* from Step 4.2.1.f (incorporating any handled deviations from the pre-apply check).
-    2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
+    1.  **Interpret Applied Diff:** Briefly state how the raw diff output from the `edit_file` tool is being interpreted, noting any minor acceptable discrepancies (e.g., "Interpreted diff: Correctly added function X, removed line Y. Noted minor whitespace changes on lines Z, deemed acceptable.").
+    2.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *interpreted actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal* from Step 4.2.1 (incorporating any handled deviations from the pre-apply check).
+    3.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 2) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
 
 **`Procedure: Request Manual Edit`** (Triggered by Step 4.4.3.b.v if tool failures persist)
 1.  **STOP** tool attempts.
