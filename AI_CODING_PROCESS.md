@@ -68,6 +68,7 @@ When responding to user requests involving code analysis, planning, or modificat
     `3.2.` **Identify Standards & Verify Alignment:** Explicitly identify the Core Principles or specific sections from `PROJECT_STANDARDS.md` **and relevant technical patterns/structures from the project's `PROJECT_ARCHITECTURE.md`** that are most pertinent to the request. Briefly state how the proposed plan/edit aligns with these standards, **citing the primary relevant section/pattern name(s)**. **Confirm the plan prioritizes the simplest, clearest solution that fully meets requirements and adheres to all standards.**
         *   *Example 1 (DI Focus): "Planning to add component X. This requires adhering to the Dependency Injection principles (`PROJECT_STANDARDS.md`) and specific DI configuration guidelines (`PROJECT_ARCHITECTURE.md`). Plan involves updating the DI config module per standard practice."*
         *   *Example 2 (Error Handling Focus): "Plan includes error handling for Y, following Error Handling guidelines (`PROJECT_STANDARDS.md` - Section 2.A) and hierarchy examples (`PROJECT_ARCHITECTURE.md` - `StandardErrorHandling` pattern), using standard logging."*
+        *   *(Note for AI: If `PROJECT_STANDARDS.md` or `PROJECT_ARCHITECTURE.md` are not explicitly provided in the current context, state this. Then, base your alignment on general software design principles, any architectural patterns observed directly in the existing codebase, and the specific requirements of the user's request.)*
 
     `3.3.` **Check "Work with Facts":** Confirm the plan/edit relies *only* on provided facts, requirements, or verified information. State if clarification is needed. *Example: "Proceeding based on requirement Z. Clarify if other factors apply."*
 
@@ -105,7 +106,7 @@ When responding to user requests involving code analysis, planning, or modificat
         *   **Trigger:** Before calling `edit_file`.
         *   **Action:**
             `a. Explicit Instructions:` Be explicit in `instructions` (add vs. modify/replace).
-            `b. Sufficient Context:` Ensure `code_edit` includes enough unchanged lines for anchoring.
+            `b. Sufficient Context:` Ensure `code_edit` includes enough unchanged lines for anchoring. *As a guideline, aim for 2-3 unchanged lines immediately before and after each modified code block for anchoring, where the code structure allows. For very small, single-line changes in isolation, context might be adjusted. The goal is to uniquely identify the edit location.*
 
     `3.9.` **Exception for Diagnostics:**
         *   **Trigger:** For temporary deviations (e.g., print statements/temporary logging).
@@ -156,7 +157,7 @@ When responding to user requests involving code analysis, planning, or modificat
     *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the proposed diff text).
         *   Ensure `instructions` are explicit (add vs. modify/replace).
         *   **When replacing or removing code, the old/deprecated code MUST be completely deleted, not commented out.** The `code_edit` should reflect this direct removal.
-        *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring.
+        *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring. *As a guideline, aim for 2-3 unchanged lines immediately before and after each modified code block for anchoring, where the code structure allows. For very small, single-line changes in isolation, context might be adjusted. The goal is to uniquely identify the edit location.*
         *   **Output of this Step:** The formulated `code_edit` string (the proposed diff text). **You MUST present this string clearly as the output of Step 4.1 before proceeding to Step 4.2.**
         *   This step ONLY involves formulating the `code_edit` text content. You **MUST NOT** call `edit_file` or `reapply` during this step. Application occurs *only* in Step 4.3 after successful verification in Step 4.2.
 
@@ -212,7 +213,7 @@ When responding to user requests involving code analysis, planning, or modificat
                     e.  Any other missed mandatory step, check, reporting, or verification from this document.
                     f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
                 iv. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
-                v.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts on the same specific fix) before triggering this escalation. **This involves a **BLOCKER:** step.**
+                v.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts for the same planned logical change to a specific file section, or if 3 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome) before triggering this escalation. **This involves a **BLOCKER:** step.**
 
     #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
     *   `a. Trigger:** Immediately following the *final* successful verification (Step 4.4) for the task's edits.
@@ -278,7 +279,7 @@ When responding to user requests involving code analysis, planning, or modificat
 
 **`Procedure: Verify Diff`**
 *   **Purpose:** To provide a core, reusable set of checks for verifying any diff (proposed or applied) against its intended state/plan. Called by Step 4.2.1.b, `Procedure: Verify Reapply Diff`, and `Procedure: Verify Edit File Diff`.
-*   **Inputs (Conceptual):** The `diff` content, the `intent` (e.g., the plan, the state before the edit, the final intended proposal).
+*   **Inputs (Conceptual):** The `diff` content, the `intent` (e.g., the plan, the state before the edit, the final intended proposal). *(Note: The specific source of the `intent` (e.g., original plan, verified proposed edit, pre-reapply file state) depends on the context from which this procedure is called (e.g., Step 4.2.1.b, `Procedure: Verify Edit File Diff`, `Procedure: Verify Reapply Diff`).)*
 *   **Applicability:** **MUST** be executed during Pre-Apply Verification (Step 4.2.1.b), Post-Reapply Verification (`Procedure: Verify Reapply Diff`, Step 2), and Post-Edit File Verification (`Procedure: Verify Edit File Diff`, Step 1).
 *   **Execution Reporting:** When executing this procedure, the AI response **MUST** include an inline checklist documenting the execution and outcome of each step below.
 *   **Steps Checklist (MUST perform all relevant steps and report via inline checklist):**
@@ -346,7 +347,7 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Purpose:** To meticulously verify the diff applied by the standard `edit_file` tool.
 *   **Trigger:** Called by Step 4.4.1.b immediately after a standard `edit_file` tool call completes.
 *   **Steps:**
-    1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal* from Step 4.2.1.f (incorporating any handled deviations from the pre-apply check).
+    1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal from Step 4.2 (specifically, the verified proposed `code_edit` diff after `Procedure: Verify Diff` execution in Step 4.2.1.b)* (incorporating any handled deviations from the pre-apply check).
     2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
 
 **`Procedure: Request Manual Edit`** (Triggered by Step 4.4.3.b.v if tool failures persist)
@@ -420,7 +421,7 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Steps (For EACH Deviation):**
     1.  **Fact-check Deviation:** Use tools to confirm the existence and correctness of the deviation.
     2.  **Justify Deviation:** If deviation is intentional, justify it. If not, state it's unplanned and report it.
-    3.  **Handle Deviation:** If deviation is intentional, implement it. If not, revise the plan.
+    3.  **Integrate or Revise:** If the deviation is verified, justified as beneficial/necessary, and accepted: **formally update the current working plan and the intended `code_edit` to incorporate this deviation.** The `code_edit` can then be considered aligned with the *updated* plan. If the deviation is not acceptable, **revise the proposed `code_edit` to remove the deviation** and align with the original (or a newly revised) plan.
 
 **`Procedure: Verify Reapply Diff`**
 *   **Purpose:** To meticulously verify the diff applied by the `reapply` tool.
@@ -434,7 +435,7 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Purpose:** To meticulously verify the diff applied by the standard `edit_file` tool.
 *   **Trigger:** Called by Step 4.4.1.b immediately after a standard `edit_file` tool call completes.
 *   **Steps:**
-    1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal* from Step 4.2.1.f (incorporating any handled deviations from the pre-apply check).
+    1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal from Step 4.2 (specifically, the verified proposed `code_edit` diff after `Procedure: Verify Diff` execution in Step 4.2.1.b)* (incorporating any handled deviations from the pre-apply check).
     2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
 
 **`Procedure: Request Manual Edit`**
