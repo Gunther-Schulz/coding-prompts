@@ -30,6 +30,14 @@
 
 *   **[README.md]** Updated references after deleting `ai_failure_modes.md` and `AI_CODING_PROCESS_CONFIRM_ADDENDUM.md`, clarified example docs.
 
+*   **[AI_CODING_PROCESS.md v1.51]** Enhanced Robustness for Complex Edits & Tool Failures:
+    *   Added Step 3.0 (Assess Target File Complexity) to mandate heightened scrutiny and proactive full file reads for critical/complex files from the outset of planning.
+    *   Updated Step 3.8.b (Sufficient Context) and Step 4.1 (Generate Proposed `code_edit`) to require more precise context, unique anchors, and explicit `instructions` on unchangeable sections when dealing with sensitive or previously mis-edited files.
+    *   Revised Step 4.4.3.b.e (Self-Correction for Tool Failure) to accelerate escalation to `Procedure: Request Manual Edit` after fewer failed attempts (2 instead of 3) or if the same pattern of disruptive modification occurs on a second attempt.
+    *   Incorporated a new explicit check into `Procedure: Verify Diff` (Section 4) to verify the absence of major unintended structural changes (widespread deletions/reordering) as a critical deviation.
+    *   Expanded `Procedure: Handle Failed Verification for Existing Dependency` (Section 5) with detailed investigative steps (usage check in referencing file, broader context search) before deciding on a course of action, based on details from v1.34 of the process.
+    *   Corrected an issue where `Procedure: Verify Reapply Diff`, `Procedure: Verify Edit File Diff`, and `Procedure: Request Manual Edit` were inadvertently deleted from Section 5 during a previous automated edit (User reverted this part manually, AI confirmed). (Self-correction from prior turn)
+
 ## 2025-05-05
 
 *   **[AI_CODING_PROCESS.md v1.47]** Strengthened Blocker Handling Procedures:

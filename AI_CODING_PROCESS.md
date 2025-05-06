@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Version: 1.50** (Combat Superficial Execution, Added Deferred Observations Summary)
+**Version: 1.51** (Improved Handling of Edit Failures & Complex Files)
 
 ---
 
@@ -64,6 +64,10 @@ When responding to user requests involving code analysis, planning, or modificat
 
 ### 3. Pre-computation Standards Check (Planning Phase)
 
+**3.0. Assess Target File Complexity (Initial Check):** If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), or a file previously identified as complex or sensitive to edits:
+    *   **Action:** State this observation. Plan to use full file reads (`read_file` with `should_read_entire_file=True`) if any ambiguity about its structure arises during planning. Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny.
+    *   *Example: "Observing that `app.py` is a central CLI configuration file. Will proceed with heightened scrutiny for impact analysis and edit generation, using full file reads if necessary."*
+
 **NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
 
 *   **Trigger:** Before generating a multi-step plan or proposing a specific code edit (`edit_file` call).
@@ -112,7 +116,7 @@ When responding to user requests involving code analysis, planning, or modificat
         *   **Trigger:** Before calling `edit_file`.
         *   **Action:**
             `a. Explicit Instructions:` Be explicit in `instructions` (add vs. modify/replace).
-            `b. Sufficient Context:` Ensure `code_edit` includes enough unchanged lines for anchoring. *As a guideline, aim for 2-3 unchanged lines immediately before and after each modified code block for anchoring, where the code structure allows. For very small, single-line changes in isolation, context might be adjusted. The goal is to uniquely identify the edit location.*
+            `b. Sufficient Context:` Ensure `code_edit` includes enough unchanged lines for anchoring. *As a guideline, aim for 2-3 unchanged lines immediately before and after each modified code block for anchoring, where the code structure allows. For very small, single-line changes in isolation, context might be adjusted. The goal is to uniquely identify the edit location. **For complex files, or when performing corrective edits on a previously mis-edited file, consider providing even more extensive context or using highly unique anchor lines. If feasible, explicitly define sections that MUST NOT be changed by commenting them in the `instructions` field of the `edit_file` call (e.g., 'IMPORTANT: Only modify the specified lines for X; the Y and Z sections must remain untouched').** *
 
     `3.9.` **Exception for Diagnostics:**
         *   **Trigger:** For temporary deviations (e.g., print statements/temporary logging).
@@ -160,7 +164,7 @@ When responding to user requests involving code analysis, planning, or modificat
     *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the proposed diff text).
         *   Ensure `instructions` are explicit (add vs. modify/replace).
         *   **When replacing or removing code, the old/deprecated code MUST be completely deleted, not commented out.** The `code_edit` should reflect this direct removal.
-        *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring. *As a guideline, aim for 2-3 unchanged lines immediately before and after each modified code block for anchoring, where the code structure allows. For very small, single-line changes in isolation, context might be adjusted. The goal is to uniquely identify the edit location.*
+        *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring. *As a guideline, aim for 2-3 unchanged lines immediately before and after each modified code block for anchoring, where the code structure allows. For very small, single-line changes in isolation, context might be adjusted. The goal is to uniquely identify the edit location.* **When editing files identified as sensitive (per Step 3.0 or an assessment during `Procedure: Analyze Impact`) or when generating a corrective edit for a previously mis-applied diff, the AI MUST prioritize extreme precision. This includes using highly specific anchor lines, providing broader context than usual if it clarifies the edit boundaries, and reiterating in the `instructions` for `edit_file` any critical sections of the file that must remain unchanged.**
         *   **Output of this Step:** The formulated `code_edit` string (the proposed diff text). **You MUST present this string clearly as the output of Step 4.1 before proceeding to Step 4.2.**
         *   This step ONLY involves formulating the `code_edit` text content. You **MUST NOT** call `edit_file` or `reapply` during this step. Application occurs *only* in Step 4.3 after successful verification in Step 4.2.
 
@@ -216,8 +220,8 @@ When responding to user requests involving code analysis, planning, or modificat
                 d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action. **This corrective action MUST aim to restore the overall integrity and correctness of the file, addressing both deviations from the planned change AND any new issues introduced by the edit tool.** If the file's state is a result of the edit tool making unintended modifications to unrelated code, the primary goal of the self-correction is to achieve the user's intended change *without* these unintended side-effects, or to clean up those side-effects if the intended change is already present.
                 e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
                     Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
-                    i.  **Persistent Correction Failure:** Repeated attempts (e.g., >3 attempts for the same planned logical change to a specific file section, or if 3 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome) to apply a *necessary and planned correction* fail.
-                    ii. **Unacceptable Original Edit Application with Failed Cleanup:** A single `edit_file` or `reapply` application, while potentially achieving the direct technical goal of the *planned change*, introduces grossly disproportionate, unintended, and disruptive modifications (e.g., new errors, significant churn) to unrelated code sections. **If at least one self-correction attempt (e.g., a new `edit_file` call with a targeted plan to remove the specific unintended modifications like duplicate lines) fails to cleanly resolve these side-effects without causing further significant issues,** then proceed to requesting a manual edit. The goal is to avoid lengthy, unpredictable self-correction loops on widespread unintended churn.
+                    i.  **Persistent Correction Failure:** Repeated attempts (e.g., >3 attempts for the same planned logical change to a specific file section, or if **2 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome without significant unintended side-effects**) to apply a *necessary and planned correction* fail.
+                    ii. **Unacceptable Original Edit Application with Failed Cleanup:** A single `edit_file` or `reapply` application, while potentially achieving the direct technical goal of the *planned change*, introduces grossly disproportionate, unintended, and disruptive modifications (e.g., new errors, significant churn, **deletion of unrelated code blocks, widespread reordering of unrelated code**) to unrelated code sections. If at least one self-correction attempt (e.g., a new `edit_file` call with a targeted plan to remove the specific unintended modifications) fails to cleanly resolve these side-effects without causing further significant issues, **OR if the *same pattern* of disruptive modification occurs on a second consecutive attempt on the same file for the same overall task,** then proceed to requesting a manual edit. The goal is to avoid lengthy, unpredictable self-correction loops on widespread unintended churn.
                     This involves a **BLOCKER:** step.
 
     #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
@@ -317,31 +321,33 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Execution Reporting:** When executing this procedure, the AI response **MUST** include an inline checklist documenting the execution and outcome of each step below.
 *   **Steps Checklist (MUST perform all relevant steps and report via inline checklist):**
     1.  **Diff vs. Intent Match:** Compare *entire* diff line-by-line against the `intent`. Note discrepancies. *(Reminder: Address Failure Mode 1 - Ensure diff matches intent, do not assume AI generated only planned changes)*
-    2.  **Identify Deviations:** Explicitly list any lines added, deleted, or modified in the `diff` that were *not* part of the `intent` ("Deviations").
-    3.  **Handle Deviations:** If Deviations found:
+    2.  **Absence of Major Unintended Structural Changes:** Specifically verify that the diff does **not** include widespread deletion or reordering of code blocks unrelated to the `intent`. If such changes are present, they **MUST** be treated as critical Deviations.
+    3.  **Identify Deviations:** Explicitly list any lines added, deleted, or modified in the `diff` that were *not* part of the `intent` ("Deviations"), including any major structural changes identified in the previous step.
+    4.  **Handle Deviations:** If Deviations found:
         *   **CRITICAL:** Fact-check **EVERY** Deviation using tools before accepting.
         *   **Execute `Procedure: Handle Deviation` (Section 5)** for each Deviation. **Report outcome clearly.**
         *   **Repeat for ALL Deviations** before proceeding.
-    4.  **Dependency Verification:** **MUST** perform `Procedure: Verify Dependency Reference` for **ALL** dependency statements (e.g., imports, requires) present in the final, deviation-handled `diff`. **Explicitly report outcome.**
-    5.  **Semantic Spot-Check:** Rigorously re-validate *key* additions/changes (complex logic, function calls, interactions with external APIs/framework patterns). Confirm semantic correctness against the `intent`.
-    6.  **Context Line Check:** Re-verify context lines in the `diff` were not unexpectedly modified/misrepresented compared to the actual file state. Use `read_file` if suspicious.
-    7.  **Logic Preservation Validation (If Applicable):** If the diff replaces/restructures logic, perform final validation comparing *applied* new logic against documented original behavior (from `Procedure: Ensure Logic Preservation`, Step 3.4.1.e). Confirm preservation or justified modification.
-    8.  **Root Cause Check:** Ensure the final, deviation-handled `diff` still addresses the root cause identified in Step 3.4.
-    9.  **Integration Sanity Check:** Briefly check: Does the change logically fit? Interact correctly with adjacent code?
-    10. **Report Outcome:** Conclude with the overall verification outcome (e.g., "Verified", "Verified with handled deviations", "Failed - Requires correction").
+    5.  **Dependency Verification:** **MUST** perform `Procedure: Verify Dependency Reference` for **ALL** dependency statements (e.g., imports, requires) present in the final, deviation-handled `diff`. **Explicitly report outcome.**
+    6.  **Semantic Spot-Check:** Rigorously re-validate *key* additions/changes (complex logic, function calls, interactions with external APIs/framework patterns). Confirm semantic correctness against the `intent`.
+    7.  **Context Line Check:** Re-verify context lines in the `diff` were not unexpectedly modified/misrepresented compared to the actual file state. Use `read_file` if suspicious.
+    8.  **Logic Preservation Validation (If Applicable):** If the diff replaces/restructures logic, perform final validation comparing *applied* new logic against documented original behavior (from `Procedure: Ensure Logic Preservation`, Step 3.4.1.e). Confirm preservation or justified modification.
+    9.  **Root Cause Check:** Ensure the final, deviation-handled `diff` still addresses the root cause identified in Step 3.4.
+    10. **Integration Sanity Check:** Briefly check: Does the change logically fit? Interact correctly with adjacent code?
+    11. **Report Outcome:** Conclude with the overall verification outcome (e.g., "Verified", "Verified with handled deviations", "Failed - Requires correction").
 
    *Example Inline Checklist Output (in AI Response):*
    ```markdown
    **Executing `Procedure: Verify Diff`:**
    - `[x]` 1. Diff vs. Intent Match: Verified, matches final intent.
-   - `[-]` 2. Identify Deviations: N/A, no deviations from intent.
-   - `[-]` 3. Handle Deviations: N/A.
-   - `[x]` 4. Dependency Verification: `Procedure: Verify Dependency Reference` executed for `import X`, Outcome: Confirmed.
-   - `[x]` 5. Semantic Spot-Check: Key logic change `Y` reviewed, confirms intended behavior.
-   - `[x]` 6. Context Line Check: Context lines appear correct.
-   - `[-]` 7. Logic Preservation Validation: N/A, no logic replacement.
-   - `[x]` 8. Root Cause Check: Confirmed diff addresses root cause Z.
-   - `[x]` 9. Integration Sanity Check: Appears to integrate correctly.
+   - `[-]` 2. Absence of Major Unintended Structural Changes: N/A, no unintended structural changes.
+   - `[-]` 3. Identify Deviations: N/A, no deviations from intent.
+   - `[-]` 4. Handle Deviations: N/A.
+   - `[x]` 5. Dependency Verification: `Procedure: Verify Dependency Reference` executed for `import X`, Outcome: Confirmed.
+   - `[x]` 6. Semantic Spot-Check: Key logic change `Y` reviewed, confirms intended behavior.
+   - `[x]` 7. Context Line Check: Context lines appear correct.
+   - `[-]` 8. Logic Preservation Validation: N/A, no logic replacement.
+   - `[x]` 9. Root Cause Check: Confirmed diff addresses root cause Z.
+   - `[x]` 10. Integration Sanity Check: Appears to integrate correctly.
    - **Outcome:** Verified.
    ```
 
@@ -451,7 +457,15 @@ When responding to user requests involving code analysis, planning, or modificat
 **`Procedure: Handle Failed Verification for Existing Dependency`**
 *   **Trigger:** Execution is triggered by Step 3.4.1.b if hypothesis verification for a dependency reference in *existing, established code* fails (module/symbol not found).
 *   **Pre-condition:** Hypothesis verification for a dependency reference in *existing, established code* fails (module/symbol not found).
-1.  **DO NOT** immediately plan creation.
+*   **Steps:**
+    1.  **DO NOT** immediately plan creation of the missing dependency.
+    2.  **State the Discrepancy:** Clearly state that established code references a module/symbol that cannot be found, specifying the reference and the file containing it.
+    3.  **Perform Usage Check in Referencing File:** **MUST** use tools (`grep_search`) to search *within the referencing file* for actual usage of the specific symbol(s) (e.g., instantiation, method calls, type annotations). Report findings explicitly (e.g., "Usage Check in `file_x.py`: Searched for `MissingSymbol(...)`. Outcome: No usage found." or "Outcome: Usage found in function `Y`.").
+    4.  **Perform Broader Context Search:** Execute additional searches (`grep_search` for related terms/files, `codebase_search` for conceptual links) to find context about the missing element (e.g., was it moved? refactored? deprecated? any TODOs for removal?). Report findings.
+    5.  **Determine Next Action based on Context and Usage:**
+        *   If context clearly indicates a simple move/rename and the symbol is still needed: Plan the fix (update reference path).
+        *   If the dependency failed **AND** the Usage Check (Step 3) found **NO USAGE** in the referencing file **AND** broader context does not suggest it's critical: The default plan should be to **remove the stale dependency reference statement**. Briefly verify this removal doesn't cause downstream issues.
+        *   If the dependency failed **AND** usage *was* found, OR if context suggests intentional removal but usage remains, OR if context is insufficient/ambiguous: **Execute `Procedure: Handle Unclear Root Cause / Missing Info` (Section 5)**, providing the findings from this procedure as input.
 
 **`Procedure: Handle Deviation`**
 *   **Trigger:** Called by `Procedure: Verify Diff` (Step 3) whenever deviations (unplanned changes) are identified between the `diff` being checked and the `intent`.
