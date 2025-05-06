@@ -1,9 +1,63 @@
-# Framework Changelog
+# AI Collaboration Framework Changelog
 
-**(Note for AI Assistant: Use `date +%F` for current date. Always specify affected document and its version.)**
+**(Note for AI Assistant: Use `date +%F` for current date. Future entries will list changed documents under the Framework Version.)**
+
+---
+
+## Framework v2.0 - 2025-05-06
+
+### AI_CODING_PROCESS.md
+    *   No direct changes to process content. Document now refers to Framework Version (effectively rolling in v1.54).
+
+### PLAN_WRITING_PROCESS.md
+    *   No direct changes to process content. Document now refers to Framework Version (effectively rolling in v1.7).
+
+**Overall Goal/Theme of this Framework Update:** Unification of versioning for all process documents under a single framework version. Introduction of new changelog structure to reflect framework-level updates.
+
+---
+
+## Previous Individual Document Changelog (Historical - Pre-Framework v2.0)
+
+**(This section preserves the history before unified versioning. New changes go under the unified Framework Version headings above.)**
 
 ## 2025-05-06
 
+*   **[PLAN_WRITING_PROCESS.md v1.7]** Strengthened codebase analysis guidance to combat superficiality:
+    *   Added explicit sub-step `1.3.d` ("Follow Initial Leads") to encourage deeper exploration during initial analysis.
+    *   Augmented Step `2.3` ("Survey Existing Relevant Functionality") to mandate broader, conceptual searches if initial targeted surveys for common functionalities fail.
+    *   Inserted a new "GUIDING PRINCIPLE FOR ANALYSIS: HOLISTIC CODEBASE UNDERSTANDING" at the start of Phase 2 to reinforce the need for contextual awareness.
+    *   Refined the "PLANNING PRINCIPLE REMINDER: PRIORITIZE SPECIFIC CODE OVER GENERIC PATTERNS" to more strongly advocate for adapting existing sound patterns.
+    *   Added a new self-assessment item `5. Sufficiency of Analysis Depth Assessment:` to the "Logic Analysis & Verification Summary" (Step `2.12`) to make the AI reflect on its thoroughness.
+    *   Goal: Further mitigate the risk of AI planners performing superficial codebase analysis by providing more explicit directives and checks for deeper investigation.
+*   **[PLAN_WRITING_PROCESS.md v1.6]** Further enhancements for AI coding synergy:
+    *   Added new mandatory plan output sections (Step 3.4) to provide more comprehensive "briefing packages" for `AI_CODING_PROCESS.md`:
+        *   `## Existing Relevant Functionality Survey (Ref: AI_CODING_PROCESS.md Step 3.1)`
+        *   `## Key Standards & Architectural Patterns Applied (Ref: AI_CODING_PROCESS.md Step 3.2)`
+        *   `## Potential Risks & Planned Mitigations`
+    *   Updated Phase 2 analysis steps to explicitly prepare this data:
+        *   Added new Step 2.3 (Survey Existing Relevant Functionality).
+        *   Augmented Step 2.1 (Verify Standards Alignment) to collate applied standards/patterns.
+        *   Added new Step 2.5 (Structure Key Impact Summary Details) for a more prescriptive summary.
+        *   Augmented Step 2.9 (Define Clear, Actionable Steps) to include precise location hints for complex edits.
+        *   Renamed and augmented Step 2.10 (Identify Open Questions, Risks, and Plan Mitigations).
+    *   Renumbered Phase 2 steps (2.3 through 2.12) to accommodate new preparatory steps.
+    *   Goal: Maximize proactive information gathering and structured output during planning to further improve efficiency and reliability when the plan is executed via `AI_CODING_PROCESS.md`.
+*   **[PLAN_WRITING_PROCESS.md v1.5]** Enhanced plan output for AI coding synergy:
+    *   Added new mandatory sections to the plan output structure (Step 3.4) to directly feed `AI_CODING_PROCESS.md`:
+        *   `## Key Assumptions for Re-Verification (Ref: AI_CODING_PROCESS.md Step 3.4.1.b)`
+        *   `## Logic Preservation Mapping Details (Ref: AI_CODING_PROCESS.md Step 3.4.1.e)`
+        *   `## Suggested Impact Analysis Queries (For AI_CODING_PROCESS.md Steps 3.4.1.a, 4.4.2.b.i)`
+        *   `## Critical Edge Cases for Implementation (Ref: AI_CODING_PROCESS.md Step 3.4.1.c)`
+    *   Updated Phase 2 analysis steps (new 2.4, 2.5.b, 2.6, 2.9) to explicitly require preparing this structured information.
+    *   Renumbered Phase 2 steps (2.4 through 2.10) to accommodate new preparatory steps.
+    *   Goal: Make plans more directly actionable by `AI_CODING_PROCESS.md`, improving reliability and reducing ambiguity during implementation.
+*   **[PLAN_WRITING_PROCESS.md v1.4]** Comprehensive structural review and clarification:
+    *   Standardized all internal references to `PROJECT_STANDARDS.md` and `PROJECT_ARCHITECTURE.md`.
+    *   Streamlined Phase 2: Corrected step numbering, removed redundant/placeholder steps.
+    *   Clarified "verification" concepts, ensuring cross-references point to appropriate analytical steps rather than a non-existent dedicated verification step.
+    *   Centralized definitions of mandatory guideline blocks ("No Defaults/Fallbacks," "Verify Assumptions") at the start of Phase 3 for clarity and easier reference.
+    *   Updated an internal path to `learning_resources/ai_plan_writing_pitfalls.md`.
+    *   Goal: Enhance clarity, internal consistency, and maintainability of the plan writing process.
 *   **[AI_CODING_PROCESS.md v1.54]** Added Principle for Holistic Codebase Understanding:
     *   Introduced "Holistic Codebase Understanding for Integration and Reusability" to "Core Principles & Critical Checks Summary."
     *   This principle mandates striving for sufficient understanding of surrounding codebase context, reinforcing thorough searches for reusable functionality (Step 3.1) and meticulous impact analysis (Procedure: Analyze Impact).
