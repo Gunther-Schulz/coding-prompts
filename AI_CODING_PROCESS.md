@@ -32,6 +32,11 @@
 **Key Principle:** While this process provides structure, the primary takeaway is that **strict adherence to the existing verification and checking steps is the most crucial factor** in preventing errors and ensuring robust, maintainable code.
 **Self-Driven Compliance Principle:** The AI is responsible for proactively initiating and completing **all** required steps and verifications outlined herein **without external prompting** (except when the literal text `**BLOCKER:**` is used, as this explicitly requires user input). The structured reporting and summaries mandated by this process serve as the primary **proof** of this self-driven compliance; **the act of providing such reports or summaries does not, by itself, constitute a reason to pause or await user input unless explicitly stated by a `**BLOCKER:**` or a specific procedural step requiring confirmation.** Furthermore, to provide clear proof of step execution, the AI **MUST** prefix relevant sections of its responses with the corresponding step number and name (e.g., '**Step 3.2: Identify Standards & Verify Alignment**').
 
+**Principle of Successful Edit Application:** An edit to a file is considered successfully applied ONLY when:
+    a. The intended planned change is correctly implemented.
+    b. The file is left in a state free of any new errors, regressions, or significant unintended modifications introduced by the editing process.
+    c. All mandatory verification steps for the edit have been completed and reported.
+
 **Absolute Critical Checks (Non-Negotiable):**
 
 1.  **Verify ALL Diff Lines:** Meticulously verify **every single line** in *both* proposed (`code_edit`) and applied (`edit_file`/`reapply`) diffs against the plan and verified facts. **Treat tool output with extreme skepticism.** See clarification in Step 4 warning.
@@ -199,7 +204,7 @@ When responding to user requests involving code analysis, planning, or modificat
                 iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
 
         `4.4.3` **Self-Correct if Necessary:**
-            *   `a.` Trigger:** If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues. Also triggered by specific missed mandatory steps (see below).
+            *   `a.` Trigger:** If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues, **or the introduction of new errors/regressions in any part of the edited file, even if unrelated to the primary planned change.** Also triggered by specific missed mandatory steps (see below).
             *   `b.` Action:**
                 a.  **STOP** proceeding with flawed logic/state. State the issue discovered.
                 b. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch.").
@@ -210,8 +215,12 @@ When responding to user requests involving code analysis, planning, or modificat
                     d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.6 / `Procedure: Handle Architectural Decisions`).
                     e.  Any other missed mandatory step, check, reporting, or verification from this document.
                     f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
-                d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
-                e.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts for the same planned logical change to a specific file section, or if 3 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome) before triggering this escalation. **This involves a **BLOCKER:** step.**
+                d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action. **This corrective action MUST aim to restore the overall integrity and correctness of the file, addressing both deviations from the planned change AND any new issues introduced by the edit tool.** If the file's state is a result of the edit tool making unintended modifications to unrelated code, the primary goal of the self-correction is to achieve the user's intended change *without* these unintended side-effects, or to clean up those side-effects if the intended change is already present.
+                e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
+                    Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
+                    i.  **Persistent Correction Failure:** Repeated attempts (e.g., >3 attempts for the same planned logical change to a specific file section, or if 3 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome) to apply a *necessary and planned correction* fail.
+                    ii. **Unacceptable Original Edit Application with Failed Cleanup:** A single `edit_file` or `reapply` application, while potentially achieving the direct technical goal of the *planned change*, introduces grossly disproportionate, unintended, and disruptive modifications (e.g., new errors, significant churn) to unrelated code sections. **If at least one self-correction attempt (e.g., a new `edit_file` call with a targeted plan to remove the specific unintended modifications like duplicate lines) fails to cleanly resolve these side-effects without causing further significant issues,** then proceed to requesting a manual edit. The goal is to avoid lengthy, unpredictable self-correction loops on widespread unintended churn.
+                    This involves a **BLOCKER:** step.
 
     #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
     *   `a.` Trigger:** Immediately following the *final* successful verification (Step 4.4) for the task's edits.
@@ -376,7 +385,12 @@ When responding to user requests involving code analysis, planning, or modificat
     1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal from Step 4.2 (specifically, the verified proposed `code_edit` diff after `Procedure: Verify Diff` execution in Step 4.2.1.b)* (incorporating any handled deviations from the pre-apply check).
     2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
 
-**`Procedure: Request Manual Edit`** (Triggered by Step 4.4.3.b.v if tool failures persist)
+**`Procedure: Request Manual Edit`**
+*   **Trigger:** Called by Step 4.4.3.b.e if tool failures persist or edit application requires complex cleanup.
+*   **Advisory for "Unacceptable Original Edit Application with Failed Cleanup" Trigger:**
+    *   When this procedure is invoked because an automated edit achieved the primary goal but introduced unacceptable side-effects (churn, new errors in unrelated code) which a subsequent focused cleanup attempt also failed to resolve (as per Step 4.4.3.b.e.ii):
+        *   The explanation in "State Tool Failure" (Step 2 below) **MUST** clearly differentiate between the successful primary change and the failed cleanup of the unacceptable side-effects.
+        *   The primary goal of "Provide Specific Edit Details for Manual Application" (Step 3 below) **MUST** be to provide the user with the **original, minimal, and correct planned change** that was initially intended, presented cleanly with its necessary context, as if the side-effects had not occurred. This allows the user to apply the core intended change cleanly.
 1.  **STOP** tool attempts.
 2.  **State Tool Failure:** Explain the issue and the presumed incorrect file state based on last tool output.
 3.  **Provide Specific Edit Details for Manual Application:**
@@ -465,6 +479,35 @@ When responding to user requests involving code analysis, planning, or modificat
     2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
 
 **`Procedure: Request Manual Edit`**
-*   **Trigger:** Called by Step 4.4.3.b.v if repeated attempts to apply an edit via tools (`edit_file`, `reapply`) fail or produce incorrect results, and self-correction loops are exhausted.
+*   **Trigger:** Called by Step 4.4.3.b.e if tool failures persist or edit application requires complex cleanup.
+*   **Advisory for "Unacceptable Original Edit Application with Failed Cleanup" Trigger:**
+    *   When this procedure is invoked because an automated edit achieved the primary goal but introduced unacceptable side-effects (churn, new errors in unrelated code) which a subsequent focused cleanup attempt also failed to resolve (as per Step 4.4.3.b.e.ii):
+        *   The explanation in "State Tool Failure" (Step 2 below) **MUST** clearly differentiate between the successful primary change and the failed cleanup of the unacceptable side-effects.
+        *   The primary goal of "Provide Specific Edit Details for Manual Application" (Step 3 below) **MUST** be to provide the user with the **original, minimal, and correct planned change** that was initially intended, presented cleanly with its necessary context, as if the side-effects had not occurred. This allows the user to apply the core intended change cleanly.
 1.  **STOP** tool attempts.
 2.  **State Tool Failure:** Explain the issue and the presumed incorrect file state based on last tool output.
+3.  **Provide Specific Edit Details for Manual Application:**
+    *   **MUST** clearly specify the target file.
+    *   **MUST** clearly state whether the action is an insertion, replacement, or deletion.
+    *   If an insertion or replacement, **MUST** provide the precise code block to be inserted/used as replacement.
+    *   If a deletion, **MUST** clearly describe or show the exact lines to be deleted.
+    *   **MUST** include sufficient surrounding context (a few lines before and after the change area) to uniquely identify the location of the edit.
+    *   **MUST** present this (for insertions/replacements) as a single, clearly demarcated code block, using the language's comment style for `// ... existing code ...` where appropriate, that the user can easily copy and paste to represent the *final state* of the edited section.
+    *   *Example (for insertion/replacement): "To manually apply the fix to `src/example.py`, please modify the relevant section to match the following (or insert at the indicated location):"*
+        ```python
+        // ... existing code ...
+        // Context line before change
+        // New code to be inserted / This block replaces the old code
+        // Further new code if applicable
+        // Context line after change
+        // ... existing code ...
+        ```
+    *   *Example (for deletion): "To manually apply the fix to `src/example.py`, please delete the following lines:"*
+        ```python
+        // ... existing code ...
+        // Context line before deletion
+        // Line to be deleted
+        // Another line to be deleted
+        // Context line after deletion
+        // ... existing code ...
+        ```
