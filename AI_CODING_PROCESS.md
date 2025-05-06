@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Framework Component Version: Belongs to AI Collaboration Framework v2.1. See FRAMEWORK_CHANGELOG.md for detailed history.**
+**Framework Component Version: Belongs to AI Collaboration Framework v2.2. See FRAMEWORK_CHANGELOG.md for detailed history.**
 
 ---
 
@@ -182,7 +182,11 @@ When responding to user requests involving code analysis, planning, or modificat
     *   **Application to Multi-File Changes:** When a single user request or task necessitates changes to multiple files, this entire [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize] cycle (Steps 4.1 through 4.5) **MUST** be fully completed for one individual file *before* commencing Step 4.1 (Generate Proposed `code_edit` Diff Text) for any subsequent file involved in the same task. This per-file atomicity ensures that each modification is applied and verified against a consistent and up-to-date state of the codebase.
 *   **Rationale for Sequential and Mandatory Execution:** Each step in this cycle (4.1 through 4.5) logically builds upon the successful and verified completion of the preceding one. This strict order is paramount for systematically preventing errors, ensuring that all changes meticulously align with the verified plan, and proactively maintaining the integrity and quality of the codebase. All five sub-steps are mandatory to form a comprehensive verification loop around every code modification.
 
-    **CRITICAL WARNING:** VERIFY ALL DIFF LINES. Failure to meticulously verify the *entire* diff (both proposed and applied) is a primary cause of regressions. **Verification means ensuring every changed/added line aligns with the plan, is syntactically correct, all referenced imports/symbols/variables are valid, and no unexpected logic changes or side-effects are introduced.** Treat tool output (`edit_file`, `reapply`) with extreme skepticism.
+    **CRITICAL WARNING:** VERIFY ALL DIFF LINES. Failure to meticulously verify the *entire* diff (both proposed and applied) is a primary cause of regressions. **Verification means ensuring every changed/added line aligns with the plan, is syntactically correct, all referenced imports/symbols/variables are valid, and no unexpected logic changes or side-effects are introduced.** Treat tool output (`edit_file`, `reapply`) with extreme skepticism. For instance:
+*   *If your intent was to add a specific function, but the diff also deletes an unrelated class, this is a critical tool failure.*
+*   *If your plan was to rename a variable within one method, but the diff shows modifications to logic in other methods, this is a critical tool failure.*
+*   *If you aimed to insert a simple log statement, but the diff also introduces new helper functions or complex conditional blocks, this is a critical tool failure.*
+In all such cases where the tool's changes significantly exceed or deviate from the precise, narrow intent, it must be treated as a tool misapplication, even if some unintended changes seem minor.
 
     #### 4.1 Generate Proposed `code_edit` Diff Text
     *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the proposed diff text).
@@ -245,7 +249,11 @@ When responding to user requests involving code analysis, planning, or modificat
                 e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
                     Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
                     i.  **Persistent Correction Failure:** Repeated attempts (e.g., >3 attempts for the same planned logical change to a specific file section, or if **2 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome without significant unintended side-effects**) to apply a *necessary and planned correction* fail.
-                    ii. **Unacceptable Original Edit Application with Failed Cleanup:** A single `edit_file` or `reapply` application, while potentially achieving the direct technical goal of the *planned change*, introduces grossly disproportionate, unintended, and disruptive modifications (e.g., new errors, significant churn, **deletion of unrelated code blocks, widespread reordering of unrelated code**) to unrelated code sections. If at least one self-correction attempt (e.g., a new `edit_file` call with a targeted plan to remove the specific unintended modifications) fails to cleanly resolve these side-effects without causing further significant issues, **OR if the *same pattern* of disruptive modification occurs on a second consecutive attempt on the same file for the same overall task,** then proceed to requesting a manual edit. The goal is to avoid lengthy, unpredictable self-correction loops on widespread unintended churn.
+                    ii. **Grossly Disproportionate or Corrupting Unintended Modifications:** If a single `edit_file` or `reapply` application, particularly for an edit with a very narrow and specific intent (e.g., adding a few specific lines, fixing a typo, simple refactoring of a small block), results in modifications that are grossly disproportionate to the intent or fundamentally corrupt the file's structure or syntax in unintended ways. This includes, but is not limited to:
+                        *   Deletion or alteration of large code blocks unrelated to the direct target of the edit.
+                        *   Widespread reordering of code.
+                        *   Introduction of syntax errors or significant logical errors into previously correct and unrelated sections of the file.
+                        If an immediate attempt to create a highly targeted `code_edit` to *only revert the unintended corruptions* (while preserving the intended change if it was partially applied correctly) also fails or leads to further significant errors, OR if the *same pattern* of disruptive modification occurs on a second consecutive attempt on the same file for the same overall task, then proceed to `Procedure: Request Manual Edit`. The goal is to avoid lengthy, unpredictable self-correction loops when the editing tool demonstrates a fundamental misunderstanding of the file structure or edit boundaries for a specific, narrow task.
                     This involves a **BLOCKER:** step.
 
     #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
@@ -341,11 +349,16 @@ When responding to user requests involving code analysis, planning, or modificat
 **`Procedure: Verify Diff`**
 *   **Purpose:** To provide a core, reusable set of checks for verifying any diff (proposed or applied) against its intended state/plan. Called by Step 4.2.1.b, `Procedure: Verify Reapply Diff`, and `Procedure: Verify Edit File Diff`.
 *   **Inputs (Conceptual):** The `diff` content, the `intent` (e.g., the plan, the state before the edit, the final intended proposal). *(Note: The specific source of the `intent` (e.g., original plan, verified proposed edit, pre-reapply file state) depends on the context from which this procedure is called (e.g., Step 4.2.1.b, `Procedure: Verify Edit File Diff`, `Procedure: Verify Reapply Diff`).)*
+*   **Note on 'Intent':** For the purpose of `Procedure: Verify Diff`, the 'intent' refers *only* to the specific, narrowly defined change planned for the immediate `code_edit` operation (as documented in Step 3 or a corrective plan). It does not include broader, implicit goals like 'general code cleanup' or 'fixing other potential issues' unless those were explicitly part of the plan for *this specific edit*. Unplanned changes, even if seemingly beneficial, are deviations.
 *   **Applicability:** **MUST** be executed during Pre-Apply Verification (Step 4.2.1.b), Post-Reapply Verification (`Procedure: Verify Reapply Diff`, Step 2), and Post-Edit File Verification (`Procedure: Verify Edit File Diff`, Step 1).
 *   **Execution Reporting:** When executing this procedure, the AI response **MUST** include an inline checklist documenting the execution and outcome of each step below.
 *   **Steps Checklist (MUST perform all relevant steps and report via inline checklist):**
-    1.  **Diff vs. Intent Match:** Compare *entire* diff line-by-line against the `intent`. Note discrepancies. *(Reminder: Address Failure Mode 1 - Ensure diff matches intent, do not assume AI generated only planned changes)*
-    2.  **Absence of Major Unintended Structural Changes:** Specifically verify that the diff does **not** include widespread deletion or reordering of code blocks unrelated to the `intent`. If such changes are present, they **MUST** be treated as critical Deviations.
+    1.  **Diff vs. Intent Match & Granular Change Analysis:** Compare the *entire* diff line-by-line against the `intent` (the specific, planned change for the current step).
+        *   `a.` **Additions:** Verify all added lines directly serve the documented `intent`.
+        *   `b.` **Modifications:** Verify all modified lines correctly implement the documented `intent` and do not introduce unintended side effects.
+        *   `c.` **Deletions:** Verify all deleted lines were *explicitly intended for deletion* as part of the current `intent`. **Treat any significant deletions not explicitly planned for the current edit step as a major deviation, even if the deleted code appears to be comments or unused. Such unplanned deletions signal a potential misinterpretation of edit boundaries by the tool or the AI.**
+        *   `d.` Note all discrepancies for handling in Step 3 (Identify Deviations).
+    2.  **Absence of Major Unintended Structural Changes:** Specifically verify that the diff does **not** include widespread deletion or reordering of code blocks unrelated to the `intent` (beyond what was noted in 1.c). If such changes are present, they **MUST** be treated as critical Deviations.
     3.  **Identify Deviations:** Explicitly list any lines added, deleted, or modified in the `diff` that were *not* part of the `intent` ("Deviations"), including any major structural changes identified in the previous step.
     4.  **Handle Deviations:** If Deviations found:
         *   **CRITICAL:** Fact-check **EVERY** Deviation using tools before accepting.
@@ -359,21 +372,21 @@ When responding to user requests involving code analysis, planning, or modificat
     10. **Integration Sanity Check:** Briefly check: Does the change logically fit? Interact correctly with adjacent code?
     11. **Report Outcome:** Conclude with the overall verification outcome (e.g., "Verified", "Verified with handled deviations", "Failed - Requires correction").
 
-   *Example Inline Checklist Output (in AI Response):*
-   ```markdown
-   **Executing `Procedure: Verify Diff`:**
-   - `[x]` 1. Diff vs. Intent Match: Verified, matches final intent.
-   - `[-]` 2. Absence of Major Unintended Structural Changes: N/A, no unintended structural changes.
-   - `[-]` 3. Identify Deviations: N/A, no deviations from intent.
-   - `[-]` 4. Handle Deviations: N/A.
-   - `[x]` 5. Dependency Verification: `Procedure: Verify Dependency Reference` executed for `import X`, Outcome: Confirmed.
-   - `[x]` 6. Semantic Spot-Check: Key logic change `Y` reviewed, confirms intended behavior.
-   - `[x]` 7. Context Line Check: Context lines appear correct.
-   - `[-]` 8. Logic Preservation Validation: N/A, no logic replacement.
-   - `[x]` 9. Root Cause Check: Confirmed diff addresses root cause Z.
-   - `[x]` 10. Integration Sanity Check: Appears to integrate correctly.
-   - **Outcome:** Verified.
-   ```
+    *Example Inline Checklist Output (in AI Response):*
+    ```markdown
+    **Executing `Procedure: Verify Diff`:**
+    - `[x]` 1. Diff vs. Intent Match: Verified, matches final intent.
+    - `[-]` 2. Absence of Major Unintended Structural Changes: N/A, no unintended structural changes.
+    - `[-]` 3. Identify Deviations: N/A, no deviations from intent.
+    - `[-]` 4. Handle Deviations: N/A.
+    - `[x]` 5. Dependency Verification: `Procedure: Verify Dependency Reference` executed for `import X`, Outcome: Confirmed.
+    - `[x]` 6. Semantic Spot-Check: Key logic change `Y` reviewed, confirms intended behavior.
+    - `[x]` 7. Context Line Check: Context lines appear correct.
+    - `[-]` 8. Logic Preservation Validation: N/A, no logic replacement.
+    - `[x]` 9. Root Cause Check: Confirmed diff addresses root cause Z.
+    - `[x]` 10. Integration Sanity Check: Appears to integrate correctly.
+    - **Outcome:** Verified.
+    ```
 
 **`Procedure: Ensure Logic Preservation`**
 *   **Purpose:** To meticulously preserve essential behavior when replacing or significantly restructuring existing logic blocks (called in Step 3.4.1.e).

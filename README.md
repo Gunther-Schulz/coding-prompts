@@ -20,12 +20,13 @@ The process guidelines instruct the AI to strictly adhere to your customized pro
 
 *   **`AI_CODING_PROCESS.md`**: The main workflow for *all* coding tasks (fixing bugs, adding features, refactoring). **Reference this most often.** (While most effective when used with your customized `PROJECT_STANDARDS.md` and `PROJECT_ARCHITECTURE.md`, it includes fallbacks if these are not yet available.)
     *   *Use:* `@AI_CODING_PROCESS.md Refactor this function...`
-*   **`PLAN_WRITING_PROCESS.md`**: A specific process for when you ask the AI to *create a plan* before coding.
+*   **`PLAN_WRITING_PROCESS.md`**: A specific process for when you ask the AI to *create a plan* before coding. **(Note: Currently `Component Status: Alpha` - undergoing refinement to improve robustness of generated plans. See `KNOWN_ISSUES.md`.)**
     *   *Use:* `@PLAN_WRITING_PROCESS.md Create a plan to add OAuth...`
 *   **`PROJECT_STANDARDS.md` (❗ MUST CUSTOMIZE)**: Defines *your* project's core principles, coding style, testing approach, etc. The AI **must** follow these. (Usually referenced automatically by the process documents). **See `example_supporting_documents/` for a template.**
 *   **`PROJECT_ARCHITECTURE.md` (❗ MUST CUSTOMIZE)**: Describes *your* project's specific architecture, patterns, libraries, and directory structure. The AI **must** follow this. (Usually referenced automatically by the process documents). **See `example_supporting_documents/` for a template.**
 *   **`learning_resources/` (Directory)**: Contains supplementary materials like `ai_failure_modes.md` and `ai_plan_writing_pitfalls.md`. These offer deeper dives into AI interaction patterns, common pitfalls, and best practices that have shaped this framework's design. Essential for understanding the *why* behind the process guidelines.
 *   **`FRAMEWORK_CHANGELOG.md`**: Tracks updates made to the process documents themselves.
+*   **`KNOWN_ISSUES.md`**: Lists known shortcomings or areas for improvement in the framework's process documents.
 
 ## Getting Started
 
