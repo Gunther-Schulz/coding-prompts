@@ -276,19 +276,30 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Applicability:** **MUST** be performed **immediately** after stating any assumption during Planning (Step 3.4.1.b) that impacts the proposed plan or edit.
 *   **Steps (MUST perform IMMEDIATELY after stating assumption):**
     1.  **Detail Verification Method:** State specific method(s) (`read_file`, `grep_search`, docs review, etc.).
-    2.  **Execute Verification & Report:** Perform verification. **MUST** report outcome structured:
+    2.  **Execute Verification & Report:** Perform verification. **MUST** report outcome using the structured format below. **When Step 3.4.1.b requires verifying multiple hypotheses, each complete hypothesis verification block (Hypothesis, Method, Execution, Outcome) SHOULD be presented as an item in a list (e.g., a bullet point or numbered item) for improved readability. The sub-details (Method, Execution, Outcome) MAY be indented under their respective Hypothesis statement.**
         ```markdown
         **Hypothesis:** [State assumption]
         **Verification Method:** [Tool/Method]
         **Verification Execution:** [Action, e.g., Performing `read_file`...]
         **Verification Outcome:** [Confirmed: [Details] / Failed: [Details]]
         ```
-        *Example Outcome Report:*
+        *Example Outcome Report (Single Hypothesis):*
         ```markdown
         **Hypothesis:** External API `GET /items/{id}` returns `itemName` field.
         **Verification Method:** `read_file` on `docs/api_spec.v2.json`
         **Verification Execution:** Reading API spec file...
         **Verification Outcome:** Confirmed: Spec shows `itemName` present in response schema.
+        ```
+        *Example Outcome Report (Multiple Hypotheses, demonstrating suggested list format):*
+        ```markdown
+        - **Hypothesis:** [First assumption stated here]
+          - **Verification Method:** [Method for first hypothesis]
+          - **Verification Execution:** [Details of executing verification for first hypothesis]
+          - **Verification Outcome:** [Outcome for first hypothesis]
+        - **Hypothesis:** [Second assumption stated here]
+          - **Verification Method:** [Method for second hypothesis]
+          - **Verification Execution:** [Details of executing verification for second hypothesis]
+          - **Verification Outcome:** [Outcome for second hypothesis]
         ```
     3.  **Proceed or Halt:** Only proceed if Outcome is 'Confirmed'. If 'Failed', plan **MUST** be revised/halted. *(Reminder: Address Failure Mode 2 - Base decisions on verified facts, not assumptions or general patterns.)*
 
