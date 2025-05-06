@@ -24,7 +24,7 @@ Past failures in planning have often stemmed from:
 
 **Goal:** To improve plan quality by incorporating rigorous upfront analysis of the codebase, standards, and potential dependencies, minimizing errors during subsequent implementation.
 
-**Version: 1.7** (Strengthened codebase analysis guidance: Added explicit step to "Follow Initial Leads" (1.3.d). Mandated broader searches for common functionality if initial survey fails (2.3). Added "Holistic Codebase Understanding" guiding principle to Phase 2. Refined "Prioritize Specific Code" principle. Added "Sufficiency of Analysis Depth Assessment" to planning summary (2.12).)
+**Framework Component Version: Belongs to AI Collaboration Framework v2.0. See FRAMEWORK_CHANGELOG.md for detailed history.**
 
 ---
 

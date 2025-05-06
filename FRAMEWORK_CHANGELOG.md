@@ -1,6 +1,24 @@
-# Framework Changelog
+# AI Collaboration Framework Changelog
 
-**(Note for AI Assistant: Use `date +%F` for current date. Always specify affected document and its version.)**
+**(Note for AI Assistant: Use `date +%F` for current date. Future entries will list changed documents under the Framework Version.)**
+
+---
+
+## Framework v2.0 - 2025-05-06
+
+### AI_CODING_PROCESS.md
+    *   No direct changes to process content. Document now refers to Framework Version (effectively rolling in v1.54).
+
+### PLAN_WRITING_PROCESS.md
+    *   No direct changes to process content. Document now refers to Framework Version (effectively rolling in v1.7).
+
+**Overall Goal/Theme of this Framework Update:** Unification of versioning for all process documents under a single framework version. Introduction of new changelog structure to reflect framework-level updates.
+
+---
+
+## Previous Individual Document Changelog (Historical - Pre-Framework v2.0)
+
+**(This section preserves the history before unified versioning. New changes go under the unified Framework Version headings above.)**
 
 ## 2025-05-06
 
