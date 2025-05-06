@@ -141,8 +141,10 @@ When responding to user requests involving code analysis, planning, or modificat
     *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content.
         *   Ensure `instructions` are explicit (add vs. modify/replace).
         *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring.
+        *   This step ONLY involves formulating the `code_edit` text content. You **MUST NOT** call `edit_file` or `reapply` during this step. Application occurs *only* in Step 4.3 after successful verification in Step 4.2.
 
     #### 4.2 Pre-Apply Verification (Mandatory Before 4.3)
+    *   The following verification steps **MUST** be successfully completed and reported *before* proceeding to Step 4.3 (Apply Edit).
     *   **Purpose:** To meticulously scrutinize the *proposed `code_edit` diff* against the verified plan *before* calling the `edit_file` tool.
     *   **Mandate:** **DO NOT SKIP OR RUSH.** Treat proposed diffs skeptically.
     *   **Action:** Perform the following checks on the generated `code_edit` from 4.1:
@@ -157,8 +159,8 @@ When responding to user requests involving code analysis, planning, or modificat
             *   *Example (Deviation Handling): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on proposed edit against plan (Outcome: Verified, deviations handled - reported in `Procedure: Handle Deviation`). Key assumption 'Model Y' verified (Outcome: Confirmed). Logic Preservation: N/A. Proceeding to Apply Edit (4.3)."*
 
     #### 4.3 Apply Edit (After Successful 4.2)
-    *   **Action:** Call the edit tool.
-        *   `4.3.1 Apply Edit Tool:` (e.g., Call `edit_file` or `reapply`)
+    *   **Action:**
+        *   `4.3.1 Apply Edit Tool:` Call the edit tool **only after successful completion and reporting of Step 4.2 Pre-Apply Verification**. (e.g., Call `edit_file` or `reapply`)
 
     #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
     *   **Purpose:** To meticulously verify the *actual diff applied* by the tool (`edit_file` or `reapply`) and check for side effects.
