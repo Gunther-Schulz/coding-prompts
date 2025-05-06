@@ -145,7 +145,7 @@ When responding to user requests involving code analysis, planning, or modificat
             *   *Why it's before 'Apply Edit' and mandatory:* To catch and rectify any deviations, errors, or misunderstandings in the *proposed code itself* prior to its integration into the actual codebase. This is a critical preventive checkpoint to avoid applying flawed or incomplete edits.
         *   **4.3 Apply Edit (After Successful 4.2):**
             *   **MUST** explicitly state that the edit is about to be applied before calling the tool. *Example: "**Step 4.3: Apply Edit:** Now applying the verified edit to `[target_file]`."*
-            *   `4.3.1 Apply Edit Tool:` Call the edit tool **only after successful completion and reporting of Step 4.2 Pre-Apply Verification and after making the announcement above**. (e.g., Call `edit_file` or `reapply`)
+            *   4.3.1 Apply Edit Tool: Call the edit tool **only after successful completion and reporting of Step 4.2 Pre-Apply Verification and after making the announcement above**. (e.g., Call `edit_file` or `reapply`)
         *   **4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result):** Following the execution of the edit tool, this step meticulously verifies the *actual diff applied* to the file. It confirms that the tool correctly implemented the verified proposal from 4.2 and checks for any unexpected side-effects or discrepancies introduced by the tool itself.
             *   *Why it's after 'Apply Edit' and mandatory:* Edit tools may not always apply changes perfectly as specified. This step is essential to confirm that the *result in the file* accurately reflects the intended, verified change and to detect any tool-induced errors or incomplete applications.
         *   **4.5 Generate Post-Action Verification Summary:** This concluding step for the cycle involves creating a structured summary that documents the successful completion and outcomes of all preceding verification actions (4.2, 4.4) for the applied edit.
@@ -179,30 +179,30 @@ When responding to user requests involving code analysis, planning, or modificat
     #### 4.3 Apply Edit (After Successful 4.2)
     *   **Action:**
         *   **MUST** explicitly state that the edit is about to be applied before calling the tool. *Example: "**Step 4.3: Apply Edit:** Now applying the verified edit to `[target_file]`."*
-        *   `4.3.1 Apply Edit Tool:` Call the edit tool **only after successful completion and reporting of Step 4.2 Pre-Apply Verification and after making the announcement above**. (e.g., Call `edit_file` or `reapply`)
+        *   `4.3.1` Apply Edit Tool: Call the edit tool **only after successful completion and reporting of Step 4.2 Pre-Apply Verification and after making the announcement above**. (e.g., Call `edit_file` or `reapply`)
 
     #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
     *   **Purpose:** To meticulously verify the *actual diff applied* by the tool (`edit_file` or `reapply`) and check for side effects.
     *   **Action:** After a successful `edit_file` or `reapply` call result, explicitly check **and report the outcome of each** of the following:
 
         `4.4.1` **Verify Edit Application:**
-            *   `a. Post-Reapply Verification:** **CRITICAL:** If modification resulted from `reapply`:
+            *   `a. Post-Reapply Verification:` ** **CRITICAL:** If modification resulted from `reapply`:
                 *   **Perform `Procedure: Verify Reapply Diff` (Section 5)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
-            *   `b. Post-edit_file Verification:** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
+            *   `b. Post-edit_file Verification:` ** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
                 *   **WARNING:** Treat Diff Output with Extreme Skepticism.
                 *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
-            *   `c. No Introduced Redundancy:** Check for duplicate logic, unnecessary checks, redundant mappings. Remove if found.
+            *   `c. No Introduced Redundancy:` ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
 
-        `4.4.2` **Check for Leftover Code & Dependencies:**
-            *   `a. Confirm Absence of Leftover Code/Comments:** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
-            *   `b. Verify Downstream Consumers & Cleanup:**
+        `4.4.2` **Check for Leftover Code & Dependencies:
+            *   `a. Confirm Absence of Leftover Code/Comments:` ** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
+            *   `b. Verify Downstream Consumers & Cleanup:`
                 i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, **trigger self-correction (4.4.3)**.
                 ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST trigger self-correction (4.4.3)**.
                 iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
 
         `4.4.3` **Self-Correct if Necessary:**
-            *   `a. Trigger:** If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues. Also triggered by specific missed mandatory steps (see below).
-            *   `b. Action:**
+            *   `a.` Trigger:** If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues. Also triggered by specific missed mandatory steps (see below).
+            *   `b.` Action:**
                 i.  **STOP** proceeding with flawed logic/state. State the issue discovered.
                 ii. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch.").
                 iii.**Triggers for Self-Correction (STOP and Address):**
@@ -216,8 +216,8 @@ When responding to user requests involving code analysis, planning, or modificat
                 v.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts for the same planned logical change to a specific file section, or if 3 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome) before triggering this escalation. **This involves a **BLOCKER:** step.**
 
     #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
-    *   `a. Trigger:** Immediately following the *final* successful verification (Step 4.4) for the task's edits.
-    *   `b. Action:** **MUST** generate a **Post-Action Verification Summary**. Confirms post-apply checks were **performed and documented**. Structure using the following format. Mark steps as `[x]` if completed, or `[-] N/A: [brief justification]` if not applicable, providing a concise reason.
+    *   `a.` Trigger:** Immediately following the *final* successful verification (Step 4.4) for the task's edits.
+    *   `b.` Action:** **MUST** generate a **Post-Action Verification Summary**. Confirms post-apply checks were **performed and documented**. Structure using the following format. Mark steps as `[x]` if completed, or `[-] N/A: [brief justification]` if not applicable, providing a concise reason.
         ```markdown
         **Post-Action Verification Summary:**
         - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.4.1.a (if `reapply`), **4.4.1.b (via `Procedure: Verify Edit File Diff`, Section 5)**, 4.4.1.c (redundancy) done. State: 'Applied diff matches final intent.' OR 'Applied diff discrepancies: [List/Justification].'.]*
