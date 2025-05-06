@@ -147,7 +147,7 @@ When responding to user requests involving code analysis, planning, or modificat
             *   `a.` **Announce Intent to Edit:** First, **MUST** explicitly state that the edit is about to be applied. *Example: "**Step 4.3: Apply Edit:** Now applying the verified edit to `[target_file]`."*
             *   `b.` **Call Edit Tool:** Second, as the immediate continuation of the announcement from sub-step 'a' (and within the same complete AI response turn), you **MUST** generate the call to the appropriate edit tool (e.g., `edit_file` or `reapply`). This tool call is only to be made after successful completion and reporting of Step 4.2 Pre-Apply Verification. Step 4.3 is considered complete only after the tool call has been generated.
         *   **4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result):** Following the execution of the edit tool, this step meticulously verifies the *actual diff applied* to the file. It confirms that the tool correctly implemented the verified proposal from 4.2 and checks for any unexpected side-effects or discrepancies introduced by the tool itself.
-            *   *Example (Deviation Handling): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on proposed edit against plan (Outcome: Verified, deviations handled - reported in `Procedure: Handle Deviation`). Key assumption 'Model Y' verified (Outcome: Confirmed). Logic Preservation: N/A. Proceeding to Apply Edit (4.3)."*
+            *   *Why it's after 'Apply Edit' and mandatory:* Edit tools may not always apply changes perfectly as specified. This step is essential to confirm that the *result in the file* accurately reflects the intended, verified change and to detect any tool-induced errors or incomplete applications.
         *   **4.5 Generate Post-Action Verification Summary:** This concluding step for the cycle involves creating a structured summary that documents the successful completion and outcomes of all preceding verification actions (4.2, 4.4) for the applied edit.
             *   *Why it's the final part of the cycle for an edit and mandatory:* This provides a clear, auditable record confirming that the entire verification process was diligently followed for the specific change. It serves as a final quality gate and proof of adherence before considering the edit cycle for that task complete.
 
@@ -182,7 +182,7 @@ When responding to user requests involving code analysis, planning, or modificat
         *   `b.` **Call Edit Tool:** Second, as the immediate continuation of the announcement from sub-step 'a' (and within the same complete AI response turn), you **MUST** generate the call to the appropriate edit tool (e.g., `edit_file` or `reapply`). This tool call is only to be made after successful completion and reporting of Step 4.2 Pre-Apply Verification. Step 4.3 is considered complete only after the tool call has been generated.
 
     #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
-    *   **Purpose:** To meticulously verify the *actual diff applied* by the tool (`edit_file` or `reapply`) and check for side effects.
+    *   **Purpose:** To meticulously verify the *actual diff applied* to the file.
     *   **Action:** After a successful `edit_file` or `reapply` call result, explicitly check **and report the outcome of each** of the following:
 
         `4.4.1` **Verify Edit Application:**
