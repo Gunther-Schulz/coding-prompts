@@ -1,6 +1,43 @@
-# AI Collaboration Framework Changelog
-
 **(Note for AI Assistant: Use `date +%F` for current date. Future entries will list changed documents under the Framework Version.)**
+
+---
+
+## Framework v2.4 - 2025-05-07
+
+### PLAN_WRITING_PROCESS.md
+    *   Updated `Framework Component Version` to `v2.4`.
+    *   Added new **Step 0.1: Document Maturity & Alpha Status Acknowledgment**. This step requires explicit user confirmation to proceed if the `PLAN_WRITING_PROCESS.md` is marked with `Component Status: Alpha`.
+
+**Overall Goal/Theme of this Framework Update:** Improve user awareness and consent when utilizing process documents marked with a non-stable (e.g., Alpha) status.
+
+---
+
+## Framework v2.3 - 2025-05-07
+
+### PLAN_WRITING_PROCESS.md
+    *   Updated `Framework Component Version` to `v2.3`.
+    *   Added `Component Status: Alpha` to clearly indicate its current maturity level.
+
+**Overall Goal/Theme of this Framework Update:** Enhance clarity of individual process document maturity within the unified framework versioning system.
+
+---
+
+## Framework v2.2 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/AI_CODING_PROCESS.md`
+
+**Summary of Changes:**
+Enhanced AI's self-verification procedures for code edits, particularly concerning unintended modifications by editing tools. Improved guidelines for diff scrutiny, escalation for severe tool errors, and clarity of critical warnings.
+
+**Detailed Changes to `coding-prompts/AI_CODING_PROCESS.md`:**
+
+1.  **Enhanced `Procedure: Verify Diff`:** Clarified 'intent' scope, mandated granular analysis of additions/modifications/deletions against specific intent, and emphasized treating unplanned deletions as major deviations. Restored full 11-point checklist.
+2.  **Refined Trigger for `Procedure: Request Manual Edit`:** Broadened the "Grossly Disproportionate Modifications" condition to cover more general file corruption scenarios and refined self-correction attempts before escalation.
+3.  **Improved "CRITICAL WARNING" (Step 4):** Replaced single lengthy example with three varied, shorter examples illustrating tool misapplication, plus a reinforcing conclusion.
+
+**Reason for Changes:**
+To improve AI rigor in verifying diffs and handling tool errors, driven by experiences with unintended `edit_file` modifications. Aims for clearer guidelines and more impactful warnings.
 
 ---
 
