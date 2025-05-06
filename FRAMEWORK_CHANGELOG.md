@@ -4,6 +4,11 @@
 
 ## 2025-05-06
 
+*   **[AI_CODING_PROCESS.md v1.53]** Added Principle for Proactive Context Gathering:
+    *   Introduced a new principle "Proactive Context Gathering for Robustness" to the "Core Principles & Critical Checks Summary" section.
+    *   This principle encourages the AI to proactively favor obtaining more comprehensive file context (e.g., via `read_file` with `should_read_entire_file=True` when feasible) over relying on minimal partial views, especially for key files, to enhance understanding and reduce risks from incomplete context.
+    *   Goal: Further improve the robustness of AI-assisted coding by promoting fuller situational awareness during planning and execution.
+
 *   **[AI_CODING_PROCESS.md v1.52]** Enhanced Guidance on Sufficient File Context:
     *   Strengthened Step 3.0 ("Assess Target File Complexity") to more explicitly guide the AI to obtain fuller file context (e.g., by requesting from user or using `should_read_entire_file=True`) when initial partial reads of complex/central files prove insufficient for confident planning and editing.
     *   Added a clarifying sentence to Step 3.3 ("Check 'Work with Facts'") to reinforce the general principle that file content used for planning must be sufficiently complete to avoid guesswork, prompting clarification or more data if partial views are ambiguous.

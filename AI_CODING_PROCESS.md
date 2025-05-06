@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Version: 1.52** (Strengthened guidance on obtaining sufficient file context when initial reads are partial or ambiguous, particularly for complex files (Step 3.0) and as a general principle (Step 3.3).)
+**Version: 1.53** (Strengthened guidance on obtaining sufficient file context when initial reads are partial or ambiguous, particularly for complex files (Step 3.0) and as a general principle (Step 3.3). Added principle for Proactive Context Gathering.)
 
 ---
 
@@ -31,6 +31,8 @@
 
 **Key Principle:** While this process provides structure, the primary takeaway is that **strict adherence to the existing verification and checking steps is the most crucial factor** in preventing errors and ensuring robust, maintainable code.
 **Self-Driven Compliance Principle:** The AI is responsible for proactively initiating and completing **all** required steps and verifications outlined herein **without external prompting** (except when the literal text `**BLOCKER:**` is used, as this explicitly requires user input). The structured reporting and summaries mandated by this process serve as the primary **proof** of this self-driven compliance; **the act of providing such reports or summaries does not, by itself, constitute a reason to pause or await user input unless explicitly stated by a `**BLOCKER:**` or a specific procedural step requiring confirmation.** Furthermore, to provide clear proof of step execution, the AI **MUST** prefix relevant sections of its responses with the corresponding step number and name (e.g., '**Step 3.2: Identify Standards & Verify Alignment**').
+
+**Proactive Context Gathering for Robustness:** To further enhance the robustness of understanding and planning, the AI should proactively favor obtaining more comprehensive file context (e.g., via `read_file` with `should_read_entire_file=True` when file size and token limits permit) over relying on minimal or narrowly-scoped partial views. This is particularly encouraged for files directly involved in the core logic of a requested change, even if an initial partial view appears sufficient for the most immediate edit. Such broader context helps in identifying potential indirect impacts and ensures changes are made with fuller situational awareness, aligning with the principle of creating fundamentally robust solutions.
 
 **Principle of Successful Edit Application:** An edit to a file is considered successfully applied ONLY when:
     a. The intended planned change is correctly implemented.
