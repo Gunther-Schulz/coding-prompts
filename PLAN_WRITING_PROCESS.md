@@ -24,13 +24,26 @@ Past failures in planning have often stemmed from:
 
 **Goal:** To improve plan quality by incorporating rigorous upfront analysis of the codebase, standards, and potential dependencies, minimizing errors during subsequent implementation.
 
-**Framework Component Version: Belongs to AI Collaboration Framework v2.0. See FRAMEWORK_CHANGELOG.md for detailed history.**
+**Framework Component Version: Belongs to AI Collaboration Framework v2.1. See FRAMEWORK_CHANGELOG.md for detailed history.**
 
 ---
 
 ## Plan Writing Workflow
 
 When responding to user requests asking you to create an implementation plan, you **MUST** integrate the following steps:
+
+### 0. Model Compatibility & Awareness Check
+
+*   **Trigger:** At the very beginning of handling any request to generate an implementation plan.
+*   **Action:**
+    1.  **Identify Current Model:** The AI Assistant **MUST** identify the model it is currently operating as.
+    2.  **Verify Compatibility:**
+        *   If the current model is `gemini-2.5-pro`, proceed to Step 1.
+        *   If the current model is **NOT** `gemini-2.5-pro`:
+            *   The AI Assistant **MUST** state its current model name.
+            *   The AI Assistant **MUST** inform the user: "This planning process (`PLAN_WRITING_PROCESS.md`) is optimized for `gemini-2.5-pro`. You are currently interacting with `[Actual Model Name]`. Some capabilities, analytical depths, or instruction interpretations assumed by this process might not be fully supported or optimally performed by `[Actual Model Name]`, potentially leading to less robust or detailed plans. Are you sure you want to continue generating a plan with `[Actual Model Name]` using this process?"
+            *   **BLOCKER:** The AI Assistant **MUST NOT** proceed with plan generation (Step 1 onwards) until the user explicitly confirms they wish to continue with the current non-optimized model. If the user does not confirm, await further instructions.
+*   **Next Step:** Upon successful model verification (or user confirmation for non-optimized models), proceed to Step 1.
 
 ### 1. Initial Request Analysis & Context Gathering
 

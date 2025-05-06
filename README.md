@@ -9,7 +9,7 @@ AI coding assistants are powerful, but sometimes they make mistakes:
 
 ## Solution: A Framework for Better AI Collaboration
 
-This repository provides a framework to help AI assistants (especially in Cursor) work more reliably and consistently. The core components are:
+This repository provides a framework to help AI assistants (especially in Cursor, and designed to work with models like gemini-2.5-pro) work more reliably and consistently. The core components are:
 
 *   **Process Guidelines (e.g., `AI_CODING_PROCESS.md`, `PLAN_WRITING_PROCESS.md`):** These define mandatory workflows for the AI, including checklists for analysis, planning, and verification *before* making changes. This helps catch errors early.
 *   **Project-Specific Documents (❗ `PROJECT_STANDARDS.md`, `PROJECT_ARCHITECTURE.md`):** You **MUST CUSTOMIZE** these using the provided templates. They define your project's unique coding styles, architectural patterns, and operational rules.

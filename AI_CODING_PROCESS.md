@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Framework Component Version: Belongs to AI Collaboration Framework v2.0. See FRAMEWORK_CHANGELOG.md for detailed history.**
+**Framework Component Version: Belongs to AI Collaboration Framework v2.1. See FRAMEWORK_CHANGELOG.md for detailed history.**
 
 ---
 
@@ -14,6 +14,7 @@
 1.  [Introduction & Goal](#ai-assistant---standard-coding-process)
 2.  [Core Principles & Critical Checks Summary](#core-principles--critical-checks-summary)
 3.  [General Coding Workflow](#general-coding-workflow)
+    *   [Step 0: Model Compatibility & Awareness Check](#0-model-compatibility--awareness-check)
     *   [Step 1: Confirm Standards Awareness](#1-confirm-standards-awareness-initial-step)
     *   [Step 2: Confirm Goal](#2-confirm-goal-recommended)
     *   [Step 3: Pre-computation Standards Check (Planning)](#3-pre-computation-standards-check-planning-phase)
@@ -57,6 +58,19 @@ A superficial approach to codebase analysis that results in poor integration, du
 ## General Coding Workflow
 
 When responding to user requests involving code analysis, planning, or modification, you **MUST** integrate the following steps **and explicitly report their execution and outcome in your responses**:
+
+### 0. Model Compatibility & Awareness Check
+
+*   **Trigger:** At the very beginning of handling any coding-related request.
+*   **Action:**
+    1.  **Identify Current Model:** The AI Assistant **MUST** identify the model it is currently operating as.
+    2.  **Verify Compatibility:**
+        *   If the current model is `gemini-2.5-pro`, proceed to Step 1.
+        *   If the current model is **NOT** `gemini-2.5-pro`:
+            *   The AI Assistant **MUST** state its current model name.
+            *   The AI Assistant **MUST** inform the user: "This coding process (`AI_CODING_PROCESS.md`) is optimized for `gemini-2.5-pro`. You are currently interacting with `[Actual Model Name]`. Some capabilities, verification rigor, or complex instruction interpretations assumed by this process might not be fully supported or optimally performed by `[Actual Model Name]`, potentially leading to suboptimal code, errors, or process deviations. Are you sure you want to continue with `[Actual Model Name]` using this process?"
+            *   **BLOCKER:** The AI Assistant **MUST NOT** proceed with the coding workflow (Step 1 onwards) until the user explicitly confirms they wish to continue with the current non-optimized model. If the user does not confirm, await further instructions.
+*   **Next Step:** Upon successful model verification (or user confirmation for non-optimized models), proceed to Step 1.
 
 ### 1. Confirm Standards Awareness (Initial Step)
 
