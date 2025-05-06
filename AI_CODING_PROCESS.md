@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Framework Component Version: Belongs to AI Collaboration Framework v2.2. See FRAMEWORK_CHANGELOG.md for detailed history.**
+**Framework Component Version: Belongs to AI Collaboration Framework v2.5. See FRAMEWORK_CHANGELOG.md for detailed history.**
 
 ---
 
@@ -85,12 +85,21 @@ When responding to user requests involving code analysis, planning, or modificat
 
 ### 3. Pre-computation Standards Check (Planning Phase)
 
-**3.0. Assess Target File Complexity (Initial Check):** If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), or a file previously identified as complex or sensitive to edits, or if an initial partial file read (e.g., from `read_file` without `should_read_entire_file=True`) **proves insufficient to confidently locate all necessary code sections for planning and executing the required change (e.g., exact lines for deletion/modification, precise insertion points for new code):**
-    *   **Action:** State this observation and the specific information gap. **Unless the remaining necessary context can be obtained through highly targeted and reliable means (e.g., a `grep_search` for a unique anchor string known to be near the area of interest), the AI MUST prioritize obtaining a more complete view of the file.** This typically involves:
-        a.  Requesting the user to provide the full file content or relevant missing sections.
-        b.  If user interaction is not immediately feasible and the file is critical for the task, using `read_file` with `should_read_entire_file=True` (if permissible by token limits and file size considerations for that tool).
-    *   Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny based on the complete information.
-    *   *Example: "Observing that `app.py` is a central CLI configuration file. The initial partial read does not show the command registration section needed for this change. To proceed accurately, I need to see the full content of this file or the section containing command registrations. Requesting full file content."*
+**3.0. Assess Target File Complexity & Ensure Sufficient Context (Initial Check):**
+If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), or a file previously identified as complex or sensitive to edits, OR if an initial partial file read (e.g., from `read_file` without `should_read_entire_file=True`) proves insufficient to confidently locate all necessary code sections for planning and executing the required change:
+    *   **Action:** The AI **MUST** prioritize obtaining a complete and sufficient view of the target file before proceeding with detailed planning or edit generation for that file. The following sequence **MUST** be followed:
+        1.  **Attempt Full File Read:** The AI **SHOULD** first attempt to obtain the full file content using `read_file` with `should_read_entire_file=True`. (Note: Per tool constraints, reading entire files is generally only allowed if it has been edited or manually attached by the user. The AI should be mindful of this constraint when deciding to use this option).
+        2.  **Handle Incomplete Full Read Attempt:** If the `read_file` attempt in Step 3.0.Action.1:
+            *   Explicitly indicates that only a partial file is being returned (e.g., "File is not in the list of files that have been manually attached... Showing the first few lines instead."), OR
+            *   Fails for other reasons preventing a full read (e.g., tool error, file not found, exceeding size/line limits for full reads if applicable), OR
+            *   The AI still deems the returned content insufficient for the task despite `should_read_entire_file=True` having been attempted.
+            Then, the AI **MUST** take the following steps:
+            a.  Clearly state the situation (e.g., "Attempted to read the full content of `[filename]`, but only partial/no content was provided because [reason given by tool / content still insufficient].").
+            b.  **Request the user to provide the full file content** or the specific missing sections critical for the task.
+            c.  **BLOCKER:** The AI **MUST NOT** proceed with planning or generating edits for this file based on the incomplete information if a complete view was deemed necessary. It **MUST** await the user's provision of the file content OR explicit instruction from the user to proceed with caution using only the partial information (if the AI believes this *might* be feasible but carries risk, it should state this risk when asking for confirmation to proceed).
+        3.  **Alternative (Use with Extreme Caution and Explicit Justification):** Only if highly targeted and reliable means (e.g., a `grep_search` for a *unique and unambiguous* anchor string known to be immediately adjacent to *all* areas of interest) can *definitively and completely substitute* for a full file view for the specific task, and this is demonstrably less risky than proceeding with partial information after a failed full read attempt (and subsequent user request as per 3.0.Action.2.b), may this be considered. This path requires explicit justification by the AI, detailing why this alternative is sufficient and safe for the given task, and should be exceptionally rare for complex changes in critical files.
+    *   Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny based on the (ideally complete) information obtained.
+    *   *Example (after failed full read attempt): "Attempted to read the full content of `app.py` using `should_read_entire_file=True`, but only partial content was provided because the file was not on the pre-approved list for full reads. To accurately refactor the CLI structure as planned, which involves verifying all existing command registrations and ensuring correct placement of new ones, I need the complete content of this central configuration file. Please provide the full content of `src/beat_the_books/cli/app.py`."*
 
 **NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
 
