@@ -4,6 +4,20 @@
 
 ## 2025-05-06
 
+*   **[AI_CODING_PROCESS.md v1.51]** Enhanced Robustness for Complex Edits & Tool Failures:
+    *   Added Step 3.0 (Assess Target File Complexity) to mandate heightened scrutiny and proactive full file reads for critical/complex files from the outset of planning.
+    *   Updated Step 3.8.b (Sufficient Context) and Step 4.1 (Generate Proposed `code_edit`) to require more precise context, unique anchors, and explicit `instructions` on unchangeable sections when dealing with sensitive or previously mis-edited files.
+    *   Revised Step 4.4.3.b.e (Self-Correction for Tool Failure) to accelerate escalation to `Procedure: Request Manual Edit` after fewer failed attempts (2 instead of 3) or if the same pattern of disruptive modification occurs on a second attempt.
+    *   Incorporated a new explicit check into `Procedure: Verify Diff` (Section 4) to verify the absence of major unintended structural changes (widespread deletions/reordering) as a critical deviation.
+    *   Expanded `Procedure: Handle Failed Verification for Existing Dependency` (Section 5) with detailed investigative steps (usage check in referencing file, broader context search) before deciding on a course of action, based on details from v1.34 of the process.
+    *   Corrected an issue where `Procedure: Verify Reapply Diff`, `Procedure: Verify Edit File Diff`, and `Procedure: Request Manual Edit` were inadvertently deleted from Section 5 during a previous automated edit (User reverted this part manually, AI confirmed). (Self-correction from prior turn)
+
+*   **[AI_CODING_PROCESS.md v1.50]** Added Deferred Observations & Principle of Success:
+    *   Added optional Step 6 ("Summarize Deferred Observations") to capture out-of-scope findings.
+    *   Added "Principle of Successful Edit Application" definition in Core Principles section.
+    *   Refined rules for "Autonomous Execution and Turn Management for Steps 4.1 to 4.3" (later superseded by v1.51 changes to remove optional pause).
+    *   General wording refinements to combat superficial execution.
+
 *   **[PLAN_WRITING_PROCESS.md v1.3]** Structural improvements & path correction:
     *   Broke down Step 1.3 (Read/Analyze State) into sub-steps (1.3.a, 1.3.b, 1.3.c).
     *   Grouped mandate/reminder blocks at the start of Phase 2.
@@ -29,14 +43,6 @@
     *   Goal: Further reduce the likelihood of applicable steps being skipped unintentionally by enforcing conscious justification and clarifying trigger conditions.
 
 *   **[README.md]** Updated references after deleting `ai_failure_modes.md` and `AI_CODING_PROCESS_CONFIRM_ADDENDUM.md`, clarified example docs.
-
-*   **[AI_CODING_PROCESS.md v1.51]** Enhanced Robustness for Complex Edits & Tool Failures:
-    *   Added Step 3.0 (Assess Target File Complexity) to mandate heightened scrutiny and proactive full file reads for critical/complex files from the outset of planning.
-    *   Updated Step 3.8.b (Sufficient Context) and Step 4.1 (Generate Proposed `code_edit`) to require more precise context, unique anchors, and explicit `instructions` on unchangeable sections when dealing with sensitive or previously mis-edited files.
-    *   Revised Step 4.4.3.b.e (Self-Correction for Tool Failure) to accelerate escalation to `Procedure: Request Manual Edit` after fewer failed attempts (2 instead of 3) or if the same pattern of disruptive modification occurs on a second attempt.
-    *   Incorporated a new explicit check into `Procedure: Verify Diff` (Section 4) to verify the absence of major unintended structural changes (widespread deletions/reordering) as a critical deviation.
-    *   Expanded `Procedure: Handle Failed Verification for Existing Dependency` (Section 5) with detailed investigative steps (usage check in referencing file, broader context search) before deciding on a course of action, based on details from v1.34 of the process.
-    *   Corrected an issue where `Procedure: Verify Reapply Diff`, `Procedure: Verify Edit File Diff`, and `Procedure: Request Manual Edit` were inadvertently deleted from Section 5 during a previous automated edit (User reverted this part manually, AI confirmed). (Self-correction from prior turn)
 
 ## 2025-05-05
 
