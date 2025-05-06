@@ -139,50 +139,7 @@ When responding to user requests involving code analysis, planning, or modificat
     *   The sub-steps within this section (4.1 through 4.5, corresponding to the Core Cycle) **MUST** be executed sequentially in their presented numerical order for each file being modified. No sub-step may be skipped or reordered during the processing of a file.
     *   **Autonomous Execution Reminder:** All non-BLOCKER sub-steps (4.1 through 4.5) for a given file are to be executed autonomously and continuously as part of a single, comprehensive AI response turn dedicated to that file's modification cycle. Reporting and verification are integral to this continuous flow. **Do not pause for user input during this per-file cycle** unless a sub-step explicitly states it is a `**BLOCKER:**` or specifically requires asking for user confirmation (e.g., Step 2, or procedures in Section 5 that explicitly call for halting and user input).
     *   **Application to Multi-File Changes:** When a single user request or task necessitates changes to multiple files, this entire [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize] cycle (Steps 4.1 through 4.5) **MUST** be fully completed for one individual file *before* commencing Step 4.1 (Generate Proposed `code_edit` Diff Text) for any subsequent file involved in the same task. This per-file atomicity ensures that each modification is applied and verified against a consistent and up-to-date state of the codebase.
-*   **Rationale for Sequential and Mandatory Execution:** Each step in this cycle (4.1 through 4.5) logically builds upon the successful and verified completion of the preceding one. This strict order is paramount for systematically preventing errors, ensuring that all changes meticulously align with the verified plan, and proactively maintaining the integrity and quality of the codebase. All five sub-steps are mandatory to form a comprehensive verification loop around every code modification:
-        *   **4.1 Generate Proposed `code_edit` Diff Text:** This initial phase involves formulating the precise `code_edit` content based on the established and verified plan from Step 3.
-            *   *Why it's first and mandatory:* A proposed change must be clearly defined before any verification or application can occur. This step translates the plan into a concrete, reviewable artifact.
-        *   **4.2 Pre-Apply Verification:** This crucial step involves a meticulous examination of the *proposed `code_edit` diff* against the verified plan *before* calling the `edit_file` tool. It ensures the proposed changes align with the plan and are free of obvious errors or unintended modifications.
-            *   *Why it's before 'Apply Edit' and mandatory:* To catch and rectify any deviations, errors, or misunderstandings in the *proposed code itself* prior to its integration into the actual codebase. This is a critical preventive checkpoint to avoid applying flawed or incomplete edits.
-        *   **4.3 Apply Edit (After Successful 4.2):** This step involves making an announcement and then immediately generating the tool call to apply the edit. Both the announcement text and the subsequent tool call **MUST** be part of the same continuous AI response.
-            *   **Action:** After successful completion and reporting of Step 4.2 (Pre-Apply Verification), you **MUST** proceed to apply the edit.
-                *   In a single, continuous AI response turn:
-                    1.  First, **MUST** explicitly state the intent to apply the edit, including the target file. *Example: "**Step 4.3: Apply Edit:** Now applying the verified edit to `[target_file]`."*
-                    2.  Second, immediately following the announcement (in the same AI response), you **MUST** generate and output the tool call for the appropriate edit tool (e.g., `edit_file` or `reapply`).
-            *   **CRITICAL:** The announcement and the actual tool call **MUST** be part of the same AI response, with no pause or user interaction in between. Step 4.3 is considered complete only after the tool call has been generated and outputted.
-        *   **4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result):** Following the execution of the edit tool, this step meticulously verifies the *actual diff applied* to the file. It confirms that the tool correctly implemented the verified proposal from 4.2 and checks for any unexpected side-effects or discrepancies introduced by the tool itself.
-            *   **Purpose:** To meticulously verify the *actual diff applied* to the file.
-            *   **Action:** After a successful `edit_file` or `reapply` call result, explicitly check **and report the outcome of each** of the following:
-
-                `4.4.1` **Verify Edit Application:**
-                    *   `a.` Post-Reapply Verification:** ** **CRITICAL:** If modification resulted from `reapply`:
-                        *   **Perform `Procedure: Verify Reapply Diff` (Section 5)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
-                    *   `b.` Post-edit_file Verification:** ** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
-                        *   **WARNING:** Treat Diff Output with Extreme Skepticism.
-                        *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
-                    *   `c.` No Introduced Redundancy:** ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
-
-                `4.4.2` **Check for Leftover Code & Dependencies:**
-                    *   `a.`  Confirm Absence of Leftover Code/Comments: ** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
-                    *   `b.`  Verify Downstream Consumers & Cleanup: **
-                        i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, **trigger self-correction (4.4.3)**.
-                        ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST trigger self-correction (4.4.3)**.
-                        iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
-
-                `4.4.3` **Self-Correct if Necessary:**
-                    *   `a.` Trigger:** If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues. Also triggered by specific missed mandatory steps (see below).
-                    *   `b.` Action:**
-                        a.  **STOP** proceeding with flawed logic/state. State the issue discovered.
-                        b. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch.").
-                        c.**Triggers for Self-Correction (STOP and Address):**
-                            a.  Missed mandatory immediate verification for a hypothesis (3.4.1.b).
-                            b.  Missed mandatory Pre-Edit Verification (4.2.1), Post-Reapply Verification (4.4.1.a), Post-Edit File Verification (4.4.1.b), or Dependency Re-verification (4.4.2.b.i).
-                            c.  Missed mandatory Post-Action Verification Summary (4.4.3) for the preceding edit.
-                            d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.6 / `Procedure: Handle Architectural Decisions`).
-                            e.  Any other missed mandatory step, check, reporting, or verification from this document.
-                            f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
-                        d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
-                        e.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts for the same planned logical change to a specific file section, or if 3 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome) before triggering this escalation. **This involves a **BLOCKER:** step.**
+*   **Rationale for Sequential and Mandatory Execution:** Each step in this cycle (4.1 through 4.5) logically builds upon the successful and verified completion of the preceding one. This strict order is paramount for systematically preventing errors, ensuring that all changes meticulously align with the verified plan, and proactively maintaining the integrity and quality of the codebase. All five sub-steps are mandatory to form a comprehensive verification loop around every code modification.
 
     **CRITICAL WARNING:** VERIFY ALL DIFF LINES. Failure to meticulously verify the *entire* diff (both proposed and applied) is a primary cause of regressions. **Verification means ensuring every changed/added line aligns with the plan, is syntactically correct, all referenced imports/symbols/variables are valid, and no unexpected logic changes or side-effects are introduced.** Treat tool output (`edit_file`, `reapply`) with extreme skepticism.
 
