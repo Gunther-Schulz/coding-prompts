@@ -2,6 +2,43 @@
 
 ---
 
+## Framework v2.6 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/AI_CODING_PROCESS.md`
+
+**Summary of Changes:**
+Enhanced the AI coding process to improve proactive assessment of existing code patterns, reconciliation of plans with partially modified codebases, handling of plan assumptions, and clarification of "plan" references.
+
+**Detailed Changes to `coding-prompts/AI_CODING_PROCESS.md`:**
+
+1.  **Added Step `3.3.1. Reconcile Plan with Current Code State`:**
+    *   Requires the AI to perform a preliminary comparison between a provided implementation plan and the current file content.
+    *   If parts of the plan appear already implemented, the AI must state this, confirm its understanding of the remaining scope, and may ask for user clarification if ambiguity arises.
+
+2.  **Added Step `3.4.0.a Assess Interacting Existing Patterns`:**
+    *   Mandates that when planned changes significantly interact with existing architectural patterns or critical execution paths, the AI must briefly assess these existing patterns for obvious robustness concerns that could be exacerbated by the new changes (e.g., late initializations, risky existing logic).
+    *   Significant concerns directly relevant to the planned integration should be highlighted.
+
+3.  **Enhanced Step `3.4.1.b Perform Procedure: Verify Hypothesis`:**
+    *   Added a provision that if a provided implementation plan's 'Key Assumptions' section seems sparse, the AI should proactively identify, state, and verify any additional critical assumptions it's making about the existing codebase's state or structure.
+
+4.  **Refined Trigger for `Procedure: Request Manual Edit` (Step `4.4.3.b.e.i`):**
+    *   Added a qualitative consideration to the "Persistent Correction Failure" trigger: to especially consider escalating to a manual edit request if failed edits involve large structural block movements or changes in complex/sensitive files where `edit_file` consistently fails.
+
+5.  **Added Clarifying Note in "Core Principles & Critical Checks Summary":**
+    *   Inserted a "Note on 'Implementation Plan' and 'The Plan' References" to explain that "the plan" can refer to a formal provided document or the AI's own internally formulated plan (from Step 3).
+    *   Clarifies that process steps explicitly conditioned on a formal plan document may be N/A otherwise.
+
+**Reason for Changes:**
+These changes were driven by a detailed refactoring session where issues arose from:
+*   A plan not explicitly addressing a robustness weakness in an existing code pattern that new code interacted with.
+*   Difficulties in applying a plan to a codebase that was already partially modified in line with the plan.
+*   A desire to ensure the AI more proactively identifies and verifies its own implicit assumptions when a plan might be incomplete in this regard.
+*   To clarify the AI_CODING_PROCESS.md's applicability whether or not a formal plan document is provided, ensuring the process remains robust and universally interpretable by the AI.
+
+---
+
 ## Framework v2.5 - 2025-05-06
 
 **Affected Document(s):**
