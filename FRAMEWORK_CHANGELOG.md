@@ -2,6 +2,31 @@
 
 ---
 
+## Framework v2.5 - 2025-05-06
+
+**Affected Document(s):**
+*   `coding-prompts/AI_CODING_PROCESS.md`
+
+**Summary of Changes:**
+Strengthened the procedure for obtaining sufficient file context (Step 3.0). Mandated that if a full file read attempt is unsuccessful or provides insufficient context for a critical task, the AI **MUST** request the full file content from the user and treat this as a **BLOCKER** before proceeding with edits on that file.
+
+**Detailed Changes to `coding-prompts/AI_CODING_PROCESS.md`:**
+
+1.  **Revised Step 3.0 ("Assess Target File Complexity & Ensure Sufficient Context"):**
+    *   Mandated prioritizing a complete file view for critical/complex files.
+    *   Specified attempting `read_file` with `should_read_entire_file=True` as the first step.
+    *   If the full read attempt is unsuccessful (e.g., tool indicates only partial content is returned because the file is not on an allowlist, or the returned content is still insufficient), the AI **MUST**:
+        *   Clearly state the situation.
+        *   Request the user to provide the full file content or critical missing sections.
+        *   Treat this as a **BLOCKER**, not proceeding with planning/edits for that file based on incomplete information, until the user provides the content or gives explicit instruction to proceed with caution (with risks stated).
+    *   Updated the example to reflect this new blocking scenario.
+    *   Clarified that the alternative of using `grep_search` for context should be extremely rare and requires strong justification.
+
+**Reason for Changes:**
+To prevent the AI from proceeding with potentially risky edits on critical files when it has insufficient context, especially if an attempt to read the full file using `read_file` did not yield the complete content. This ensures the AI adheres to the principle of working with complete facts and prioritizes safety and accuracy by explicitly involving the user when essential information is missing. This change was prompted by an incident where the AI proceeded with an edit based on a partial file view after a full read attempt was only partially successful.
+
+---
+
 ## Framework v2.4 - 2025-05-07
 
 ### PLAN_WRITING_PROCESS.md
