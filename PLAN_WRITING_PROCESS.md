@@ -24,7 +24,7 @@ Past failures in planning have often stemmed from:
 
 **Goal:** To improve plan quality by incorporating rigorous upfront analysis of the codebase, standards, and potential dependencies, minimizing errors during subsequent implementation.
 
-**Version: 1.6** (Further enhancements for AI coding synergy: Added new mandatory plan output sections (Existing Functionality Survey, Applied Standards/Patterns, Risks/Mitigations). Updated Phase 2 to prepare this data and for more precise edit location hints. Updated Key Impact Summary structure. Renumbered Phase 2 again.)
+**Version: 1.7** (Strengthened codebase analysis guidance: Added explicit step to "Follow Initial Leads" (1.3.d). Mandated broader searches for common functionality if initial survey fails (2.3). Added "Holistic Codebase Understanding" guiding principle to Phase 2. Refined "Prioritize Specific Code" principle. Added "Sufficiency of Analysis Depth Assessment" to planning summary (2.12).)
 
 ---
 
@@ -45,6 +45,7 @@ When responding to user requests asking you to create an implementation plan, yo
             *   **High-level algorithm/decision points:** Identify all significant conditional branches, the specific conditions triggering them, and the distinct logic executed within each branch.
             *   **Complete Execution Paths & Side Effects:** Trace the complete execution path for all significant conditional branches to identify **all potential outcomes and side effects** (specific return values, exceptions raised, data store interactions, logging actions, external interactions) associated with the logic being replaced.
         *   `c.` **Analyze Existing Component Roles/Relationships:** **MUST** explicitly document the **current roles and relationships** of the key existing components identified (e.g., how data model `X` currently links component `Y` to `Z`). Avoid designing target architecture elements until this existing structure is understood and documented.
+        *   `d.` **Follow Initial Leads:** When analyzing existing logic (1.3.b) or component relationships (1.3.c), if a key function/method call directly leads to another closely related module or a non-trivial helper function central to understanding the current component's behavior, a preliminary read/analysis of that called component's relevant interface or core logic is encouraged to achieve sufficient context. Briefly note if such a lead was followed.
     4.  **Output Existing State Analysis Summary:** **After** completing Step 1.3, **MUST** output a brief summary of the findings before proceeding to Step 2. *Example: "**Existing State Summary:** `func_to_refactor` handles cases A (returns X, logs Y) and B (raises ZError). It relies on `component_P` for data retrieval and `component_Q` for formatting."
 
 ### 2. Core Analysis & Plan Drafting
@@ -53,9 +54,15 @@ When responding to user requests asking you to create an implementation plan, yo
 *   **Action:** Draft the plan steps while performing the following analysis:
 
     ---
+    **GUIDING PRINCIPLE FOR ANALYSIS: HOLISTIC CODEBASE UNDERSTANDING**
+
+    Beyond understanding the immediate files of modification, the planner **MUST** strive to develop a sufficient understanding of the surrounding codebase context. This includes actively looking for connections, potential ripple effects, and opportunities for reuse, aligning with the goal of creating plans for changes that are not just locally correct but also fit cohesively and efficiently within the broader system. When in doubt, favor more exploration over narrow assumptions.
+    ---
+
+    ---
     **PLANNING PRINCIPLE REMINDER: PRIORITIZE SPECIFIC CODE OVER GENERIC PATTERNS (See Failure Mode 2)**
 
-    While general design patterns are useful background, **your primary guide MUST be the specific patterns, structures, and logic discovered in *this* codebase** during Step 1.3. Avoid imposing generic patterns if the existing code provides a viable (even if imperfect) alternative structure that can be leveraged or refactored. Base your plan on verified specifics, not generalized assumptions.
+    While general design patterns are useful background, **your primary guide MUST be the specific patterns, structures, and logic discovered in *this* codebase** during Step 1.3. Avoid imposing generic patterns if the existing code provides a viable (even if imperfect) alternative structure that can be leveraged or refactored. Base your plan on verified specifics, not generalized assumptions. This means if a slightly non-standard but functional pattern is established in the codebase for a similar problem, prefer understanding and adapting it (if sound) over imposing a textbook generic pattern, unless the existing pattern is demonstrably flawed or the user explicitly requests a shift to a new standard.
     ---
 
     ---
@@ -73,7 +80,7 @@ When responding to user requests asking you to create an implementation plan, yo
         *   *Logging:* What logging framework and patterns are used? Plan **MUST** integrate logging consistently.
         *   *Shared Utilities/Logic:* Are there central utility modules or shared business logic functions (e.g., for mapping, validation, calculations)? Plan **MUST** utilize or extend these where applicable instead of duplicating functionality.
         *   *Other relevant patterns defined in `PROJECT_ARCHITECTURE.md`...*
-    `2.3.` **Survey Existing Relevant Functionality:** Based on the request and initial analysis (Steps 1.2, 1.3, 2.2), perform a targeted survey for existing codebase functionalities that are directly relevant to the planned changes or could be reused. For each key area surveyed: document the functionality/concept searched, key files/modules investigated, and the outcome (e.g., 'to be reused as-is', 'to be modified per plan step X', 'no suitable existing logic found'). This information is for the 'Existing Relevant Functionality Survey' section of the plan output.
+    `2.3.` **Survey Existing Relevant Functionality:** Based on the request and initial analysis (Steps 1.2, 1.3, 2.2), perform a targeted survey for existing codebase functionalities that are directly relevant to the planned changes or could be reused. For each key area surveyed: document the functionality/concept searched, key files/modules investigated, and the outcome (e.g., 'to be reused as-is', 'to be modified per plan step X', 'no suitable existing logic found'). This information is for the 'Existing Relevant Functionality Survey' section of the plan output. If the planned new functionality seems common (e.g., date formatting, string manipulation, a core business rule calculation) and the initial targeted survey yields no direct reuse candidates, the AI should consider performing a broader, more conceptual search (`codebase_search` with general terms) before concluding that no relevant existing utilities or patterns can be leveraged. Document if such a broader search was undertaken due to this condition.
     `2.4.` **Perform Dependency Validation Checklist (MUST Perform & State Results):** Before finalizing steps involving new dependencies or structural changes:
         *   [ ] **Adding Dependencies:** If planning for module `B` to reference symbol `X` from module `A`:
             *   [ ] Path Validation: Confirm module `A`'s path exists and is valid relative to module `B` (`file_search`, `list_dir`).
@@ -111,7 +118,8 @@ When responding to user requests asking you to create an implementation plan, yo
             *   `[x/-] 2. Logic Change Mapping:` *[Narrative confirming Step 2.7.b mapping (detailing how new logic handles each documented existing branch **and its outcomes/side-effects**) was performed and included in the plan. Mark `[x]` if refactoring done, `[-]` if N/A.]*
             *   `[x/-] 3. Plan-to-Code Alignment Check:` *[Narrative confirming that the proposed logic changes and their mappings (from Step 2.7.b) were checked for consistency and feasibility against the analyzed current codebase state (from Step 1.3). Mark `[x]` if refactoring done, `[-]` if N/A.]*
             *   `[x/-] 4. Existing Structure Integration Check:` *[Narrative confirming the plan was checked (as part of the analysis in Steps 1.3.c and 2.7.b) to ensure it correctly leverages existing component roles/relationships or justifies deviations. Mark `[x]` if applicable, `[-]` if N/A.]*
-            *   `[x] 5. Confirmation:` Logic analysis & verification summary complete. *(This point is always marked `[x]` when the summary is generated).*
+            *   `[x/-] 5. Sufficiency of Analysis Depth Assessment:` *[Planner's brief assessment on whether the depth of codebase exploration (file reads, lead following per Step 1.3.d, broader searches per Step 2.3) was sufficient to confidently address potential integration issues and avoid superficial assumptions. Note any areas where further exploration might have been beneficial but was deferred due to scope/time, or confirm exploration was deemed sufficient.]*
+            *   `[x] 6. Confirmation:` Logic analysis & verification summary complete. *(This point is always marked `[x]` when the summary is generated).*
         ```
 
 ### 3. Plan Review & Presentation

@@ -4,6 +4,13 @@
 
 ## 2025-05-06
 
+*   **[PLAN_WRITING_PROCESS.md v1.7]** Strengthened codebase analysis guidance to combat superficiality:
+    *   Added explicit sub-step `1.3.d` ("Follow Initial Leads") to encourage deeper exploration during initial analysis.
+    *   Augmented Step `2.3` ("Survey Existing Relevant Functionality") to mandate broader, conceptual searches if initial targeted surveys for common functionalities fail.
+    *   Inserted a new "GUIDING PRINCIPLE FOR ANALYSIS: HOLISTIC CODEBASE UNDERSTANDING" at the start of Phase 2 to reinforce the need for contextual awareness.
+    *   Refined the "PLANNING PRINCIPLE REMINDER: PRIORITIZE SPECIFIC CODE OVER GENERIC PATTERNS" to more strongly advocate for adapting existing sound patterns.
+    *   Added a new self-assessment item `5. Sufficiency of Analysis Depth Assessment:` to the "Logic Analysis & Verification Summary" (Step `2.12`) to make the AI reflect on its thoroughness.
+    *   Goal: Further mitigate the risk of AI planners performing superficial codebase analysis by providing more explicit directives and checks for deeper investigation.
 *   **[PLAN_WRITING_PROCESS.md v1.6]** Further enhancements for AI coding synergy:
     *   Added new mandatory plan output sections (Step 3.4) to provide more comprehensive "briefing packages" for `AI_CODING_PROCESS.md`:
         *   `## Existing Relevant Functionality Survey (Ref: AI_CODING_PROCESS.md Step 3.1)`
