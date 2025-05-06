@@ -4,6 +4,12 @@
 
 ## 2025-05-06
 
+*   **[AI_CODING_PROCESS.md v1.54]** Added Principle for Holistic Codebase Understanding:
+    *   Introduced "Holistic Codebase Understanding for Integration and Reusability" to "Core Principles & Critical Checks Summary."
+    *   This principle mandates striving for sufficient understanding of surrounding codebase context, reinforcing thorough searches for reusable functionality (Step 3.1) and meticulous impact analysis (Procedure: Analyze Impact).
+    *   It explicitly calls out superficial codebase analysis as a deviation if it leads to poor integration, duplicated effort, or misunderstanding of architectural context.
+    *   Goal: Ensure changes are not just locally correct but also fit cohesively and efficiently within the broader system, combating superficial codebase review.
+
 *   **[AI_CODING_PROCESS.md v1.53]** Added Principle for Proactive Context Gathering:
     *   Introduced a new principle "Proactive Context Gathering for Robustness" to the "Core Principles & Critical Checks Summary" section.
     *   This principle encourages the AI to proactively favor obtaining more comprehensive file context (e.g., via `read_file` with `should_read_entire_file=True` when feasible) over relying on minimal partial views, especially for key files, to enhance understanding and reduce risks from incomplete context.
