@@ -4,6 +4,21 @@
 
 ---
 
+## Framework v2.1 - 2025-05-07
+
+### AI_CODING_PROCESS.md
+    * Added new Step 0 "Model Compatibility & Awareness Check" that verifies if the AI model is gemini-2.5-pro
+    * If a different model is detected, requires explicit user confirmation to proceed with the process
+    * Updated table of contents to include the new step
+
+### PLAN_WRITING_PROCESS.md
+    * Added new Step 0 "Model Compatibility & Awareness Check" that verifies if the AI model is gemini-2.5-pro
+    * If a different model is detected, requires explicit user confirmation to proceed with the process
+
+**Overall Goal/Theme of this Framework Update:** Enhance safety and user awareness by explicitly checking for model compatibility. Since the processes are optimized for gemini-2.5-pro, this change ensures users are explicitly informed and given an opportunity to confirm if they wish to continue with a different model that may not perform optimally with these processes.
+
+---
+
 ## Framework v2.0 - 2025-05-06
 
 ### AI_CODING_PROCESS.md
