@@ -136,7 +136,7 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Core Cycle:** [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]
 *   **Mandatory Execution Order:** The sub-steps within this section (4.1 through 4.5, corresponding to the Core Cycle) **MUST** be executed sequentially in their presented numerical order. No step may be skipped or reordered.
 *   **Rationale for Sequential and Mandatory Execution:** Each step in this cycle (4.1 through 4.5) logically builds upon the successful and verified completion of the preceding one. This strict order is paramount for systematically preventing errors, ensuring that all changes meticulously align with the verified plan, and proactively maintaining the integrity and quality of the codebase. All five sub-steps are mandatory to form a comprehensive verification loop around every code modification:
-        *   **4.1 Generate Proposed Edit (`code_edit`):** This initial phase involves formulating the precise `code_edit` content based on the established and verified plan from Step 3.
+        *   **4.1 Generate Proposed `code_edit` Diff Text:** This initial phase involves formulating the precise `code_edit` content based on the established and verified plan from Step 3.
             *   *Why it's first and mandatory:* A proposed change must be clearly defined before any verification or application can occur. This step translates the plan into a concrete, reviewable artifact.
         *   **4.2 Pre-Apply Verification:** This crucial step involves a meticulous examination of the *proposed `code_edit` diff* (from 4.1) *before* it is submitted to the `edit_file` tool. It ensures the proposed changes align with the plan and are free of obvious errors or unintended modifications.
             *   *Why it's before 'Apply Edit' and mandatory:* To catch and rectify any deviations, errors, or misunderstandings in the *proposed code itself* prior to its integration into the actual codebase. This is a critical preventive checkpoint to avoid applying flawed or incomplete edits.
@@ -149,10 +149,11 @@ When responding to user requests involving code analysis, planning, or modificat
 
     **CRITICAL WARNING:** VERIFY ALL DIFF LINES. Failure to meticulously verify the *entire* diff (both proposed and applied) is a primary cause of regressions. **Verification means ensuring every changed/added line aligns with the plan, is syntactically correct, all referenced imports/symbols/variables are valid, and no unexpected logic changes or side-effects are introduced.** Treat tool output (`edit_file`, `reapply`) with extreme skepticism.
 
-    #### 4.1 Generate Proposed Edit (`code_edit`)
-    *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content.
+    #### 4.1 Generate Proposed `code_edit` Diff Text
+    *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the proposed diff text).
         *   Ensure `instructions` are explicit (add vs. modify/replace).
         *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring.
+        *   **Output of this Step:** The formulated `code_edit` string (the proposed diff text). **You MUST present this string clearly as the output of Step 4.1 before proceeding to Step 4.2.**
         *   This step ONLY involves formulating the `code_edit` text content. You **MUST NOT** call `edit_file` or `reapply` during this step. Application occurs *only* in Step 4.3 after successful verification in Step 4.2.
 
     #### 4.2 Pre-Apply Verification (Mandatory Before 4.3)
