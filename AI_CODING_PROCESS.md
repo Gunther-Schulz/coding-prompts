@@ -186,16 +186,16 @@ When responding to user requests involving code analysis, planning, or modificat
     *   **Action:** After a successful `edit_file` or `reapply` call result, explicitly check **and report the outcome of each** of the following:
 
         `4.4.1` **Verify Edit Application:**
-            *   `a. Post-Reapply Verification:` ** **CRITICAL:** If modification resulted from `reapply`:
+            *   `a.` Post-Reapply Verification:** ** **CRITICAL:** If modification resulted from `reapply`:
                 *   **Perform `Procedure: Verify Reapply Diff` (Section 5)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
-            *   `b. Post-edit_file Verification:` ** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
+            *   `b.` Post-edit_file Verification:** ** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
                 *   **WARNING:** Treat Diff Output with Extreme Skepticism.
                 *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
-            *   `c. No Introduced Redundancy:` ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
+            *   `c. No Introduced Redundancy:** ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
 
         `4.4.2` **Check for Leftover Code & Dependencies:**
-            *   `a. Confirm Absence of Leftover Code/Comments:` ** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
-            *   `b. Verify Downstream Consumers & Cleanup:` **
+            *   `a.`  Confirm Absence of Leftover Code/Comments: ** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
+            *   `b.`  Verify Downstream Consumers & Cleanup: **
                 i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, **trigger self-correction (4.4.3)**.
                 ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST trigger self-correction (4.4.3)**.
                 iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
@@ -203,17 +203,17 @@ When responding to user requests involving code analysis, planning, or modificat
         `4.4.3` **Self-Correct if Necessary:**
             *   `a.` Trigger:** If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues. Also triggered by specific missed mandatory steps (see below).
             *   `b.` Action:**
-                i.  **STOP** proceeding with flawed logic/state. State the issue discovered.
-                ii. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch.").
-                iii.**Triggers for Self-Correction (STOP and Address):**
+                a.  **STOP** proceeding with flawed logic/state. State the issue discovered.
+                b. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch.").
+                c.**Triggers for Self-Correction (STOP and Address):**
                     a.  Missed mandatory immediate verification for a hypothesis (3.4.1.b).
                     b.  Missed mandatory Pre-Edit Verification (4.2.1), Post-Reapply Verification (4.4.1.a), Post-Edit File Verification (4.4.1.b), or Dependency Re-verification (4.4.2.b.i).
                     c.  Missed mandatory Post-Action Verification Summary (4.4.3) for the preceding edit.
                     d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.6 / `Procedure: Handle Architectural Decisions`).
                     e.  Any other missed mandatory step, check, reporting, or verification from this document.
                     f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
-                iv. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
-                v.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts for the same planned logical change to a specific file section, or if 3 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome) before triggering this escalation. **This involves a **BLOCKER:** step.**
+                d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action.
+                e.  **If Tool Failure Persists:** **Execute `Procedure: Request Manual Edit` (Section 5)**. **Reminder:** Avoid excessive self-correction loops (e.g., >3 attempts for the same planned logical change to a specific file section, or if 3 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome) before triggering this escalation. **This involves a **BLOCKER:** step.**
 
     #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
     *   `a.` Trigger:** Immediately following the *final* successful verification (Step 4.4) for the task's edits.
@@ -251,7 +251,7 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Applicability:** **MUST** be performed during Planning (Step 3.4.1.a) before generating edits, especially for changes to interfaces, paths, symbols, core models, or widely used components.
 *   **Steps Checklist:**
     1.  **Identify Affected Call Sites/References:** For interface/path/symbol changes, **MUST** use tools (`grep_search`) to find *all* potential call sites/imports/references codebase-wide. List findings.
-    2.  **Enhanced Scope for Core Refactoring:** **CRITICAL TRIGGER:** If modifying base classes, core domain interfaces, widely used utilities, DI container, core configs: **MUST** explicitly consider consumers across *all* layers (CLI, helpers, services). Employ broader search strategies (`grep` for attribute access, semantic search). **MUST** search for inheritors/consumers (e.g., `grep_search 'class .*(.*BaseClassName.*):'`, `codebase_search`). List key findings, **including specific inheritors/consumers identified and brief note on potential impact checked.**
+    2.  **Enhanced Scope for Core Refactoring:** **CRITICAL:** If modifying base classes, core domain interfaces, widely used utilities, DI container, core configs: **MUST** explicitly consider consumers across *all* layers (CLI, helpers, services). Employ broader search strategies (`grep` for attribute access, semantic search). **MUST** search for inheritors/consumers (e.g., `grep_search 'class .*(.*BaseClassName.*):'`, `codebase_search`). List key findings, **including specific inheritors/consumers identified and brief note on potential impact checked.**
     3.  **Circular Dependency Check:** When adding a new module dependency (B needs A), explicitly state check, examine dependencies in module A, report outcome (e.g., "Circular Check: `module_a` does not import `module_b`. OK.").
     4.  **Data Representation Impact:** For changes affecting data representation (ID vs Name, format) or core models, explicitly consider impacts across layers (ORM, Mappers, Exporters, Consumers, Tests).
 
