@@ -135,6 +135,8 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Purpose:** This step covers the critical cycle of generating a proposed code edit, verifying it rigorously *before* application, applying it, and verifying the result *after* application.
 *   **Core Cycle:** [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]
 *   **Mandatory Execution Order:** The sub-steps within this section (4.1 through 4.5, corresponding to the Core Cycle) **MUST** be executed sequentially in their presented numerical order. No step may be skipped or reordered.
+
+    **Application to Multi-File Changes:** When a single user request or task necessitates changes to multiple files, this entire [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize] cycle (Steps 4.1 through 4.5) constitutes an atomic unit of work. This cycle **MUST** be fully completed for one individual file *before* commencing Step 4.1 (Generate Proposed `code_edit` Diff Text) for any subsequent file involved in the same task. This per-file atomicity ensures that each modification is applied and verified against a consistent and up-to-date state of the codebase, reducing complexity and the risk of cascading errors.
 *   **Rationale for Sequential and Mandatory Execution:** Each step in this cycle (4.1 through 4.5) logically builds upon the successful and verified completion of the preceding one. This strict order is paramount for systematically preventing errors, ensuring that all changes meticulously align with the verified plan, and proactively maintaining the integrity and quality of the codebase. All five sub-steps are mandatory to form a comprehensive verification loop around every code modification:
         *   **4.1 Generate Proposed `code_edit` Diff Text:** This initial phase involves formulating the precise `code_edit` content based on the established and verified plan from Step 3.
             *   *Why it's first and mandatory:* A proposed change must be clearly defined before any verification or application can occur. This step translates the plan into a concrete, reviewable artifact.
@@ -180,9 +182,9 @@ When responding to user requests involving code analysis, planning, or modificat
     *   **Action:** After a successful `edit_file` or `reapply` call result, explicitly check **and report the outcome of each** of the following:
 
         `4.4.1` **Verify Edit Application:**
-            *   `a. Post-Reapply Verification:** **CRITICAL:** If modification resulted from `reapply`:
+            *   a. Post-Reapply Verification:** **CRITICAL:** If modification resulted from `reapply`:
                 *   **Perform `Procedure: Verify Reapply Diff` (Section 5)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
-            *   `b. Post-`edit_file` Verification:** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
+            *   b. Post-`edit_file` Verification:** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
                 *   **WARNING:** Treat Diff Output with Extreme Skepticism.
                 *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
             *   `c. No Introduced Redundancy:** Check for duplicate logic, unnecessary checks, redundant mappings. Remove if found.
