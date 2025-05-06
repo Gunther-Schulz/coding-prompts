@@ -185,9 +185,9 @@ When responding to user requests involving code analysis, planning, or modificat
     *   **Action:** After a successful `edit_file` or `reapply` call result, explicitly check **and report the outcome of each** of the following:
 
         `4.4.1` **Verify Edit Application:**
-            *   a. Post-Reapply Verification:** **CRITICAL:** If modification resulted from `reapply`:
+            *   `a. Post-Reapply Verification:** **CRITICAL:** If modification resulted from `reapply`:
                 *   **Perform `Procedure: Verify Reapply Diff` (Section 5)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
-            *   b. Post-`edit_file` Verification:** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
+            *   `b. Post-edit_file Verification:** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
                 *   **WARNING:** Treat Diff Output with Extreme Skepticism.
                 *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
             *   `c. No Introduced Redundancy:** Check for duplicate logic, unnecessary checks, redundant mappings. Remove if found.
