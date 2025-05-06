@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Version: 1.51** (Improved Handling of Edit Failures & Complex Files)
+**Version: 1.52** (Strengthened guidance on obtaining sufficient file context when initial reads are partial or ambiguous, particularly for complex files (Step 3.0) and as a general principle (Step 3.3).)
 
 ---
 
@@ -64,9 +64,12 @@ When responding to user requests involving code analysis, planning, or modificat
 
 ### 3. Pre-computation Standards Check (Planning Phase)
 
-**3.0. Assess Target File Complexity (Initial Check):** If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), or a file previously identified as complex or sensitive to edits:
-    *   **Action:** State this observation. Plan to use full file reads (`read_file` with `should_read_entire_file=True`) if any ambiguity about its structure arises during planning. Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny.
-    *   *Example: "Observing that `app.py` is a central CLI configuration file. Will proceed with heightened scrutiny for impact analysis and edit generation, using full file reads if necessary."*
+**3.0. Assess Target File Complexity (Initial Check):** If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), or a file previously identified as complex or sensitive to edits, or if an initial partial file read (e.g., from `read_file` without `should_read_entire_file=True`) **proves insufficient to confidently locate all necessary code sections for planning and executing the required change (e.g., exact lines for deletion/modification, precise insertion points for new code):**
+    *   **Action:** State this observation and the specific information gap. **Unless the remaining necessary context can be obtained through highly targeted and reliable means (e.g., a `grep_search` for a unique anchor string known to be near the area of interest), the AI MUST prioritize obtaining a more complete view of the file.** This typically involves:
+        a.  Requesting the user to provide the full file content or relevant missing sections.
+        b.  If user interaction is not immediately feasible and the file is critical for the task, using `read_file` with `should_read_entire_file=True` (if permissible by token limits and file size considerations for that tool).
+    *   Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny based on the complete information.
+    *   *Example: "Observing that `app.py` is a central CLI configuration file. The initial partial read does not show the command registration section needed for this change. To proceed accurately, I need to see the full content of this file or the section containing command registrations. Requesting full file content."*
 
 **NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
 
@@ -80,7 +83,7 @@ When responding to user requests involving code analysis, planning, or modificat
         *   *Example 2 (Error Handling Focus): "Plan includes error handling for Y, following Error Handling guidelines (`PROJECT_STANDARDS.md` - Section 2.A) and hierarchy examples (`PROJECT_ARCHITECTURE.md` - `StandardErrorHandling` pattern), using standard logging."*
         *   *(Note for AI: If `PROJECT_STANDARDS.md` or `PROJECT_ARCHITECTURE.md` are not explicitly provided in the current context, state this. Then, base your alignment on general software design principles, any architectural patterns observed directly in the existing codebase, and the specific requirements of the user's request.)*
 
-    `3.3.` **Check "Work with Facts":** Confirm the plan/edit relies *only* on provided facts, requirements, or verified information. State if clarification is needed. *Example: "Proceeding based on requirement Z. Clarify if other factors apply."*
+    `3.3.` **Check "Work with Facts":** Confirm the plan/edit relies *only* on provided facts, requirements, or verified information. **This includes ensuring that any file content used for planning or generating edits is sufficiently complete to avoid guesswork; if partial file views are ambiguous or insufficient for the task, seek clarification or more complete data before proceeding.** State if clarification is needed. *Example: "Proceeding based on requirement Z. Clarify if other factors apply."*
 
     `3.4.` **Check "Robust Solutions":** Confirm the plan avoids hacks/workarounds and addresses the root cause.
         **Data Integrity Priority:** When encountering **unexpectedly missing or invalid data** from external sources or between internal components:

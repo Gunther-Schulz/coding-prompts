@@ -4,6 +4,11 @@
 
 ## 2025-05-06
 
+*   **[AI_CODING_PROCESS.md v1.52]** Enhanced Guidance on Sufficient File Context:
+    *   Strengthened Step 3.0 ("Assess Target File Complexity") to more explicitly guide the AI to obtain fuller file context (e.g., by requesting from user or using `should_read_entire_file=True`) when initial partial reads of complex/central files prove insufficient for confident planning and editing.
+    *   Added a clarifying sentence to Step 3.3 ("Check 'Work with Facts'") to reinforce the general principle that file content used for planning must be sufficiently complete to avoid guesswork, prompting clarification or more data if partial views are ambiguous.
+    *   Goal: Improve proactive information gathering and reduce errors stemming from incomplete file context, based on observed successful interaction patterns.
+
 *   **[AI_CODING_PROCESS.md v1.51]** Enhanced Robustness for Complex Edits & Tool Failures:
     *   Added Step 3.0 (Assess Target File Complexity) to mandate heightened scrutiny and proactive full file reads for critical/complex files from the outset of planning.
     *   Updated Step 3.8.b (Sufficient Context) and Step 4.1 (Generate Proposed `code_edit`) to require more precise context, unique anchors, and explicit `instructions` on unchangeable sections when dealing with sensitive or previously mis-edited files.
