@@ -134,6 +134,18 @@ When responding to user requests involving code analysis, planning, or modificat
 
 *   **Purpose:** This step covers the critical cycle of generating a proposed code edit, verifying it rigorously *before* application, applying it, and verifying the result *after* application.
 *   **Core Cycle:** [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]
+*   **Mandatory Execution Order:** The sub-steps within this section (4.1 through 4.5, corresponding to the Core Cycle) **MUST** be executed sequentially in their presented numerical order. No step may be skipped or reordered.
+*   **Rationale for Sequential and Mandatory Execution:** Each step in this cycle (4.1 through 4.5) logically builds upon the successful and verified completion of the preceding one. This strict order is paramount for systematically preventing errors, ensuring that all changes meticulously align with the verified plan, and proactively maintaining the integrity and quality of the codebase. All five sub-steps are mandatory to form a comprehensive verification loop around every code modification:
+        *   **4.1 Generate Proposed Edit (`code_edit`):** This initial phase involves formulating the precise `code_edit` content based on the established and verified plan from Step 3.
+            *   *Why it's first and mandatory:* A proposed change must be clearly defined before any verification or application can occur. This step translates the plan into a concrete, reviewable artifact.
+        *   **4.2 Pre-Apply Verification:** This crucial step involves a meticulous examination of the *proposed `code_edit` diff* (from 4.1) *before* it is submitted to the `edit_file` tool. It ensures the proposed changes align with the plan and are free of obvious errors or unintended modifications.
+            *   *Why it's before 'Apply Edit' and mandatory:* To catch and rectify any deviations, errors, or misunderstandings in the *proposed code itself* prior to its integration into the actual codebase. This is a critical preventive checkpoint to avoid applying flawed or incomplete edits.
+        *   **4.3 Apply Edit:** Only after the `code_edit` has successfully passed the rigorous Pre-Apply Verification (4.2) is the `edit_file` (or `reapply`) tool called to modify the target file.
+            *   *Why it's after 'Pre-Apply Verification' and mandatory:* This ensures that only changes that have been thoroughly vetted against the plan are attempted on the live codebase, minimizing the risk of introducing errors.
+        *   **4.4 Post-Apply Verification:** Following the execution of the edit tool, this step meticulously verifies the *actual diff applied* to the file. It confirms that the tool correctly implemented the verified proposal from 4.2 and checks for any unexpected side-effects or discrepancies introduced by the tool itself.
+            *   *Why it's after 'Apply Edit' and mandatory:* Edit tools may not always apply changes perfectly as specified. This step is essential to confirm that the *result in the file* accurately reflects the intended, verified change and to detect any tool-induced errors or incomplete applications.
+        *   **4.5 Generate Post-Action Verification Summary:** This concluding step for the cycle involves creating a structured summary that documents the successful completion and outcomes of all preceding verification actions (4.2, 4.4) for the applied edit.
+            *   *Why it's the final part of the cycle for an edit and mandatory:* This provides a clear, auditable record confirming that the entire verification process was diligently followed for the specific change. It serves as a final quality gate and proof of adherence before considering the edit cycle for that task complete.
 
     **CRITICAL WARNING:** VERIFY ALL DIFF LINES. Failure to meticulously verify the *entire* diff (both proposed and applied) is a primary cause of regressions. **Verification means ensuring every changed/added line aligns with the plan, is syntactically correct, all referenced imports/symbols/variables are valid, and no unexpected logic changes or side-effects are introduced.** Treat tool output (`edit_file`, `reapply`) with extreme skepticism.
 
@@ -173,7 +185,6 @@ When responding to user requests involving code analysis, planning, or modificat
                 *   **WARNING:** Treat Diff Output with Extreme Skepticism.
                 *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
             *   `c. No Introduced Redundancy:** Check for duplicate logic, unnecessary checks, redundant mappings. Remove if found.
-            *   `d. Optional Post-Refactor Smoke Test:** After significant refactoring, consider minimal runtime "smoke test" (e.g., `command --help`). Failure should trigger self-correction (4.4.3). State if performed and outcome.
 
         `4.4.2` **Check for Leftover Code & Dependencies:**
             *   `a. Confirm Absence of Leftover Code/Comments:** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
@@ -263,7 +274,7 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Purpose:** To provide a core, reusable set of checks for verifying any diff (proposed or applied) against its intended state/plan. Called by Step 4.2.1.b, `Procedure: Verify Reapply Diff`, and `Procedure: Verify Edit File Diff`.
 *   **Inputs (Conceptual):** The `diff` content, the `intent` (e.g., the plan, the state before the edit, the final intended proposal).
 *   **Applicability:** **MUST** be executed during Pre-Apply Verification (Step 4.2.1.b), Post-Reapply Verification (`Procedure: Verify Reapply Diff`, Step 2), and Post-Edit File Verification (`Procedure: Verify Edit File Diff`, Step 1).
-*   **Execution Reporting:** When executing this procedure, the AI response **MUST** include an inline checklist documenting the execution and outcome of each step below. **The output should follow the structure shown in the *Example Inline Checklist Output*, including the `Executing Procedure: Verify Diff` heading. If this procedure is performed for multiple files or contexts within a single parent step, each instance should be clearly delineated using this full format, potentially by adding a specific target (e.g., "Executing `Procedure: Verify Diff` for `filename.ext`:") to the heading for clarity.**
+*   **Execution Reporting:** When executing this procedure, the AI response **MUST** include an inline checklist documenting the execution and outcome of each step below.
 *   **Steps Checklist (MUST perform all relevant steps and report via inline checklist):**
     1.  **Diff vs. Intent Match:** Compare *entire* diff line-by-line against the `intent`. Note discrepancies. *(Reminder: Address Failure Mode 1 - Ensure diff matches intent, do not assume AI generated only planned changes)*
     2.  **Identify Deviations:** Explicitly list any lines added, deleted, or modified in the `diff` that were *not* part of the `intent` ("Deviations").
@@ -386,3 +397,15 @@ When responding to user requests involving code analysis, planning, or modificat
     1.  **Treat Diff as New:** Approach with extreme skepticism.
     2.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `reapply`*. The 'intent' for this verification is the file state *before* the `reapply` call. **Emphasize extra scrutiny due to `reapply` context.**
     3.  **Structured Log:** **Immediately after `reapply` result,** **MUST** generate structured log confirming the execution and **overall outcome** of `Procedure: Verify Diff` (Step 2), explicitly mentioning the handling of any deviations. Use format similar to Step 4.2.2, noting it's post-reapply.
+
+**`Procedure: Verify Edit File Diff`**
+*   **Purpose:** To meticulously verify the diff applied by the standard `edit_file` tool.
+*   **Trigger:** Called by Step 4.4.1.b immediately after a standard `edit_file` tool call completes.
+*   **Steps:**
+    1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal* from Step 4.2.1.f (incorporating any handled deviations from the pre-apply check).
+    2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
+
+**`Procedure: Request Manual Edit`**
+*   **Trigger:** Called by Step 4.4.3.b.v if repeated attempts to apply an edit via tools (`edit_file`, `reapply`) fail or produce incorrect results, and self-correction loops are exhausted.
+1.  **STOP** tool attempts.
+2.  **State Tool Failure:** Explain the issue and the presumed incorrect file state based on last tool output.
