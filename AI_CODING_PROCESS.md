@@ -193,9 +193,9 @@ When responding to user requests involving code analysis, planning, or modificat
                 *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
             *   `c. No Introduced Redundancy:` ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
 
-        `4.4.2` **Check for Leftover Code & Dependencies:
+        `4.4.2` **Check for Leftover Code & Dependencies:**
             *   `a. Confirm Absence of Leftover Code/Comments:` ** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
-            *   `b. Verify Downstream Consumers & Cleanup:`
+            *   `b. Verify Downstream Consumers & Cleanup:` **
                 i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, **trigger self-correction (4.4.3)**.
                 ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST trigger self-correction (4.4.3)**.
                 iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
