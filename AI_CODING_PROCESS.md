@@ -167,11 +167,7 @@ When responding to user requests involving code analysis, planning, or modificat
             *   *Example (Deviation Handling): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on proposed edit against plan (Outcome: Verified, deviations handled - reported in `Procedure: Handle Deviation`). Key assumption 'Model Y' verified (Outcome: Confirmed). Logic Preservation: N/A. Proceeding to Apply Edit (4.3)."*
 
     #### 4.3 Apply Edit (After Successful 4.2)
-    *   **Action:** After successful completion and reporting of Step 4.2 (Pre-Apply Verification), you **MUST** proceed to apply the edit.
-        *   In a single, continuous AI response turn:
-            1.  First, **MUST** explicitly state the intent to apply the edit, including the target file. *Example: "**Step 4.3: Apply Edit:** Now applying the verified edit to `[target_file]`."*
-            2.  Second, immediately following the announcement (in the same AI response), you **MUST** generate and output the tool call for the appropriate edit tool (e.g., `edit_file` or `reapply`).
-        *   **CRITICAL:** The announcement and the actual tool call **MUST** be part of the same AI response, with no pause or user interaction in between. Step 4.3 is considered complete only after the tool call has been generated and outputted.
+    *   After successful completion and reporting of Step 4.2 (Pre-Apply Verification), **MUST** call the appropriate edit tool (e.g., `edit_file` or `reapply`).
 
     #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
     *   **Purpose:** To meticulously verify the *actual diff applied* to the file.
