@@ -140,11 +140,12 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Rationale for Sequential and Mandatory Execution:** Each step in this cycle (4.1 through 4.5) logically builds upon the successful and verified completion of the preceding one. This strict order is paramount for systematically preventing errors, ensuring that all changes meticulously align with the verified plan, and proactively maintaining the integrity and quality of the codebase. All five sub-steps are mandatory to form a comprehensive verification loop around every code modification:
         *   **4.1 Generate Proposed `code_edit` Diff Text:** This initial phase involves formulating the precise `code_edit` content based on the established and verified plan from Step 3.
             *   *Why it's first and mandatory:* A proposed change must be clearly defined before any verification or application can occur. This step translates the plan into a concrete, reviewable artifact.
-        *   **4.2 Pre-Apply Verification:** This crucial step involves a meticulous examination of the *proposed `code_edit` diff* (from 4.1) *before* it is submitted to the `edit_file` tool. It ensures the proposed changes align with the plan and are free of obvious errors or unintended modifications.
+        *   **4.2 Pre-Apply Verification:** This crucial step involves a meticulous examination of the *proposed `code_edit` diff* against the verified plan *before* calling the `edit_file` tool. It ensures the proposed changes align with the plan and are free of obvious errors or unintended modifications.
             *   *Why it's before 'Apply Edit' and mandatory:* To catch and rectify any deviations, errors, or misunderstandings in the *proposed code itself* prior to its integration into the actual codebase. This is a critical preventive checkpoint to avoid applying flawed or incomplete edits.
-        *   **4.3 Apply Edit:** Only after the `code_edit` has successfully passed the rigorous Pre-Apply Verification (4.2) is the `edit_file` (or `reapply`) tool called to modify the target file.
-            *   *Why it's after 'Pre-Apply Verification' and mandatory:* This ensures that only changes that have been thoroughly vetted against the plan are attempted on the live codebase, minimizing the risk of introducing errors.
-        *   **4.4 Post-Apply Verification:** Following the execution of the edit tool, this step meticulously verifies the *actual diff applied* to the file. It confirms that the tool correctly implemented the verified proposal from 4.2 and checks for any unexpected side-effects or discrepancies introduced by the tool itself.
+        *   **4.3 Apply Edit (After Successful 4.2):**
+            *   **MUST** explicitly state that the edit is about to be applied before calling the tool. *Example: "**Step 4.3: Apply Edit:** Now applying the verified edit to `[target_file]`."*
+            *   `4.3.1 Apply Edit Tool:` Call the edit tool **only after successful completion and reporting of Step 4.2 Pre-Apply Verification and after making the announcement above**. (e.g., Call `edit_file` or `reapply`)
+        *   **4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result):** Following the execution of the edit tool, this step meticulously verifies the *actual diff applied* to the file. It confirms that the tool correctly implemented the verified proposal from 4.2 and checks for any unexpected side-effects or discrepancies introduced by the tool itself.
             *   *Why it's after 'Apply Edit' and mandatory:* Edit tools may not always apply changes perfectly as specified. This step is essential to confirm that the *result in the file* accurately reflects the intended, verified change and to detect any tool-induced errors or incomplete applications.
         *   **4.5 Generate Post-Action Verification Summary:** This concluding step for the cycle involves creating a structured summary that documents the successful completion and outcomes of all preceding verification actions (4.2, 4.4) for the applied edit.
             *   *Why it's the final part of the cycle for an edit and mandatory:* This provides a clear, auditable record confirming that the entire verification process was diligently followed for the specific change. It serves as a final quality gate and proof of adherence before considering the edit cycle for that task complete.
@@ -154,6 +155,7 @@ When responding to user requests involving code analysis, planning, or modificat
     #### 4.1 Generate Proposed `code_edit` Diff Text
     *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the proposed diff text).
         *   Ensure `instructions` are explicit (add vs. modify/replace).
+        *   **When replacing or removing code, the old/deprecated code MUST be completely deleted, not commented out.** The `code_edit` should reflect this direct removal.
         *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring.
         *   **Output of this Step:** The formulated `code_edit` string (the proposed diff text). **You MUST present this string clearly as the output of Step 4.1 before proceeding to Step 4.2.**
         *   This step ONLY involves formulating the `code_edit` text content. You **MUST NOT** call `edit_file` or `reapply` during this step. Application occurs *only* in Step 4.3 after successful verification in Step 4.2.
@@ -175,7 +177,8 @@ When responding to user requests involving code analysis, planning, or modificat
 
     #### 4.3 Apply Edit (After Successful 4.2)
     *   **Action:**
-        *   `4.3.1 Apply Edit Tool:` Call the edit tool **only after successful completion and reporting of Step 4.2 Pre-Apply Verification**. (e.g., Call `edit_file` or `reapply`)
+        *   **MUST** explicitly state that the edit is about to be applied before calling the tool. *Example: "**Step 4.3: Apply Edit:** Now applying the verified edit to `[target_file]`."*
+        *   `4.3.1 Apply Edit Tool:` Call the edit tool **only after successful completion and reporting of Step 4.2 Pre-Apply Verification and after making the announcement above**. (e.g., Call `edit_file` or `reapply`)
 
     #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
     *   **Purpose:** To meticulously verify the *actual diff applied* by the tool (`edit_file` or `reapply`) and check for side effects.
@@ -348,6 +351,32 @@ When responding to user requests involving code analysis, planning, or modificat
 
 **`Procedure: Request Manual Edit`** (Triggered by Step 4.4.3.b.v if tool failures persist)
 1.  **STOP** tool attempts.
+2.  **State Tool Failure:** Explain the issue and the presumed incorrect file state based on last tool output.
+3.  **Provide Specific Edit Details for Manual Application:**
+    *   **MUST** clearly specify the target file.
+    *   **MUST** clearly state whether the action is an insertion, replacement, or deletion.
+    *   If an insertion or replacement, **MUST** provide the precise code block to be inserted/used as replacement.
+    *   If a deletion, **MUST** clearly describe or show the exact lines to be deleted.
+    *   **MUST** include sufficient surrounding context (a few lines before and after the change area) to uniquely identify the location of the edit.
+    *   **MUST** present this (for insertions/replacements) as a single, clearly demarcated code block, using the language's comment style for `// ... existing code ...` where appropriate, that the user can easily copy and paste to represent the *final state* of the edited section.
+    *   *Example (for insertion/replacement): "To manually apply the fix to `src/example.py`, please modify the relevant section to match the following (or insert at the indicated location):"*
+        ```python
+        // ... existing code ...
+        // Context line before change
+        // New code to be inserted / This block replaces the old code
+        // Further new code if applicable
+        // Context line after change
+        // ... existing code ...
+        ```
+    *   *Example (for deletion): "To manually apply the fix to `src/example.py`, please delete the following lines:"*
+        ```python
+        // ... existing code ...
+        // Context line before deletion
+        // Line to be deleted
+        // Another line to be deleted
+        // Context line after deletion
+        // ... existing code ...
+        ```
 
 ---
 
