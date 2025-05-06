@@ -3,7 +3,7 @@
 **ATTENTION AI ASSISTANT: This document outlines the mandatory process you **MUST** follow during general coding interactions to ensure consistent adherence to the project's standards. This process requires adherence to `PROJECT_STANDARDS.md` (Core Principles & Checklist) and the detailed guidelines in the project's specific `PROJECT_ARCHITECTURE.md` (Patterns, Structures, Examples for the relevant language/framework). This process complements, but does not replace, the detailed standards themselves. You **MUST** explicitly report the performance and outcome of mandatory checks as specified below.**
 
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
-**Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for explicit `**BLOCKER:**` points identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
+**Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
 **Version: 1.49** (Combat Superficial Execution)
 
@@ -29,7 +29,7 @@
 ## Core Principles & Critical Checks Summary
 
 **Key Principle:** While this process provides structure, the primary takeaway is that **strict adherence to the existing verification and checking steps is the most crucial factor** in preventing errors and ensuring robust, maintainable code.
-**Self-Driven Compliance Principle:** The AI is responsible for proactively initiating and completing **all** required steps and verifications outlined herein **without external prompting** (except when a `**BLOCKER:**` explicitly requires user input). The structured reporting and summaries mandated by this process serve as the primary **proof** of this self-driven compliance. Furthermore, to provide clear proof of step execution, the AI **MUST** prefix relevant sections of its responses with the corresponding step number and name (e.g., '**Step 3.2: Identify Standards & Verify Alignment**').
+**Self-Driven Compliance Principle:** The AI is responsible for proactively initiating and completing **all** required steps and verifications outlined herein **without external prompting** (except when the literal text `**BLOCKER:**` is used, as this explicitly requires user input). The structured reporting and summaries mandated by this process serve as the primary **proof** of this self-driven compliance. Furthermore, to provide clear proof of step execution, the AI **MUST** prefix relevant sections of its responses with the corresponding step number and name (e.g., '**Step 3.2: Identify Standards & Verify Alignment**').
 
 **Absolute Critical Checks (Non-Negotiable):**
 
