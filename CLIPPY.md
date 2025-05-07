@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.9. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.10. See CHANGELOG.md for detailed history.**
 
 we
 ---
@@ -226,7 +226,7 @@ When responding to user requests involving code analysis, planning, or modificat
 *   *If your intent was to add a specific function, but the diff also deletes an unrelated class, this is a critical tool failure.*
 *   *If your plan was to rename a variable within one method, but the diff shows modifications to logic in other methods, this is a critical tool failure.*
 *   *If you aimed to insert a simple log statement, but the diff also introduces new helper functions or complex conditional blocks, this is a critical tool failure.*
-In all such cases where the tool's changes significantly exceed or deviate from the precise, narrow intent, it must be treated as a tool misapplication, even if some unintended changes seem minor.
+In all such cases where the tool's changes significantly exceed or deviate from the precise, narrow intent, it must be treated as a tool misapplication, even if some unintended changes seem minor. **This includes being skeptical of what the diff *doesn't* show. If an intended change, such as a deletion, is not explicitly confirmed by the diff, assume it may not have happened and verify directly (see `Procedure: Verify Diff`, Step 7).**
 
     #### 4.1 Generate Proposed `code_edit` Diff Text
     *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the proposed diff text).
@@ -436,7 +436,7 @@ In all such cases where the tool's changes significantly exceed or deviate from 
         *   `c.` **Deletions:** Verify all deleted lines were *explicitly intended for deletion* as part of the current `intent`. **Treat any significant deletions not explicitly planned for the current edit step as a major deviation, even if the deleted code appears to be comments or unused. Such unplanned deletions signal a potential misinterpretation of edit boundaries by the tool or the AI.**
         *   `d.` Note all discrepancies for handling in Step 3 (Identify Deviations).
     2.  **Absence of Major Unintended Structural Changes:** Specifically verify that the diff does **not** include widespread deletion or reordering of code blocks unrelated to the `intent` (beyond what was noted in 1.c). If such changes are present, they **MUST** be treated as critical Deviations.
-    3.  **Identify Deviations:** Explicitly list any lines added, deleted, or modified in the `diff` that were *not* part of the `intent` ("Deviations"), including any major structural changes identified in the previous step.
+    3.  **Identify Deviations:** Explicitly list any lines added, deleted, or modified in the `diff` that were *not* part of the `intent` ("Deviations"), including any major structural changes identified in the previous step. **Furthermore, any component of the `intent` (e.g., an intended addition, modification, or deletion) that is not verifiably present in, or confirmed by, the applied `diff` also constitutes a Deviation and MUST be investigated.**
     4.  **Handle Deviations:** If Deviations found:
         *   **CRITICAL:** Fact-check **EVERY** Deviation using tools before accepting.
         *   **Execute `Procedure: Handle Deviation` (Section 5)** for each Deviation. **Report outcome clearly.**

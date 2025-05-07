@@ -2,6 +2,39 @@
 
 ---
 
+## Framework v0.2.10 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+
+**Summary of Changes:**
+Strengthened AI self-verification requirements within `CLIPPY.MD`'s post-edit procedures. Mandated autonomous file state verification using `read_file` when edit tool diffs are ambiguous or incomplete, particularly regarding intended deletions, before verification can proceed. Relies on the strength of the mandatory procedure (`Procedure: Verify Diff`, Step 7) rather than explicit negative constraints.
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Enhanced `Procedure: Verify Diff` (Section 4):**
+    *   Modified Step 1.c (Deletions): Explicitly requires treating unconfirmed *intended* deletions as critical discrepancies, mandating investigation via Step 7.
+    *   Modified Step 3 (Identify Deviations): Broadened definition of deviations to include any intended change not confirmed by the applied diff.
+    *   Overhauled Step 7 ("Context Line Check") to "File State Verification and Diff Ambiguity Resolution":
+        *   Added mandatory check for diff completeness regarding the *full* intent (adds, modifies, deletes).
+        *   Mandated **immediate and autonomous use of `read_file`** if the diff is insufficient or suspicious.
+        *   Established the content retrieved via `read_file` as the authoritative basis for completing the verification if the tool's diff was insufficient.
+
+2.  **Reinforced "CRITICAL WARNING" (Step 4):**
+    *   Added sentence emphasizing skepticism towards what a diff *doesn't* show (e.g., unconfirmed deletions) and directing AI to verify directly via the updated Step 7 of `Procedure: Verify Diff`.
+
+3.  **Removed Explicit Guiding Principle from Step 4.4:**
+    *   The "Guiding Principle: Autonomous Verification of Edit Outcomes" paragraph (previously added and then discussed) was removed from the start of Step 4.4. The process now relies on the mandatory actions defined within the updated `Procedure: Verify Diff` (Step 7) to enforce self-verification. (The removed text was archived in `CLIPPY_Optional_Additions.md`).
+
+4.  **Updated Table of Contents:** Reflects renaming of `Procedure: Verify Diff` Step 7. (Implicit change due to Step 1c above).
+
+5.  **Version Bump:** Document version updated to `v0.2.10`.
+
+**Reason for Changes:**
+To address a specific AI failure mode where uncertainty about an edit's outcome (due to an incomplete diff from the `edit_file` tool, particularly concerning deletions) led to premature user escalation instead of autonomous verification using available tools (`read_file`). The changes mandate self-reliance in verifying the actual file state when tool output is ambiguous, strengthening the core verification procedure itself.
+
+---
+
 ## Framework v0.2.9 - 2025-05-07
 
 **Affected Document(s):**
