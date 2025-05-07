@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.13. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.14. See CHANGELOG.md for detailed history.**
 
 we
 ---
@@ -163,6 +163,8 @@ When responding to user requests involving code analysis, planning, or modificat
             `d.` **Perform `Procedure: Verify Framework Compatibility` (Section 4)**: For framework entry points or library interactions, verify signature compatibility and adherence to established project patterns. State outcome.
             `e.` **Perform `Procedure: Ensure Logic Preservation` (Section 4) (Mandatory for Logic Replacement):** When replacing/restructuring logic blocks, document original behavior first ( **citing specific conditions or execution paths from the original code.** ), then detail how the new logic preserves it, explicitly justifying intentional changes and presenting trade-offs if necessary.
             `f.` **Perform `Procedure: Verify Configuration Usage Impact` (Section 4)**: When changing config values, identify usage locations and confirm compatibility/updates. State outcome.
+            `g.` **Consider Testability:** Briefly assess if the proposed code structure facilitates unit/integration testing. Note if dependencies are injectable or if the structure hinders testability.
+            `h.` **Consider Observability:** Briefly assess if the change warrants new or updated structured logging or metrics for monitoring and diagnostics, referencing project standards if available.
 
         `3.4.2.` **Verification for Moves/Renames:** Use *multiple* search strategies (as detailed in `Procedure: Analyze Impact`, Section 4) to confirm impact. **DO NOT** rely on a single 'no results' search. *Example: 'Modifying `parser_x` impacts `processor_y`. Plan includes verifying compatibility.'*
 

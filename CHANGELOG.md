@@ -2,6 +2,29 @@
 
 ---
 
+## Framework v0.2.14 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+
+**Summary of Changes:**
+Added light-touch considerations for Testability and Observability to the planning phase (Step 3.4.1) of `CLIPPY.md`.
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Added Testability Check (Step 3.4.1.g):
+    *   Introduced a new sub-point requiring a brief assessment of whether the proposed code structure facilitates testing (e.g., dependency injection, structural clarity).
+
+2.  **Added Observability Check (Step 3.4.1.h):
+    *   Introduced a new sub-point requiring a brief assessment of whether the proposed change warrants new or updated logging or metrics for monitoring/diagnostics.
+
+3.  **Version Bump:** Toolkit Component Version in `CLIPPY.md` updated to `v0.2.14`.
+
+**Reason for Changes:**
+To encourage proactive consideration of non-functional aspects like testability and observability during the planning phase, promoting more robust and maintainable code design without adding significant cognitive overhead to the process.
+
+---
+
 ## Framework v0.2.13 - 2025-05-07
 
 **Affected Document(s):**
