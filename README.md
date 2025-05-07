@@ -14,7 +14,7 @@ This repository provides a framework specifically designed to help AI assistants
 *   **Process Guidelines (e.g., `AI_CODING_PROCESS.md`, `PLAN_WRITING_PROCESS.md`):** These define mandatory workflows for the AI, including checklists for analysis, planning, and verification *before* making changes. This helps catch errors early.
 *   **Project-Specific Documents (❗ `PROJECT_STANDARDS.md`, `PROJECT_ARCHITECTURE.md`):** You **MUST CUSTOMIZE** these using the provided templates. They define your project's unique coding styles, architectural patterns, and operational rules.
 
-The process guidelines instruct the AI to strictly adhere to your customized project-specific documents. This tailored approach ensures the AI's contributions align with your specific needs and helps prevent common issues like incorrect assumptions or duplicated functionality.
+The process guidelines prompt the AI to follow your customized project-specific documents. This structured approach helps the AI's contributions align with your specific needs and helps mitigate common issues like incorrect assumptions or duplicated functionality.
 
 ## Key Documents & When to Use Them
 
