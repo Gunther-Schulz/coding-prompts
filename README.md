@@ -1,5 +1,9 @@
 # coding-prompts 🤖✨
 
+<p align="center">
+  <img src="img/logo.png" alt="logo" width="30%" />
+</p>
+
 ## Problem: AI Coding Assistants Can Be Unreliable
 
 AI coding assistants are powerful, but sometimes they make mistakes:
@@ -12,7 +16,7 @@ AI coding assistants are powerful, but sometimes they make mistakes:
 This repository provides a framework specifically designed to help AI assistants within the Cursor environment, leveraging the gemini-2.5-pro model. It is tailored for this specific setup and will most likely not function as intended with other tools or models. The core components are:
 
 *   **Process Guidelines (e.g., `AI_CODING_PROCESS.md`, `PLAN_WRITING_PROCESS.md`):** These define mandatory workflows for the AI, including checklists for analysis, planning, and verification *before* making changes. This helps catch errors early.
-*   **Project-Specific Documents (❗ `PROJECT_STANDARDS.md`, `PROJECT_ARCHITECTURE.md`):** You **MUST CUSTOMIZE** these using the provided examples. They define your project's unique coding styles, architectural patterns, and operational rules.
+*   **Project-Specific Documents (❗ `PROJECT_STANDARDS.md`, `PROJECT_ARCHITECTURE.md`):** You **MUST CUSTOMIZE** these using the provided examples. They define your project's unique coding styles, architectural patterns, and operational rules. You can of course AI-generate these.
 
 The process guidelines encourage using your customized project-specific documents, which provide key context on your project's coding standards and architecture. While the guidelines include general best practices as fallbacks, using your specific documents helps the AI produce code that better fits your project. This structured approach helps the AI's contributions align with your specific needs and helps mitigate common issues like incorrect assumptions or duplicated functionality.
 
