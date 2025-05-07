@@ -24,7 +24,7 @@ Past failures in planning have often stemmed from:
 
 **Goal:** To improve plan quality by incorporating rigorous upfront analysis of the codebase, standards, and potential dependencies, minimizing errors during subsequent implementation.
 
-**Framework Component Version: Belongs to AI Collaboration Framework v2.4. See FRAMEWORK_CHANGELOG.md for detailed history.**
+**Framework Component Version: Belongs to AI Collaboration Framework v0.2.4. See FRAMEWORK_CHANGELOG.md for detailed history.**
 **Component Status: Alpha**
 
 ---
