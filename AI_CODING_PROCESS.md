@@ -303,18 +303,24 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 
 *   **Trigger:** After successful completion of Step 5 (Adherence Checkpoint) and before concluding the interaction for the current overall task/request cycle.
 *   **Action:**
-    *   The AI **MAY** generate a "Deferred Observations Summary".
-    *   This summary should list noteworthy observations made during the execution of Steps 1-4 that were deemed out of scope for the current task (and not already escalated via a `**BLOCKER:**` or explicitly discussed and deferred with a documented plan during earlier steps) but might warrant future review or action. Examples include:
+    *   The AI **MAY** generate a "Deferred Observations Summary" for general observations (minor bugs, smells, etc. unrelated to immediate edit side effects).
+    *   **MANDATORY:** If any unintended modifications were introduced during Step 4 edits (even if the primary goal was met and the changes were accepted to proceed, as noted in Step 4.5), the AI **MUST** generate a "Deferred Edit Issues Summary" section within this step. This section **MUST**:
+        *   List each file and function affected by unintended side effects.
+        *   Clearly describe the specific unintended changes observed in the final applied diff (e.g., "Error handling logic in the final `try-except` block was altered", "Logging statements were changed from X to Y", "Cleanup logic Z was removed").
+        *   **Provide a detailed breakdown and analysis of the likely behavioral differences** resulting from these unintended changes (similar to the example analysis provided when asked about `analyze.py`, `docs.py`, `review.py` changes). Focus on how error handling, output, logging, or core function logic might now differ from the original, intended behavior.
+        *   **Explicitly ask the user if they want to prioritize fixing any of these specific deferred edit issues now**, or if they should be addressed later. Example: "Would you like me to attempt to correct any of these specific unintended modifications now, or should we defer them?"
+    *   The general "Deferred Observations Summary" should list noteworthy observations made during the execution of Steps 1-4 that were deemed out of scope for the current task (and not already escalated via a `**BLOCKER:**` or explicitly discussed and deferred with a documented plan during earlier steps) but might warrant future review or action. Examples include:
         *   Potential minor bugs or unhandled edge cases.
         *   Identified code smells (e.g., overly complex methods, duplicated logic).
         *   Minor deviations from best practices or project standards.
         *   Areas noted for potential future refactoring (clarity, performance, maintainability).
         *   Existing TODOs or FIXMEs encountered in directly relevant code sections.
     *   The summary should be concise and provide actionable context (e.g., file, function/area, brief description).
-    *   The AI **MUST** explicitly state: "**Step 6: Deferred Observations Summary:** No specific deferred observations were noted for future review during this task cycle." if no such summary is generated or if no items were noted.
-    *   *Example 1 (With Observations): "**Step 6: Deferred Observations Summary:** The following items were noted for potential future review: 1. `src/utils/parser.py` (`parse_data` function): Could be simplified to improve readability. 2. `src/models/user.py`: Consider adding validation for the `email` field format."*
-    *   *Example 2 (No Observations): "**Step 6: Deferred Observations Summary:** No specific deferred observations were noted for future review during this task cycle."*
-*   **Goal:** To capture potentially valuable insights or identified areas for improvement that were outside the immediate scope of the completed task, facilitating systematic follow-up. This step is for items not critical enough to have triggered a `**BLOCKER:**` or formal deferral discussion during the task itself.
+    *   The AI **MUST** explicitly state: "**Step 6: Deferred Observations Summary:** No specific deferred observations were noted for future review during this task cycle." if no *general* summary is generated or if no such items were noted (even if a mandatory "Deferred Edit Issues Summary" was generated).
+    *   *Example 1 (With Deferred Edit Issues):* "**Step 6: Deferred Edit Issues & Observations Summary:**\\n**Deferred Edit Issues:**\\n1. `src/commands/analyze.py` (`run_analysis`): Unintended changes to final `try-except` block. *Behavioral Impact:* May handle `FormatterError` differently, logs might be altered...\\n2. `src/commands/docs.py` (`generate_cli`): Unintended changes to logging/error handling. *Behavioral Impact:* Success message no longer prints to console, `OSError` handling less specific...\\n**General Observations:**\\n1. `src/utils/parser.py`: `parse_data` function could be simplified.\\n**Next Steps:** Would you like me to attempt to correct the unintended modifications in `analyze.py` or `docs.py` now, or should we defer these fixes?"
+    *   *Example 2 (No Edit Issues, No General Observations):* "**Step 6: Deferred Observations Summary:** No specific deferred observations were noted for future review during this task cycle."
+    *   *Example 3 (No Edit Issues, With General Observations):* "**Step 6: Deferred Observations Summary:**\\n**General Observations:**\\n1. `src/models/user.py`: Consider adding validation for the `email` field format."
+*   **Goal:** To capture potentially valuable insights or identified areas for improvement that were outside the immediate scope of the completed task, facilitating systematic follow-up. This step is for items not critical enough to have triggered a `**BLOCKER:**` or formal deferral discussion during the task itself. **Critically, it ensures unintended side effects from edits are clearly documented, analyzed for impact, and explicitly presented to the user for a decision on immediate action.**
 
 ---
 
