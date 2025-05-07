@@ -27,7 +27,7 @@ This document outlines the core coding principles, style guidelines, and develop
     *   Follow PEP 8 import ordering (standard library, third-party, local application).
     *   Use `isort` (via `ruff`) for automated import sorting.
     *   Avoid wildcard imports (`from module import *`).
-    *   Use absolute imports for local modules where possible (e.g., `from beat_the_books.domain.models import Game`) unless relative imports significantly improve clarity within closely related submodules.
+    *   Use absolute imports for local modules where possible (e.g., `from logtailer.core.models import LogEntry`) unless relative imports significantly improve clarity within closely related submodules.
 *   **Line Length:** Maximum 100 characters.
 
 ## 4. Naming Conventions
@@ -45,7 +45,7 @@ This document outlines the core coding principles, style guidelines, and develop
 *   **Philosophy:** Fail fast and explicitly. Catch exceptions where they can be meaningfully handled or appropriately logged and re-raised. Avoid catching generic `Exception` unless absolutely necessary and documented.
 *   **Custom Exceptions:** Define specific custom exceptions inheriting from base exception classes (e.g., `ProviderError`, `ValidationError`) in the relevant domain or application layer. See `PROJECT_ARCHITECTURE.md` for hierarchy examples.
 *   **Logging:**
-    *   Use the `loguru` library configured in `beat_the_books/config/logging.py`.
+    *   Use the `loguru` library, with setup typically in `logtailer/core/logging_setup.py` (or as defined in project configuration).
     *   Log messages should be informative and provide context.
     *   Use appropriate log levels: `DEBUG` for detailed diagnostics, `INFO` for operational messages, `WARNING` for potential issues, `ERROR` for runtime errors, `CRITICAL` for severe errors.
     *   Avoid logging sensitive information (passwords, API keys).
@@ -56,7 +56,7 @@ This document outlines the core coding principles, style guidelines, and develop
 *   **Requirement:** All new features and bug fixes **MUST** include corresponding tests (unit and/or integration).
 *   **Unit Tests:** Focus on testing individual functions or classes in isolation. Use mocking (`unittest.mock`) to isolate dependencies. Strive for high unit test coverage for core logic.
 *   **Integration Tests:** Test interactions between components or with external systems (e.g., database, APIs). Use fixtures and potentially test containers where appropriate.
-*   **Test Location:** Tests reside in the `tests/` directory, mirroring the `src/` structure (e.g., `tests/domain/test_models.py` tests `src/beat_the_books/domain/models.py`).
+*   **Test Location:** Tests reside in the `tests/` directory, mirroring the main application's structure (e.g., `tests/core/test_models.py` tests `logtailer/core/models.py`).
 *   **Assertions:** Use clear and specific `pytest` assertions.
 
 ## 7. Documentation
@@ -68,12 +68,42 @@ This document outlines the core coding principles, style guidelines, and develop
 
 ## 8. Dependency Management
 
-*   **Tool:** Use `conda` for environment management and `pip` (within conda environment) for package installation.
-*   **Definition Files:**
-    *   `environment.yml`: Defines the conda environment and core dependencies.
-    *   `pyproject.toml`: Defines project metadata, build dependencies, and tool configurations (black, ruff, pytest). Used by `pip` for installation.
-    *   `conda-lock.yml`: Generated lock file for reproducible conda environments.
-*   **Adding Dependencies:** Add new dependencies to `environment.yml` (for conda-managed) or `pyproject.toml` (under `[project.dependencies]`) and regenerate lock files (`conda-lock`).
+*   **Environment Management:** Python's built-in `venv` module is recommended for creating isolated virtual environments.
+    ```bash
+    python -m venv .venv
+    source .venv/bin/activate  # On Linux/macOS
+    # .venv\Scripts\activate    # On Windows
+    ```
+*   **Package Installation:** Use `pip` for package installation within the activated virtual environment.
+*   **Project Definition & Dependencies:**
+    *   `pyproject.toml`: This file is the primary source for:
+        *   Project metadata (name, version, authors).
+        *   Build system requirements (e.g., `setuptools`, `wheel`).
+        *   Tool configurations (e.g., `black`, `ruff`, `pytest`).
+        *   Project dependencies, listed under the `[project.dependencies]` table.
+*   **Locking Dependencies:** For reproducible environments, especially for CI/CD and team collaboration, generate a `requirements.txt` file:
+    ```bash
+    # Ensure your project is installed editable if you want its dependencies included
+    pip install -e .
+
+    # Freeze all packages in the current environment
+    pip freeze > requirements.txt
+    ```
+    To install from this lock file in a new environment:
+    ```bash
+    pip install -r requirements.txt
+    ```
+    Alternatively, for more structured dependency management and locking, consider tools like `pip-tools` (`pip-compile`) or `Poetry`. For this project, managing dependencies in `pyproject.toml` and using `pip freeze` for `requirements.txt` is the baseline.
+*   **Adding/Updating Dependencies:**
+    1.  Add or modify dependencies in the `[project.dependencies]` section of `pyproject.toml`.
+    2.  Update your environment:
+        ```bash
+        pip install -e . --upgrade
+        ```
+    3.  Regenerate `requirements.txt` if applicable:
+        ```bash
+        pip freeze > requirements.txt
+        ```
 
 ## 9. Security
 
