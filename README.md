@@ -4,6 +4,10 @@
   <img src="img/logo.png" alt="logo" width="30%" />
 </p>
 
+<p align="center">
+  <strong>⚡ Vibe Coder Certified ⚡</strong>
+</p>
+
 > An easy-to-use toolkit for AI coding with Cursor and the Gemini-2.5-pro model.
 
 ## It Looks Like You're Writing Some Code
@@ -13,7 +17,7 @@ AI coding tools are happy to:
 * Make assumptions instead of checking your actual codebase
 * Overlook important dependencies and side effects
 
-Coding-Clippy is here to get your AI back on track.
+Coding-Clippy is here to have your back and get your AI back on track.
 
 ## The AI Coding Tool Guide
 
