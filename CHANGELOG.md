@@ -2,6 +2,29 @@
 
 ---
 
+## Framework v0.2.15 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+
+**Summary of Changes:**
+Further enhanced `CLIPPY.md` planning phase (Step 3) to include proactive consideration for the complexity of newly generated code, configuration needs, and resource management.
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Enhanced Step 3.2 (Identify Standards & Verify Alignment):
+    *   Added a directive for the AI to ensure that its plan for *newly generated code* (functions, methods, logic blocks) prioritizes simplicity (e.g., appropriate length, limited nesting, SRP) and includes proactive decomposition of inherently complex new units.
+
+2.  **Added Configuration Needs Check (Step 3.4.1.i):
+    *   Introduced a new sub-point requiring assessment of whether a change necessitates new configurable parameters, promoting their integration with existing config mechanisms and avoiding hardcoding.
+
+3.  **Added Resource Management Check (Step 3.4.1.j):
+    *   Introduced a new sub-point requiring the plan to detail how system resources (files, connections, etc.) will be properly acquired and consistently released, especially in error scenarios.
+
+4.  **Version Bump:** Toolkit Component Version updated to v0.2.15.
+
+---
+
 ## Framework v0.2.14 - 2025-05-07
 
 **Affected Document(s):**
@@ -223,7 +246,7 @@ These updates stem from a CLI refactoring session where issues arose from: a pla
 *   `coding-prompts/AI_CODING_PROCESS.md`
 
 **Summary of Changes:**
-Enhanced the AI coding process to improve proactive assessment of existing code patterns, reconciliation of plans with partially modified codebases, handling of plan assumptions, and clarification of "plan" references.
+Enhanced AI coding process to improve proactive assessment of existing code patterns, reconciliation of plans with partially modified codebases, handling of plan assumptions, and clarification of "plan" references.
 
 **Detailed Changes to `coding-prompts/AI_CODING_PROCESS.md`:**
 
