@@ -4,7 +4,7 @@
   <img src="img/logo.png" alt="logo" width="30%" />
 </p>
 
-> A easy-to-use toolkit for AI coding with Cursor and the Gemini-2.5-pro model.
+> An easy-to-use toolkit for AI coding with Cursor and the Gemini-2.5-pro model.
 
 ## It Looks Like You're Writing Some Code
 
