@@ -2,6 +2,26 @@
 
 ---
 
+## Framework v0.2.11 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+
+**Summary of Changes:**
+Added a new "Absolute Critical Check" to `CLIPPY.md` mandating that the AI verify tool output congruence. This means the AI must actively check if a tool's actual output (e.g., from `read_file`, `grep_search`) aligns with the explicit request parameters and expected outcome, and handle discrepancies before proceeding.
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Added New "Absolute Critical Check" (Core Principles & Critical Checks Summary):**
+    *   Introduced check number 6: "**Verify Tool Output Congruence:** For tools where specific outputs are expected based on inputs (e.g., `read_file` returning a specific number of lines or full content, `grep_search` finding all instances), the AI **MUST** actively verify that the tool's actual output aligns with the explicit request parameters and expected outcome. Discrepancies **MUST** be acknowledged and handled before proceeding as if the request was fully met."
+
+2.  **Version Bump:** Document version (within `CLIPPY.md` itself, implied) updated to reflect framework alignment. (Toolkit Component Version updated to v0.2.11 in `CLIPPY.md`)
+
+**Reason for Changes:**
+To ensure the AI proactively verifies that tool outputs match specific expectations based on the inputs provided to the tool, preventing errors that arise from assuming a tool call perfectly fulfilled its intended scope without explicit output validation. This addresses potential misinterpretations of tool results.
+
+---
+
 ## Framework v0.2.10 - 2025-05-07
 
 **Affected Document(s):**
