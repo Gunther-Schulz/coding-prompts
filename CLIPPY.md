@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.11. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.13. See CHANGELOG.md for detailed history.**
 
 we
 ---
@@ -136,6 +136,7 @@ When responding to user requests involving code analysis, planning, or modificat
             d.  This check helps ensure the AI doesn't attempt to re-implement already existing logic or misinterpret the plan's applicability to a partially evolved codebase.
 
     `3.4.` **Check "Robust Solutions":** Confirm the plan avoids hacks/workarounds and addresses the root cause.
+        **Note on Framework Warnings:** When a framework issues a `RuntimeWarning` related to core invocation patterns (e.g., async function not awaited, incorrect registration), prioritize understanding and resolving the *source of the warning* itself. Treating only the subsequent errors (e.g., `NoneType` errors due to incomplete setup) without addressing the warning may lead to superficial fixes. The warning often points to the true root cause of instability or incorrect behavior.
         `3.4.0.a` **Assess Interacting Existing Patterns (SUGGESTION 1):** When planned changes significantly interact with or depend upon existing architectural patterns or critical execution paths within the target file(s) (e.g., application startup, core callbacks, central configuration), the AI **MUST** briefly assess these *existing* patterns for obvious robustness concerns that could be exacerbated by the planned changes (e.g., late initializations, potential for shared state issues, overly complex existing logic that the new code will plug into).
             *   **If significant concerns directly relevant to the stability of the planned integration are identified, they should be highlighted.**
             *   This is not a full audit of existing code, but a focused check on immediate interaction points critical for the success of the planned changes.
@@ -395,6 +396,7 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 **`Procedure: Verify Hypothesis`**
 *   **Purpose:** To factually verify assumptions made during planning before proceeding (called in Step 3.4.1.b).
 *   **Scope:** Covers external API structures, internal module/class/function interfaces, configuration values, data formats, library usage patterns (treat non-standard library/internal interface usage as an assumption). **CRITICAL:** Also covers assumptions about *interface consistency* between interacting components and *functional equivalence* when replacing logic (compare plan vs. documented old logic).
+    **Note on Implicit Framework Behaviors:** Assumptions about implicit framework behaviors (e.g., 'The framework will automatically await this type of async function,' or 'Context set in this callback will always be available in subcommands') are common and **MUST** be explicitly stated and verified, ideally against documentation or minimal reproducible examples if behavior is not explicitly documented for the specific use case.
 *   **Applicability:** **MUST** be performed **immediately** after stating any assumption during Planning (Step 3.4.1.b) that impacts the proposed plan or edit.
 *   **Steps (MUST perform IMMEDIATELY after stating assumption):**
     1.  **Detail Verification Method:** State specific method(s) (`read_file`, `grep_search`, docs review, etc.).
@@ -482,8 +484,8 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 *   **Purpose:** Ensure changes to framework entry points or library interactions are valid (called in Step 3.4.1.d).
 *   **Applicability:** **MUST** be performed during Planning (Step 3.4.1.d) when modifying code that directly interacts with or is invoked by a framework (e.g., CLI handlers, API routes) or uses external libraries in non-trivial ways.
 *   **Steps:**
-    1.  **Signature Check:** For framework entry points (CLI handlers, API routes), explicitly verify changes to signatures (sync/async, params, return types) are compatible with framework invocation.
-    2.  **Interaction Pattern Check:** Identify key framework/library interactions (e.g., 'Typer + DI', 'SQLAlchemy + Pydantic'). Confirm plan uses established project patterns OR check docs/examples for novel interactions. State check performed and outcome.
+    1.  **Signature Check:** For framework entry points (e.g., CLI handlers, API routes), explicitly verify changes to signatures (sync/async, params, return types) are compatible with framework invocation. This **MUST** include verifying how the framework invokes and manages the lifecycle of *registered callback functions or handlers* (e.g., for application events, request handling, or lifecycle hooks), especially when changing their synchronicity (`sync` to `async` or vice-versa). Pay close attention to how execution context or shared state is propagated to these callbacks and how `async` callbacks are awaited or managed by the framework's event loop or scheduler. If documentation is unclear, search for established community patterns or examples for this specific interaction. **Treat runtime warnings or diagnostic messages from the framework concerning callback invocation (e.g., indicating a coroutine was not properly awaited or a registration was incorrect) as critical indicators of a compatibility issue requiring immediate investigation.**
+    2.  **Interaction Pattern Check:** Identify key framework/library interactions. Confirm plan uses established project patterns OR check docs/examples for novel interactions. State check performed and outcome.
 
 **`Procedure: Verify Configuration Usage Impact`**
 *   **Purpose:** Check impact of changes to configuration values.

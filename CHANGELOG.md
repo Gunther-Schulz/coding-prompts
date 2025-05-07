@@ -2,6 +2,54 @@
 
 ---
 
+## Framework v0.2.13 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+
+**Summary of Changes:**
+Refined recent additions to `CLIPPY.md` to enhance language/framework agnosticism, particularly within `Procedure: Verify Framework Compatibility`.
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Made `Procedure: Verify Framework Compatibility` More Agnostic (Section 4):
+    *   Replaced specific examples like "Typer/Click app callbacks, middleware" and "`ctx.obj`" with more general terms like "registered callback functions or handlers" and "execution context or shared state".
+    *   Generalized the example RuntimeWarning.
+    *   Removed specific library examples from Step 2 (Interaction Pattern Check) to keep it focused on the pattern itself.
+
+2.  **Version Bump:** Toolkit Component Version in `CLIPPY.md` updated to `v0.2.13`.
+
+**Reason for Changes:**
+To ensure the coding process remains broadly applicable across different technology stacks by removing potentially overly specific examples introduced in the previous version, while retaining the core principles of the checks.
+
+---
+
+## Framework v0.2.12 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+
+**Summary of Changes:**
+Enhanced `CLIPPY.md` to improve verification of framework interactions. This includes: emphasizing root cause analysis for framework warnings, requiring explicit verification of implicit framework behavior assumptions, and strengthening checks for framework callback compatibility (especially concerning async/sync changes and context propagation).
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Strengthened `Procedure: Verify Framework Compatibility` (Section 4):**
+    *   Appended detailed clarification for verifying framework invocation of *callbacks*. This includes focusing on synchronicity changes (`sync`/`async`), context propagation (like `ctx.obj`), how `async` callbacks are awaited, and treating framework `RuntimeWarning`s (e.g., 'coroutine ... was never awaited') as critical indicators requiring immediate investigation.
+
+2.  **Added Emphasis to "Root Cause Analysis" for Framework Warnings (Step 3.4):**
+    *   Inserted a new note under "Step 3.4: Check 'Robust Solutions'" to prioritize understanding and resolving the *source of framework `RuntimeWarning`s* themselves, as they often point to the true root cause of subsequent errors.
+
+3.  **Refined `Procedure: Verify Hypothesis` for Implicit Framework Behaviors (Section 4):**
+    *   Added a note emphasizing that assumptions about implicit framework behaviors (e.g., automatic awaiting of async functions, context availability in subcommands) **MUST** be explicitly stated and verified (ideally against documentation or minimal examples).
+
+4.  **Version Bump:** Toolkit Component Version in `CLIPPY.md` updated to `v0.2.12`.
+
+**Reason for Changes:**
+To make the AI coding process more robust when dealing with framework-specific behaviors, particularly concerning the integration of asynchronous code (like callbacks) and ensuring correct context propagation. These changes are based on lessons learned from a CLI refactoring scenario where subtle framework interactions led to debugging challenges.
+
+---
+
 ## Framework v0.2.11 - 2025-05-07
 
 **Affected Document(s):**
