@@ -1,41 +1,50 @@
-# coding-prompts 🤖✨
+# Coding-Clippy
 
 <p align="center">
   <img src="img/logo.png" alt="logo" width="30%" />
 </p>
 
-## Problem: AI Coding Assistants Can Be Unreliable
+## Common Challenges with AI Coding Assistants
 
-AI coding assistants are powerful, but sometimes they make mistakes:
-*   Adding incorrect code they *think* is helpful.
-*   Making plans based on guesses, not your actual code.
-*   Missing the impact of changes elsewhere.
+AI coding assistants are powerful tools, but they have limitations:
+* Adding incorrect or non-functional code
+* Making assumptions without full context
+* Missing dependencies and side effects across the codebase
 
-## Solution: A Framework for Better AI Collaboration
+## A Framework for Effective Collaboration
 
-This repository provides a framework specifically designed to help AI assistants within the Cursor environment, leveraging the gemini-2.5-pro model. It is tailored for this specific setup and will most likely not function as intended with other tools or models. The core components are:
+Coding-Clippy provides a structured framework for AI assistants in the Cursor environment using the gemini-2.5-pro model. It guides AI behavior to follow best practices and project-specific requirements.
 
-*   **Process Guidelines (e.g., `AI_CODING_PROCESS.md`, `PLAN_WRITING_PROCESS.md`):** These define mandatory workflows for the AI, including checklists for analysis, planning, and verification *before* making changes. This helps catch errors early.
-*   **Project-Specific Documents (❗ `PROJECT_STANDARDS.md`, `PROJECT_ARCHITECTURE.md`):** You **MUST CUSTOMIZE** these using the provided examples. They define your project's unique coding styles, architectural patterns, and operational rules. You can of course AI-generate these.
+Core components:
+* **Process Guidelines** (`AI_CODING_PROCESS.md`, `PLAN_WRITING_PROCESS.md`): Structured workflows that include analysis, planning, and verification steps before implementing changes.
+* **Project-Specific Documents** (`PROJECT_STANDARDS.md`, `PROJECT_ARCHITECTURE.md`): Customizable templates that define your project's coding standards and architecture.
 
-The process guidelines encourage using your customized project-specific documents, which provide key context on your project's coding standards and architecture. While the guidelines include general best practices as fallbacks, using your specific documents helps the AI produce code that better fits your project. This structured approach helps the AI's contributions align with your specific needs and helps mitigate common issues like incorrect assumptions or duplicated functionality.
+The framework works best when AI follows your customized project documents, ensuring generated code meets your specific requirements while falling back to general best practices when needed.
 
-## Key Documents & When to Use Them
+## Available Tools
 
-*   **`AI_CODING_PROCESS.md`**: The main workflow for *all* coding tasks (fixing bugs, adding features, refactoring). **Reference this most often.** (While most effective when used with your customized `PROJECT_STANDARDS.md` and `PROJECT_ARCHITECTURE.md`, it includes fallbacks if these are not yet available.)
-    *   *Use:* `@AI_CODING_PROCESS.md Refactor this function...`
-*   **`PLAN_WRITING_PROCESS.md`**: A specific process for when you ask the AI to *create a plan* before coding. **(Note: Currently `Component Status: Alpha` - undergoing refinement to improve robustness of generated plans. See `KNOWN_ISSUES.md`.)**
-    *   *Use:* `@PLAN_WRITING_PROCESS.md Create a plan to add OAuth...`
-*   **`PROJECT_STANDARDS.md` (❗ MUST CUSTOMIZE)**: Defines *your* project's core principles, coding style, testing approach, etc. The AI **must** follow these. (Usually referenced automatically by the process documents). **See `example_supporting_documents/` for a template.**
-*   **`PROJECT_ARCHITECTURE.md` (❗ MUST CUSTOMIZE)**: Describes *your* project's specific architecture, patterns, libraries, and directory structure. The AI **must** follow this. (Usually referenced automatically by the process documents). **See `example_supporting_documents/` for a template.**
-*   **`learning_resources/` (Directory)**: Contains supplementary materials like `ai_failure_modes.md` and `ai_plan_writing_pitfalls.md`. These offer deeper dives into AI interaction patterns, common pitfalls, and best practices that have shaped this framework's design. Essential for understanding the *why* behind the process guidelines.
-*   **`FRAMEWORK_CHANGELOG.md`**: Tracks updates made to the process documents themselves.
-*   **`KNOWN_ISSUES.md`**: Lists known shortcomings or areas for improvement in the framework's process documents.
+* **`AI_CODING_PROCESS.md`**: Primary workflow for coding tasks (bug fixes, features, refactoring). Most effective when used with customized standards documents.
+  * Usage: `@AI_CODING_PROCESS.md Refactor this function...`
 
-## Getting Started
+* **`PLAN_WRITING_PROCESS.md`**: Process for creating implementation plans before coding. (Currently in Alpha status - see `KNOWN_ISSUES.md`)
+  * Usage: `@PLAN_WRITING_PROCESS.md Create a plan for adding OAuth...`
 
-1.  **❗ Customize `PROJECT_STANDARDS.md` and `PROJECT_ARCHITECTURE.md`:** Copy the templates from `example_supporting_documents/` to the root of `coding-prompts/` (or elsewhere accessible) and **fill them with your project's specific details**. This is crucial for the AI to follow *your* rules.
-2.  **Reference the Process:** When asking the AI to code or plan, include the relevant process document (`@AI_CODING_PROCESS.md` or `@PLAN_WRITING_PROCESS.md`) in your prompt.
-3.  **Ensure AI Access:** Make sure the AI can see these key documents (the process documents and *your customized* standards/architecture documents).
+* **`PROJECT_STANDARDS.md`** (requires customization): Defines project principles, coding style, and testing approach.
 
-By making the AI follow these structured processes and your specific standards, you significantly improve the quality and reliability of its contributions. While not foolproof, it helps prevent many common pitfalls.
+* **`PROJECT_ARCHITECTURE.md`** (requires customization): Documents project architecture, patterns, and structure.
+
+* **`learning_resources/`**: Materials on AI interaction patterns and best practices.
+
+* **`FRAMEWORK_CHANGELOG.md`**: Documents framework updates.
+
+* **`KNOWN_ISSUES.md`**: Lists current limitations.
+
+## Implementation Steps
+
+1. **Customize Project Documents:** Adapt templates from `example_supporting_documents/` to your project's requirements.
+
+2. **Reference Process Documents:** Include the relevant process document in your requests to the AI.
+
+3. **Ensure Document Accessibility:** Make both process documents and your customized standards accessible to the AI.
+
+Following these structured processes and project-specific standards significantly improves AI contribution quality and reliability, helping you avoid common issues.
