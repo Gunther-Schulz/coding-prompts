@@ -24,9 +24,9 @@ Coding-Clippy is here to have your back and get your AI back on track.
 Coding-Clippy acts as a guide for AI coding tools. This toolkit works with the Cursor environment and gemini-2.5-pro model to help mitigate common AI coding pitfalls. It's easy to use and "just works".
 
 What's included:
-* **`CLIPPY.md`**: Primary workflow for coding tasks (bug fixes, features, refactoring) that enforces verification procedures, dependency checks, and impact analysis. Most effective when customized to project standards. Includes built-in planning capabilities sufficient for most common coding tasks.
-* **`PLANNER.md`**: A specialized guide for creating formal, detailed implementation plans as standalone deliverables before coding begins. Best for complex architectural changes or multi-component features. (Currently in Alpha status)
-* **Project-Specific Example Documents** (in `example_supporting_documents/` folder): Example reference files showing how to define code standards and architecture for your project.
+* 🤖 **`CLIPPY.md`**: Primary workflow for coding tasks (bug fixes, features, refactoring) that enforces verification procedures, dependency checks, and impact analysis. Most effective when customized to project standards. Includes built-in planning capabilities sufficient for most common coding tasks.
+* 📜 **`PLANNER.md`**: (Currently in **Alpha** status.) A specialized guide for creating formal, detailed implementation plans as standalone deliverables before coding begins. Best for complex architectural changes or multi-component features.
+* **Project-Specific Example Documents** (in `templates/` folder): Example reference files showing how to define code standards and architecture for your project.
   * `PROJECT_STANDARDS.md`: Example coding style guide
   * `PROJECT_ARCHITECTURE.md`: Example project blueprint
 
@@ -38,15 +38,15 @@ Example of `CLIPPY.md` verification step:
 ## The Toolkit
 
 ### Process Guides
-* **`CLIPPY.md`**: A process that guides AI coding tools through planning, verification, and implementation of code changes while preventing common pitfalls.
+* 🤖 **`CLIPPY.md`**: A process that guides AI coding tools through planning, verification, and implementation of code changes while preventing common pitfalls.
   * Usage: `@CLIPPY.md Refactor this function...`
 
-* **`PLANNER.md`**: For when a formal, standalone implementation plan is needed before diving into code.
+* 📜 **`PLANNER.md`**: For when a formal, standalone implementation plan is needed before diving into code.
   * Usage: `@PLANNER.md Create a plan for adding OAuth...`
   * Example usage: "`@PLANNER.md` Create a plan for adding OAuth 2.0 authentication across our microservice architecture."
   * (Currently in Alpha status - see `KNOWN_ISSUES.md` for details)
 
-### Example Project Configuration (in `example_supporting_documents/`)
+### Example Project Configuration (in `templates/`)
 * **`PROJECT_STANDARDS.md`**: An example coding style guide - demonstrates how to document project principles, patterns, and testing approach.
 
 * **`PROJECT_ARCHITECTURE.md`**: An example project blueprint - shows how to document architecture, components, and structure.
@@ -58,6 +58,10 @@ Example of `CLIPPY.md` verification step:
 
 * **`KNOWN_ISSUES.md`**: Current limitations being addressed.
 
+* **`CLIPPY_Optional_Additions.md`**: Contains experimental principles and guidelines. These are candidates for possible future incorporation into the main `CLIPPY.md` script to address specific recurring issues or to further refine AI behavior based on ongoing testing and project needs.
+
+* **`TODO.md`**: A list of planned enhancements, features to investigate, and potential improvements for the `Coding-Clippy` toolkit, particularly for `CLIPPY.md`.
+
 ## Getting Started with Coding-Clippy
 
 Coding-Clippy is designed for immediate use, helping AI coding tools follow a structured process for more reliable results:
@@ -67,11 +71,18 @@ Coding-Clippy is designed for immediate use, helping AI coding tools follow a st
     *   For example: "`@CLIPPY.md` Refactor this function to improve performance."
     *   `CLIPPY.md` will enforce its core structured process and verification checks, even without project-specific configurations.
 
-2.  **Customize for Best Results:**
-    *   While `CLIPPY.md` works out-of-the-box, its true power is unlocked when tailored to a project.
-    *   When ready, use the example files in `example_supporting_documents/` as references to create your own project-specific versions of `PROJECT_STANDARDS.md` and `PROJECT_ARCHITECTURE.md`.
-    *   Providing details about project principles, coding style, and architecture allows `CLIPPY.md` to guide the AI with much greater precision.
-    *   Note: Consider renaming the `example_supporting_documents/` folder to something more descriptive like `example_files/` or `reference_documents/` to better reflect their purpose.
+2.  **Integrate and Customize for Best Results:**
+    *   To effectively use `Coding-Clippy` with your project, consider adding this repository as a Git submodule. This allows you to easily keep the toolkit updated while maintaining a clean separation from your project's codebase.
+      ```bash
+      # In your project's root directory:
+      git submodule add <URL_to_Coding-Clippy_repository> external/coding-clippy
+      # (Replace <URL_to_Coding-Clippy_repository> with the actual Git URL of this toolkit)
+      git submodule update --init --recursive
+      ```
+    *   Create and maintain your project-specific `PROJECT_STANDARDS.md` and `PROJECT_ARCHITECTURE.md` files **directly within your own project** (e.g., in your project's root, a dedicated `docs/` folder, or even a `.github/` folder).
+    *   You can use the files in this toolkit's `templates/` directory (located within the submodule, e.g., `external/coding-clippy/templates/`) as templates or starting points for your own project documents.
+    *   When using `@CLIPPY.md` or `@PLANNER.md` from the submodule, you will then reference your project's versions of these documents by providing their path relative to your project root (e.g., `@PROJECT_STANDARDS.md`, `@docs/PROJECT_ARCHITECTURE.md`).
+    *   Tailoring these documents with your project's specific principles, coding style, and architecture enables `CLIPPY.md` (and other toolkit components) to guide the AI with significantly greater accuracy and relevance to your codebase.
 
 3.  **Using the `PLANNER.md` Guide:**
     *   For most coding tasks, `CLIPPY.md`'s built-in planning capabilities (Step 3) are sufficient and you don't need to use `PLANNER.md` separately.
