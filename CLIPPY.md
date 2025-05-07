@@ -5,8 +5,9 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Framework Component Version: Belongs to AI Collaboration Framework v0.2.9. See FRAMEWORK_CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.9. See CHANGELOG.md for detailed history.**
 
+we
 ---
 
 ## Table of Contents

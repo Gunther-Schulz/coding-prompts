@@ -1,6 +1,6 @@
-# AI Assistant - Standard Plan Writing Process
+# AI Assistant - Standard Planning Process
 
-**ATTENTION AI ASSISTANT: This document outlines a general mandatory process you MUST follow when asked to *generate* an implementation plan. This process ensures plans are robust, context-aware, and proactively address potential integration issues *before* execution begins. It complements the project-specific plan execution process document (e.g., `AI_CODING_PROCESS.md`) and requires awareness of the project's `PROJECT_STANDARDS.md` and language/framework-specific `PROJECT_ARCHITECTURE.md`.**
+**ATTENTION AI ASSISTANT: This document outlines a general mandatory process you MUST follow when asked to *generate* an implementation plan. This process ensures plans are robust, context-aware, and proactively address potential integration issues *before* execution begins. It complements the project-specific plan execution process document (e.g., `CLIPPY.md`) and requires awareness of the project's `PROJECT_STANDARDS.md` and language/framework-specific `PROJECT_ARCHITECTURE.md`.**
 
 ## CRITICAL REQUIREMENT: Deep Code Comprehension & Pitfall Avoidance
 
@@ -24,7 +24,7 @@ Past failures in planning have often stemmed from:
 
 **Goal:** To improve plan quality by incorporating rigorous upfront analysis of the codebase, standards, and potential dependencies, minimizing errors during subsequent implementation.
 
-**Framework Component Version: Belongs to AI Collaboration Framework v0.2.4. See FRAMEWORK_CHANGELOG.md for detailed history.**
+**Framework Component Version: Belongs to AI Collaboration Framework v0.2.4. See CHANGELOG.md for detailed history.**
 **Component Status: Alpha**
 
 ---
@@ -42,18 +42,18 @@ When responding to user requests asking you to create an implementation plan, yo
         *   If the current model is `gemini-2.5-pro`, proceed to Step 1.
         *   If the current model is **NOT** `gemini-2.5-pro`:
             *   The AI Assistant **MUST** state its current model name.
-            *   The AI Assistant **MUST** inform the user: "This planning process (`PLAN_WRITING_PROCESS.md`) is optimized for `gemini-2.5-pro`. You are currently interacting with `[Actual Model Name]`. Some capabilities, analytical depths, or instruction interpretations assumed by this process might not be fully supported or optimally performed by `[Actual Model Name]`, potentially leading to less robust or detailed plans. Are you sure you want to continue generating a plan with `[Actual Model Name]` using this process?"
+            *   The AI Assistant **MUST** inform the user: "This planning process (`PLANNER.md`) is optimized for `gemini-2.5-pro`. You are currently interacting with `[Actual Model Name]`. Some capabilities, analytical depths, or instruction interpretations assumed by this process might not be fully supported or optimally performed by `[Actual Model Name]`, potentially leading to less robust or detailed plans. Are you sure you want to continue generating a plan with `[Actual Model Name]` using this process?"
             *   **BLOCKER:** The AI Assistant **MUST NOT** proceed with plan generation (Step 1 onwards) until the user explicitly confirms they wish to continue with the current non-optimized model. If the user does not confirm, await further instructions.
 *   **Next Step:** Upon successful model verification (or user confirmation for non-optimized models), proceed to Step 1.
 
 ### 0.1. Document Maturity & Alpha Status Acknowledgment
 
 *   **Trigger:** Immediately after successful completion of Step 0 (Model Compatibility & Awareness Check).
-*   **Condition:** This step is active **only if** this `PLAN_WRITING_PROCESS.md` document contains a line stating `Component Status: Alpha`.
+*   **Condition:** This step is active **only if** this `PLANNER.md` document contains a line stating `Component Status: Alpha`.
 *   **Action:**
-    1.  **State Document Status:** The AI Assistant **MUST** state: "The `PLAN_WRITING_PROCESS.md` (this planning guide) is currently marked with `Component Status: Alpha`."
+    1.  **State Document Status:** The AI Assistant **MUST** state: "The `PLANNER.md` (this planning guide) is currently marked with `Component Status: Alpha`."
     2.  **Inform User of Implications:** The AI Assistant **MUST** inform the user: "An Alpha status indicates that this planning process may be experimental, incomplete, contain known or unknown issues, or might not cover all scenarios optimally. Using an Alpha version of this process could lead to plans that require more significant review, might be less robust, or could have unforeseen limitations. Your understanding and discretion are advised."
-    3.  **Request Confirmation:** The AI Assistant **MUST** ask: "Do you acknowledge this Alpha status and agree to proceed with generating a plan using this Alpha version of `PLAN_WRITING_PROCESS.md`?"
+    3.  **Request Confirmation:** The AI Assistant **MUST** ask: "Do you acknowledge this Alpha status and agree to proceed with generating a plan using this Alpha version of `PLANNER.md`?"
     4.  **BLOCKER:** The AI Assistant **MUST NOT** proceed with plan generation (Step 1 onwards) until the user explicitly confirms their acknowledgment and agreement. If the user does not confirm, await further instructions.
 *   **Next Step:** Upon user confirmation, proceed to Step 1 (Initial Request Analysis & Context Gathering).
 
