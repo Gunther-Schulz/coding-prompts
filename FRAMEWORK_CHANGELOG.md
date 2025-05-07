@@ -2,6 +2,39 @@
 
 ---
 
+## Framework v0.2.9 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/AI_CODING_PROCESS.md`
+
+**Summary of Changes:**
+Refactored `AI_CODING_PROCESS.md` by consolidating detailed instructions for ensuring sufficient file context and preparing robust edit tool inputs into new reusable procedures. This enhances modularity and clarity.
+
+**Detailed Changes to `coding-prompts/AI_CODING_PROCESS.md`:**
+
+1.  **Added `Procedure: Ensure Sufficient File Context` (Section 4):**
+    *   Extracted from the detailed instructions previously in Step 3.0.
+    *   This procedure now centralizes the logic for assessing context needs, attempting full file reads, handling incomplete reads (including the **BLOCKER** for user input), and the cautious use of alternatives like `grep_search`.
+
+2.  **Added `Procedure: Prepare Robust Edit Tool Input` (Section 4):**
+    *   Consolidated and extracted from detailed guidance previously in Step 3.8.b and Step 4.1.
+    *   This procedure centralizes best practices for constructing the `code_edit` string and `instructions` field for the `edit_file` tool, covering context anchoring, handling complex/sensitive files, managing large block movements, and specifying sub-part changes.
+
+3.  **Updated Step 3.0:** Now directly calls `Procedure: Ensure Sufficient File Context`.
+
+4.  **Updated Step 3.8.b:** Now directly calls `Procedure: Prepare Robust Edit Tool Input`.
+
+5.  **Updated Step 4.1:** Simplified to focus on formulating the `code_edit` text, referencing `Procedure: Prepare Robust Edit Tool Input` for detailed construction guidelines.
+
+6.  **Updated Table of Contents:** Added entries for the new procedures in Section 4.
+
+7.  **Version Bump:** Document version updated to `v0.2.9`.
+
+**Reason for Changes:**
+To improve the modularity, readability, and maintainability of `AI_CODING_PROCESS.md` by centralizing recurring complex instruction sets into named, reusable procedures. This reduces redundancy and makes the main workflow steps (3.0, 3.8.b, 4.1) more concise and focused on their primary intent, while ensuring that detailed best practices for critical operations (context gathering, edit tool preparation) are consistently applied.
+
+---
+
 ## Framework v0.2.8 - 2025-05-07
 
 **Affected Document(s):**

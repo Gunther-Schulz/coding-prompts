@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Framework Component Version: Belongs to AI Collaboration Framework v0.2.8. See FRAMEWORK_CHANGELOG.md for detailed history.**
+**Framework Component Version: Belongs to AI Collaboration Framework v0.2.9. See FRAMEWORK_CHANGELOG.md for detailed history.**
 
 ---
 
@@ -22,7 +22,25 @@
     *   [Step 5: Adherence Checkpoint](#5-adherence-checkpoint-final-step-in-cycle-critical)
     *   [Step 6: Summarize Deferred Observations (Optional)](#6-summarize-deferred-observations-optional)
 4.  [Reusable Verification Procedures](#reusable-verification-procedures)
+    *   [`Procedure: Ensure Sufficient File Context`](#procedure-ensure-sufficient-file-context)
+    *   [`Procedure: Prepare Robust Edit Tool Input`](#procedure-prepare-robust-edit-tool-input)
+    *   [`Procedure: Verify Dependency Reference`](#procedure-verify-dependency-reference)
+    *   [`Procedure: Analyze Impact`](#procedure-analyze-impact)
+    *   [`Procedure: Verify Hypothesis`](#procedure-verify-hypothesis)
+    *   [`Procedure: Verify Diff`](#procedure-verify-diff)
+    *   [`Procedure: Ensure Logic Preservation`](#procedure-ensure-logic-preservation)
+    *   [`Procedure: Verify Framework Compatibility`](#procedure-verify-framework-compatibility)
+    *   [`Procedure: Verify Configuration Usage Impact`](#procedure-verify-configuration-usage-impact)
+    *   [`Procedure: Verify Reapply Diff`](#procedure-verify-reapply-diff)
+    *   [`Procedure: Verify Edit File Diff`](#procedure-verify-edit-file-diff)
 5.  [Exception Handling Procedures](#exception-handling-procedures)
+    *   [`Procedure: Handle Unclear Root Cause / Missing Info`](#procedure-handle-unclear-root-cause--missing-info)
+    *   [`Procedure: Handle Architectural Decisions`](#procedure-handle-architectural-decisions)
+    *   [`Procedure: Handle Necessary Workaround`](#procedure-handle-necessary-workaround)
+    *   [`Procedure: Consult on Ambiguous Missing Dependency`](#procedure-consult-on-ambiguous-missing-dependency)
+    *   [`Procedure: Handle Failed Verification for Existing Dependency`](#procedure-handle-failed-verification-for-existing-dependency)
+    *   [`Procedure: Handle Deviation`](#procedure-handle-deviation)
+    *   [`Procedure: Request Manual Edit`](#procedure-request-manual-edit)
 6.  [Glossary of Key Terms](#glossary-of-key-terms)
 7.  [References](#references)
 
@@ -91,20 +109,8 @@ When responding to user requests involving code analysis, planning, or modificat
 ### 3. Pre-computation Standards Check (Planning Phase)
 
 **3.0. Assess Target File Complexity & Ensure Sufficient Context (Initial Check):**
-If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), or a file previously identified as complex or sensitive to edits, OR if an initial partial file read (e.g., from `read_file` without `should_read_entire_file=True`) proves insufficient to confidently locate all necessary code sections for planning and executing the required change:
-    *   **Action:** The AI **MUST** prioritize obtaining a complete and sufficient view of the target file before proceeding with detailed planning or edit generation for that file. The following sequence **MUST** be followed:
-        1.  **Attempt Full File Read:** The AI **SHOULD** first attempt to obtain the full file content using `read_file` with `should_read_entire_file=True`. (Note: Per tool constraints, reading entire files is generally only allowed if it has been edited or manually attached by the user. The AI should be mindful of this constraint when deciding to use this option).
-        2.  **Handle Incomplete Full Read Attempt:** If the `read_file` attempt in Step 3.0.Action.1:
-            *   Explicitly indicates that only a partial file is being returned (e.g., "File is not in the list of files that have been manually attached... Showing the first few lines instead."), OR
-            *   Fails for other reasons preventing a full read (e.g., tool error, file not found, exceeding size/line limits for full reads if applicable), OR
-            *   The AI still deems the returned content insufficient for the task despite `should_read_entire_file=True` having been attempted.
-            Then, the AI **MUST** take the following steps:
-            a.  Clearly state the situation (e.g., "Attempted to read the full content of `[filename]`, but only partial/no content was provided because [reason given by tool / content still insufficient].").
-            b.  **Request the user to provide the full file content** or the specific missing sections critical for the task.
-            c.  **BLOCKER:** The AI **MUST NOT** proceed with planning or generating edits for this file based on the incomplete information if a complete view was deemed necessary. It **MUST** await the user's provision of the file content OR explicit instruction from the user to proceed with caution using only the partial information (if the AI believes this *might* be feasible but carries risk, it should state this risk when asking for confirmation to proceed).
-        3.  **Alternative (Use with Extreme Caution and Explicit Justification):** Only if highly targeted and reliable means (e.g., a `grep_search` for a *unique and unambiguous* anchor string known to be immediately adjacent to *all* areas of interest) can *definitively and completely substitute* for a full file view for the specific task, and this is demonstrably less risky than proceeding with partial information after a failed full read attempt (and subsequent user request as per 3.0.Action.2.b), may this be considered. This path requires explicit justification by the AI, detailing why this alternative is sufficient and safe for the given task, and should be exceptionally rare for complex changes in critical files.
-    *   Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny based on the (ideally complete) information obtained.
-    *   *Example (after failed full read attempt): "Attempted to read the full content of `app.py` using `should_read_entire_file=True`, but only partial content was provided because the file was not on the pre-approved list for full reads. To accurately refactor the CLI structure as planned, which involves verifying all existing command registrations and ensuring correct placement of new ones, I need the complete content of this central configuration file. Please provide the full content of `src/beat_the_books/cli/app.py`."*
+*   **Action:** Execute `Procedure: Ensure Sufficient File Context` (Section 4).
+*   Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny based on the (ideally complete) information obtained.
 
 **NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
 
@@ -173,9 +179,7 @@ If the user's request targets a file known to be a central configuration hub (e.
 
     `3.8.` **Improve Edit Tool Reliability (Before `edit_file` Call):**
         *   **Trigger:** Before calling `edit_file`.
-        *   **Action:**
-            `a. Explicit Instructions:` Be explicit in `instructions` (add vs. modify/replace).
-            `b. Sufficient Context:` Ensure `code_edit` includes enough unchanged lines for anchoring. *As a guideline, aim for 2-3 unchanged lines immediately before and after each modified code block for anchoring, where the code structure allows. For very small, single-line changes in isolation, context might be adjusted. The goal is to uniquely identify the edit location. **For complex files, or when performing corrective edits on a previously mis-edited file, consider providing even more extensive context or using highly unique anchor lines. If feasible, explicitly define sections that MUST NOT be changed by commenting them in the `instructions` field of the `edit_file` call (e.g., 'IMPORTANT: Only modify the specified lines for X; the Y and Z sections must remain untouched'). Additionally, when an edit involves moving substantial blocks of code (e.g., entire functions, classes, or large multi-line logical blocks), or when prior edits by the tool for similar structural changes have shown inaccuracies in placement, prioritize providing the edit tool with the entire surrounding logical block (e.g., the full function body if moving code within it or into it, the full class definition if reordering methods) as context. The `instructions` field should then clearly state which specific sub-parts of that larger block are being modified, added, deleted, or reordered. While this may increase the size of the `code_edit` text, it can significantly improve the tool's accuracy for complex structural modifications.** *
+        *   **Action:** Execute `Procedure: Prepare Robust Edit Tool Input` (Section 4) when formulating the `code_edit` string and `instructions` field. This includes being explicit in `instructions` (add vs. modify/replace) and ensuring sufficient context/anchoring.
 
     `3.9.` **Exception for Diagnostics:**
         *   **Trigger:** For temporary deviations (e.g., print statements/temporary logging).
@@ -225,9 +229,7 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 
     #### 4.1 Generate Proposed `code_edit` Diff Text
     *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the proposed diff text).
-        *   Ensure `instructions` are explicit (add vs. modify/replace).
-        *   **When replacing or removing code, the old/deprecated code MUST be completely deleted, not commented out.** The `code_edit` should reflect this direct removal.
-        *   Ensure `code_edit` includes sufficient unchanged context lines for anchoring. *As a guideline, aim for 2-3 unchanged lines immediately before and after each modified code block for anchoring, where the code structure allows. For very small, single-line changes in isolation, context might be adjusted. The goal is to uniquely identify the edit location.* **When editing files identified as sensitive (per Step 3.0 or an assessment during `Procedure: Analyze Impact`) or when generating a corrective edit for a previously mis-applied diff, the AI MUST prioritize extreme precision. This includes using highly specific anchor lines, providing broader context than usual if it clarifies the edit boundaries, and reiterating in the `instructions` for `edit_file` any critical sections of the file that must remain unchanged. Additionally, when an edit involves moving substantial blocks of code (e.g., entire functions, classes, or large multi-line logical blocks), or when prior edits by the tool for similar structural changes have shown inaccuracies in placement, prioritize providing the edit tool with the entire surrounding logical block (e.g., the full function body if moving code within it or into it, the full class definition if reordering methods) as context. The `instructions` field should then clearly state which specific sub-parts of that larger block are being modified, added, deleted, or reordered. While this may increase the size of the `code_edit` text, it can significantly improve the tool's accuracy for complex structural modifications.**
+        *   Apply `Procedure: Prepare Robust Edit Tool Input` (Section 4) for guidelines on constructing the `code_edit` string (including context, anchoring, handling of sensitive files, block movements, deprecated code handling) and the `instructions` field.
         *   **Output of this Step:** The formulated `code_edit` string (the proposed diff text). **You MUST present this string clearly as the output of Step 4.1 before proceeding to Step 4.2.**
         *   This step ONLY involves formulating the `code_edit` text content. You **MUST NOT** call `edit_file` or `reapply` during this step. Application occurs *only* in Step 4.3 after successful verification in Step 4.2.
 
@@ -336,6 +338,39 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 ## Reusable Verification Procedures
 
 *(This section defines standard methods referenced in the main workflow.)*
+
+**`Procedure: Ensure Sufficient File Context`**
+*   **Purpose:** To ensure the AI has adequate file content for safe and accurate planning and editing, especially for critical or complex files.
+*   **Trigger:** Called by Step 3.0 when assessing target file complexity or if initial partial reads are insufficient.
+*   **Steps:**
+    1.  **Prioritize Complete View:** If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), a file previously identified as complex or sensitive to edits, OR if an initial partial file read (e.g., from `read_file` without `should_read_entire_file=True`) proves insufficient to confidently locate all necessary code sections for planning and executing the required change, the AI **MUST** prioritize obtaining a complete and sufficient view of the target file.
+    2.  **Attempt Full File Read:** The AI **SHOULD** first attempt to obtain the full file content using `read_file` with `should_read_entire_file=True`. (Note: Per tool constraints, reading entire files is generally only allowed if it has been edited or manually attached by the user. The AI should be mindful of this constraint when deciding to use this option).
+    3.  **Handle Incomplete Full Read Attempt:** If the `read_file` attempt in Step 2:
+        *   Explicitly indicates that only a partial file is being returned (e.g., "File is not in the list of files that have been manually attached... Showing the first few lines instead."), OR
+        *   Fails for other reasons preventing a full read (e.g., tool error, file not found, exceeding size/line limits for full reads if applicable), OR
+        *   The AI still deems the returned content insufficient for the task despite `should_read_entire_file=True` having been attempted.
+        Then, the AI **MUST** take the following steps:
+        a.  Clearly state the situation (e.g., "Attempted to read the full content of `[filename]`, but only partial/no content was provided because [reason given by tool / content still insufficient].").
+        b.  **Request the user to provide the full file content** or the specific missing sections critical for the task.
+        c.  **BLOCKER:** The AI **MUST NOT** proceed with planning or generating edits for this file based on the incomplete information if a complete view was deemed necessary. It **MUST** await the user's provision of the file content OR explicit instruction from the user to proceed with caution using only the partial information (if the AI believes this *might* be feasible but carries risk, it should state this risk when asking for confirmation to proceed).
+    4.  **Alternative (Use with Extreme Caution and Explicit Justification):** Only if highly targeted and reliable means (e.g., a `grep_search` for a *unique and unambiguous* anchor string known to be immediately adjacent to *all* areas of interest) can *definitively and completely substitute* for a full file view for the specific task, and this is demonstrably less risky than proceeding with partial information after a failed full read attempt (and subsequent user request as per Step 3.c), may this be considered. This path requires explicit justification by the AI, detailing why this alternative is sufficient and safe for the given task, and should be exceptionally rare for complex changes in critical files.
+    *   *Example (after failed full read attempt): "Attempted to read the full content of `app.py` using `should_read_entire_file=True`, but only partial content was provided because the file was not on the pre-approved list for full reads. To accurately refactor the CLI structure as planned, which involves verifying all existing command registrations and ensuring correct placement of new ones, I need the complete content of this central configuration file. Please provide the full content of `src/beat_the_books/cli/app.py`."*
+
+**`Procedure: Prepare Robust Edit Tool Input`**
+*   **Purpose:** To construct the `code_edit` and `instructions` parameters for the `edit_file` tool in a way that maximizes reliability and precision.
+*   **Trigger:** Called by Step 3.8.b and applied by Step 4.1 when preparing to call `edit_file`.
+*   **Steps:**
+    1.  **Explicit Instructions Field:** The `instructions` field given to `edit_file` **MUST** be explicit about the action (add vs. modify/replace).
+    2.  **Sufficient Context in `code_edit` for Anchoring:**
+        *   **General Guideline:** Ensure the `code_edit` string includes enough unchanged lines (aim for 2-3 immediately before and after each modified block) for anchoring, where code structure allows. Adjust for small, isolated single-line changes. The goal is to uniquely identify the edit location.
+        *   **Complex/Sensitive/Corrective Edits:** For files identified as complex/sensitive (per `Procedure: Ensure Sufficient File Context` or an assessment during `Procedure: Analyze Impact`), or when generating corrective edits for previously mis-applied diffs, the AI **MUST** prioritize extreme precision:
+            *   Use highly specific anchor lines in the `code_edit` string.
+            *   Provide broader context than usual in `code_edit` if it clarifies edit boundaries.
+            *   Reiterate in the `instructions` field any critical sections of the file that **MUST** remain unchanged (e.g., "IMPORTANT: Only modify the specified lines for X; the Y and Z sections must remain untouched.").
+    3.  **Handling Substantial Block Movements/Structural Changes in `code_edit`:** When an edit involves moving substantial blocks of code (e.g., entire functions, classes, or large multi-line logical blocks), or when prior edits by the tool for similar structural changes have shown inaccuracies in placement:
+        *   **Prioritize Full Logical Block Context:** Provide the edit tool with the entire surrounding logical block (e.g., the full function body if moving code within it or into it, the full class definition if reordering methods) as context in the `code_edit` string.
+        *   **Clarify Sub-Part Changes in `instructions`:** The `instructions` field **MUST** then clearly state which specific sub-parts of that larger block (provided in `code_edit`) are being modified, added, deleted, or reordered.
+    4.  **Deprecated Code Handling in `code_edit`:** When replacing or removing code, the old/deprecated code **MUST** be completely deleted from the `code_edit` string, not commented out. The `code_edit` should reflect this direct removal.
 
 **`Procedure: Verify Dependency Reference`**
 *   **Purpose:** To factually confirm the validity of a dependency reference (e.g., import, require) before relying on it or including it in code. **MUST** be performed for **every** reference during planning (3.4.1.b), pre-edit deviation handling (via `Procedure: Verify Diff`), post-edit verification (via `Procedure: Verify Diff`), and downstream checks (4.4.2.b.i).
