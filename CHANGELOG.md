@@ -2,6 +2,40 @@
 
 ---
 
+## Framework v0.2.18 - 2025-05-08
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+
+**Summary of Changes:**
+Added new sub-step `3.0.1` ("Verify Tool Output Congruence and Sufficiency") to `CLIPPY.md`'s planning phase to ensure AI explicitly verifies information-gathering tool outputs before use. Updated Table of Contents and Pre-computation Verification Summary accordingly.
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Added Step `3.0.1. Verify Tool Output Congruence and Sufficiency (After Information Gathering)`:**
+    *   Inserted after Step `3.0` in the "General Coding Workflow" (Section 3).
+    *   **Trigger:** Immediately after any information-gathering tool call (`read_file`, `grep_search`, etc.) within Step 3.
+    *   **Action:** Requires AI to:
+        *   Verify tool output aligns with request parameters (e.g., correct lines, no unexpected truncation).
+        *   Assess if output content is sufficient and clear for the immediate planning task.
+        *   Take corrective action (re-run tool, adjust parameters, clarify with user) if output is incongruent or insufficient.
+        *   Explicitly report the outcome of this verification.
+    *   Ensures data is validated before being used in subsequent planning steps.
+
+2.  **Updated `Pre-computation Verification Summary` (Step `3.10`):**
+    *   Added a new checklist item: `- [x/-] 7. Tool Output Verification:` to confirm Step `3.0.1` was performed for all tool outputs used in planning.
+
+3.  **Updated Table of Contents (Section 3):**
+    *   Added entries for `3.0. Assess Target File Complexity & Ensure Sufficient Context (Initial Check)`.
+    *   Added entries for the new `3.0.1. Verify Tool Output Congruence and Sufficiency (After Information Gathering)`.
+
+4.  **Version Bump:** Toolkit Component Version in `CLIPPY.md` updated to `v0.2.18`.
+
+**Reason for Changes:**
+To enhance the robustness of the AI's planning phase by ensuring that all information gathered from tools is explicitly checked for correctness, completeness (congruence with the request), and sufficiency for the task at hand *before* that information is used to make decisions or formulate further plans. This aims to prevent errors arising from acting on misunderstood, incomplete, or incongruent tool outputs.
+
+---
+
 ## Framework v0.2.17 - 2025-05-08
 
 **Affected Document(s):**

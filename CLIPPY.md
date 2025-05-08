@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.17. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.18. See CHANGELOG.md for detailed history.**
 
 we
 ---
@@ -19,6 +19,8 @@ we
     *   [Step 1: Confirm Standards Awareness](#1-confirm-standards-awareness-initial-step)
     *   [Step 2: Confirm Goal](#2-confirm-goal-recommended)
     *   [Step 3: Pre-computation Standards Check (Planning)](#3-pre-computation-standards-check-planning-phase)
+        *   [3.0. Assess Target File Complexity & Ensure Sufficient Context (Initial Check)](#30-assess-target-file-complexity--ensure-sufficient-context-initial-check)
+        *   [3.0.1. Verify Tool Output Congruence and Sufficiency (After Information Gathering)](#301-verify-tool-output-congruence-and-sufficiency-after-information-gathering)
     *   [Step 4: Edit Generation & Verification Cycle](#4-edit-generation--verification-cycle)
     *   [Step 5: Adherence Checkpoint](#5-adherence-checkpoint-final-step-in-cycle-critical)
     *   [Step 6: Summarize Deferred Observations (Optional)](#6-summarize-deferred-observations-optional)
@@ -129,6 +131,25 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Action:** Execute `Procedure: Ensure Sufficient File Context` (Section 4).
 *   Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny based on the (ideally complete) information obtained.
 
+**3.0.1. Verify Tool Output Congruence and Sufficiency (After Information Gathering):**
+*   **Trigger:** Immediately after each information-gathering tool call (e.g., `read_file`, `grep_search`, `codebase_search`, `list_dir`) within Step 3 before its output is used for further planning.
+*   **Action:**
+    1.  **Verify Congruence:** Confirm the tool's output aligns with the explicit request parameters. Examples:
+        *   `read_file`: Was the requested line range or full file content returned as expected?
+        *   `grep_search`/`codebase_search`: Do the results appear complete, or is there indication of truncation (e.g., "results capped at 50 matches") that might hide relevant information?
+        *   `list_dir`: Was the directory listing provided for the correct path?
+    2.  **Assess Sufficiency & Clarity:** Evaluate if the *content* of the output is adequate and unambiguous for the *specific planning task or hypothesis verification at hand*.
+    3.  **Handle Discrepancies/Insufficiencies:**
+        *   If output is incongruent with the request (e.g., wrong lines returned, unexpected truncation not acceptable for the task) or if the content is insufficient/ambiguous for the immediate purpose:
+            *   **MUST** explicitly state the issue.
+            *   **MUST** take corrective action *before* proceeding to use this data. Corrective actions may include:
+                *   Re-running the tool with adjusted parameters (e.g., more specific query, different line numbers).
+                *   Using an alternative tool to gather the necessary information.
+                *   If ambiguity persists, requesting clarification from the user.
+            *   If proceeding with potentially incomplete data is unavoidable and deemed acceptable after consideration, this **MUST** be explicitly stated along with potential risks.
+    4.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "Output of `read_file` for `xyz.py` verified, content is sufficient for planning.", "Initial `grep_search` for '\''MyClass'\'' was truncated; re-running with `include_pattern='*.py'` for better focus. Output verified and sufficient.", "Output of `list_dir` for `src/utils` verified and sufficient.").
+*   **Next Step:** Only after successful verification (or explicit acknowledgment of proceeding with limitations), use the tool's output for subsequent planning sub-steps (e.g., 3.1, 3.2, etc.).
+
 **NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
 
 *   **Trigger:** Before generating a multi-step plan or proposing a specific code edit (`edit_file` call).
@@ -223,6 +244,7 @@ When responding to user requests involving code analysis, planning, or modificat
         - `[x/-] 4. Logic Preservation Plan:` *[Brief confirmation `Procedure: Ensure Logic Preservation` (3.4.1.e) performed if applicable. Mark `[x]` if done, `[-]` if N/A.]*
         - `[x/-] 5. Blocker Checks:` *[Brief confirmation blocker checks (3.5/3.6) performed and guidance sought/received via Section 5 procedures if triggered. Mark `[x]` if checked & resolved/approved, `[-]` if N/A.]*
         - `[x] 6. Confirmation:` Pre-computation verification summary complete. *(Always `[x]`)*
+        - `[x/-] 7. Tool Output Verification:` *[Brief confirmation that all tool outputs used in planning were verified for congruence and sufficiency as per Step 3.0.1.]*
         ```
         *(Note: This summary serves as mandatory proof that pre-computation checks were completed autonomously before proceeding. Explicit justification is required for any step marked N/A.)*
 
@@ -660,6 +682,8 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 ## 8. References
 
 // ... potentially add references later ...
+
+---
 
 ## Glossary of Key Terms
 
