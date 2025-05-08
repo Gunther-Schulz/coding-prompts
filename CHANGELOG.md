@@ -1,28 +1,30 @@
-**(Note for AI Assistant: Use `date +%F` for current date. Future entries will list changed documents under the Framework Version.)**
+## [Unreleased]
 
----
+## [0.2.19] - YYYY-MM-DD
+### Added
+- **MONOLITH_CLIPPY.md:** Added Step 3.1.1 ("Investigate Specified Refactoring Sources") to explicitly handle investigation of external source code mentioned in refactoring plans.
+- **MONOLITH_CLIPPY.md:** Added rule under "Work with Facts" Core Principle: "Plan Directives Override Ambiguous Tool Output" to prioritize plan instructions over potentially incomplete tool results.
 
-**(Note for AI Assistant: Use `date +%F` for current date. Future entries will list changed documents under the Framework Version.)**
+### Changed
+- **MONOLITH_CLIPPY.md:** Modified Step 3.1 ("Search for Existing Logic") to reference the new Step 3.1.1 for external source investigation.
 
----
-
-## Framework v0.3.0 - 2025-05-08
+## [0.2.18] - 2024-07-17
 
 **Affected Document(s):**
-*   `coding-prompts/CLIPPY.MD` (Refactored)
-*   `coding-prompts/clippy_modules/01_GENERAL_WORKFLOW.md` (New)
-*   `coding-prompts/clippy_modules/02_REUSABLE_PROCEDURES.md` (New)
-*   `coding-prompts/clippy_modules/03_EXCEPTION_HANDLING.md` (New)
-*   `coding-prompts/clippy_modules/04_RUNTIME_ERROR_PROTOCOL.md` (New)
-*   `coding-prompts/clippy_modules/05_GLOSSARY.md` (New)
-*   `coding-prompts/clippy_modules/06_REFERENCES.md` (New)
+*   `coding-clippy/experimental/CLIPPY.MD` (Refactored & Moved)
+*   `coding-clippy/experimental/clippy_modules/01_GENERAL_WORKFLOW.md` (New & Moved)
+*   `coding-clippy/experimental/clippy_modules/02_REUSABLE_PROCEDURES.md` (New & Moved)
+*   `coding-clippy/experimental/clippy_modules/03_EXCEPTION_HANDLING.md` (New & Moved)
+*   `coding-clippy/experimental/clippy_modules/04_RUNTIME_ERROR_PROTOCOL.md` (New & Moved)
+*   `coding-clippy/experimental/clippy_modules/05_GLOSSARY.md` (New & Moved)
+*   `coding-clippy/experimental/clippy_modules/06_REFERENCES.md` (New & Moved)
 
 **Summary of Changes:**
-Major structural refactoring of the AI Coding Process documentation (`CLIPPY.MD`). The previously monolithic document has been modularized to improve AI manageability, maintainability, and clarity as the process grows in complexity.
+Major structural refactoring of the AI Coding Process documentation (`CLIPPY.MD`). The previously monolithic document has been modularized to improve AI manageability, maintainability, and clarity as the process grows in complexity. **These files were also moved to the `coding-clippy/experimental/` directory as the modularization is considered experimental and not yet fully functional.**
 
 **Detailed Changes:**
 
-1.  **`coding-prompts/CLIPPY.MD` Refactored:**
+1.  **`coding-clippy/experimental/CLIPPY.MD` Refactored & Moved:**
     *   Now serves as a shorter "umbrella" document.
     *   Retains the "Introduction & Goal" and "Core Principles & Critical Checks Summary".
     *   Adds a new "Overall Process Structure" section explaining the modular design.
@@ -30,7 +32,7 @@ Major structural refactoring of the AI Coding Process documentation (`CLIPPY.MD`
     *   Removes the detailed content for sections moved to modules.
     *   Toolkit Component Version updated to `v0.3.0`.
 
-2.  **New Module Files Created in `coding-prompts/clippy_modules/`:**
+2.  **New Module Files Created in `coding-clippy/experimental/clippy_modules/` (and Moved):**
     *   `01_GENERAL_WORKFLOW.md`: Contains the detailed Steps 0-6 of the main coding workflow (previously Section 3).
     *   `02_REUSABLE_PROCEDURES.md`: Contains the detailed Reusable Verification Procedures (previously Section 4).
     *   `03_EXCEPTION_HANDLING.md`: Contains the detailed Exception Handling Procedures (previously Section 5).

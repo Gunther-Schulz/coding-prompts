@@ -22,12 +22,12 @@ The AI Assistant **MUST** consult the relevant module file when executing a spec
 1.  [Introduction & Goal](#ai-assistant---standard-coding-process) (This file)
 2.  [Core Principles & Critical Checks Summary](#core-principles--critical-checks-summary) (This file)
 3.  [Overall Process Structure](#overall-process-structure-modular-design) (This file)
-4.  [General Coding Workflow](./coding-clippy/clippy_modules/01_GENERAL_WORKFLOW.md) (Steps 0-6)
-5.  [Reusable Verification Procedures](./coding-clippy/clippy_modules/02_REUSABLE_PROCEDURES.md)
-6.  [Exception Handling Procedures](./coding-clippy/clippy_modules/03_EXCEPTION_HANDLING.md)
-7.  [Runtime Error Diagnosis and Resolution Protocol](./coding-clippy/clippy_modules/04_RUNTIME_ERROR_PROTOCOL.md)
-8.  [Glossary of Key Terms](./coding-clippy/clippy_modules/05_GLOSSARY.md)
-9.  [References](./coding-clippy/clippy_modules/06_REFERENCES.md)
+4.  [General Coding Workflow](./clippy_modules/01_GENERAL_WORKFLOW.md) (Steps 0-6)
+5.  [Reusable Verification Procedures](./clippy_modules/02_REUSABLE_PROCEDURES.md)
+6.  [Exception Handling Procedures](./clippy_modules/03_EXCEPTION_HANDLING.md)
+7.  [Runtime Error Diagnosis and Resolution Protocol](./clippy_modules/04_RUNTIME_ERROR_PROTOCOL.md)
+8.  [Glossary of Key Terms](./clippy_modules/05_GLOSSARY.md)
+9.  [References](./clippy_modules/06_REFERENCES.md)
 
 ---
 
