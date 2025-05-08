@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.15. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.17. See CHANGELOG.md for detailed history.**
 
 we
 ---
@@ -43,7 +43,8 @@ we
     *   [`Procedure: Handle Deviation`](#procedure-handle-deviation)
     *   [`Procedure: Request Manual Edit`](#procedure-request-manual-edit)
 6.  [Glossary of Key Terms](#glossary-of-key-terms)
-7.  [References](#references)
+7.  [Protocol for Runtime Error Diagnosis and Resolution](#7-protocol-for-runtime-error-diagnosis-and-resolution)
+8.  [References](#8-references)
 
 ---
 
@@ -78,11 +79,25 @@ A superficial approach to codebase analysis that results in poor integration, du
 5.  **Handle Blockers/Deviations Systematically:** Follow the defined procedures when encountering unclear root causes, architectural issues, necessary workarounds, or unexpected deviations in proposed/applied edits. (See Section 5: `Exception Handling Procedures`, Step 4.2.1.d).
 6.  **Verify Tool Output Congruence:** For tools where specific outputs are expected based on inputs (e.g., `read_file` returning a specific number of lines or full content, `grep_search` finding all instances), the AI **MUST** actively verify that the tool's actual output aligns with the explicit request parameters and expected outcome. Discrepancies **MUST** be acknowledged and handled before proceeding as if the request was fully met.
 
+**Work with Facts:**
+    - Implement based *only* on specified requirements or approved proposals. *Suggest* potential improvements, necessary deviations, or alternative approaches (based on broader knowledge or identified shortcomings) *for discussion and confirmation* before implementation.
+    - Ask for clarification if information is missing; do not guess or make assumptions.
+    - Do not introduce default values or fallback behaviors unless specifically required.
+    - **Handling Information Discrepancies:**
+        *   When different sources of information appear to conflict (e.g., runtime errors/tracebacks vs. `read_file` tool output vs. previously applied edits vs. logs), the AI **MUST**:
+            1.  Explicitly acknowledge the discrepancy observed.
+            2.  Prioritize the most direct evidence of the *runtime state* (typically tracebacks and relevant logs) when forming immediate hypotheses for diagnosing runtime errors.
+            3.  Clearly state the prioritized evidence and the resulting hypothesis.
+            4.  If tool output (like `read_file`) seems inconsistent with runtime evidence, state this possibility (e.g., "potential for stale tool output") and formulate a plan to reconcile or confirm the actual code state if necessary for the next step (e.g., by attempting a re-read or focusing verification on the specific lines indicated by the runtime evidence).
+        *   The goal is transparently address conflicting data and proceed methodically based on the best available evidence for the immediate task (diagnosis or implementation).
+
 ---
 
 ## General Coding Workflow
 
 When responding to user requests involving code analysis, planning, or modification, you **MUST** integrate the following steps **and explicitly report their execution and outcome in your responses**:
+
+**Meta-Instruction on Reporting Detail:** The level of detail in reporting for each executed step (1 through 6) **MUST** remain consistently explicit and thorough, adhering to the specific requirements outlined for each step and procedure in this document. This applies equally to proactive development/refactoring tasks and to reactive debugging/error resolution tasks (see Section 7: Protocol for Runtime Error Diagnosis and Resolution). If a specific check or sub-step is genuinely not applicable in a given context, it **MUST** be explicitly marked `[-] N/A` with a concise justification, rather than being omitted silently.
 
 ### 0. Model Compatibility & Awareness Check
 
@@ -605,3 +620,67 @@ In all such cases where the tool's changes significantly exceed or deviate from 
         // Context line after deletion
         // ... existing code ...
         ```
+
+---
+
+## 7. Protocol for Runtime Error Diagnosis and Resolution
+
+*   **Trigger:** When a runtime error (e.g., indicated by a traceback, failed command execution with error messages) occurs during code execution or testing, interrupting the planned workflow.
+*   **Goal:** To systematically identify the root cause of the runtime error and implement a verified fix, while adhering to the project's quality standards and the core principles of this document.
+*   **Core Principle Application:** Runtime error diagnosis requires the same level of care, diligence, and adherence to the standard workflow (Steps 1-6) as any other coding task. All Core Principles (Section 2) remain paramount. The steps outlined below adapt the standard workflow, particularly Section 3 (Planning), for this specific context. Reporting detail **MUST** remain consistent as per the Meta-Instruction in Section 3.
+
+*   **Procedure:**
+    1.  **Acknowledge Error & Shift Focus:** Explicitly state the observed runtime error (citing traceback/logs) and confirm that the immediate goal is now to diagnose and resolve this error.
+    2.  **Apply Standard Workflow (Adapted):** Proceed through the standard Steps 1-6, adapting the "Planning" phase (Step 3) as follows:
+        *   **Step 1 (Confirm Standards Awareness):** Reiterate commitment to standards.
+        *   **Step 2 (Confirm Goal):** The goal is now implicitly "Diagnose and fix runtime error Z." Confirmation may be skipped unless the error context is highly ambiguous.
+        *   **Step 3 (Pre-computation Standards Check - Diagnostic Adaptation):**
+            *   `3.0. Assess Complexity & Ensure Sufficient Context:` **CRITICAL:** Gather all facts related to the error. Execute `Procedure: Ensure Sufficient File Context` for all files directly implicated by the traceback. Obtain full tracebacks, relevant log entries, and understand the inputs/conditions that triggered the error. **Explicitly address any information discrepancies** using the guidelines under the "Work with Facts" Core Principle (Section 2).
+            *   `3.1. Search for Existing Logic:` Search codebase/documentation for similar errors, patterns, or known issues related to the components involved.
+            *   `3.2. Identify Standards & Verify Alignment:` Identify the standard/principle being violated (e.g., type safety, library usage contract, logical flow). The plan's goal is to restore alignment.
+            *   `3.3. Check "Work with Facts":` Base all hypotheses and plans strictly on the gathered evidence (tracebacks, logs, verified code state). Clearly state assumptions derived from evidence.
+            *   `3.4. Check "Robust Solutions":` Prioritize finding the root cause over superficial patches. Plan a fix that addresses the underlying issue. Apply diagnostic sub-steps meticulously:
+                *   `3.4.1.a. Analyze Impact:` Analyze the potential impact of the *proposed fix* on related code/functionality *before* applying it.
+                *   `3.4.1.b. Verify Hypothesis:` **This is the core diagnostic loop.**
+                    i.  Formulate a specific, testable hypothesis about the root cause based on the evidence.
+                    ii. Detail the precise steps (tools, code reads, checks) to verify or refute the hypothesis.
+                    iii.Execute verification and report the outcome using the standard `Procedure: Verify Hypothesis` format.
+                    iv. If hypothesis is confirmed and leads to a fix, proceed to plan the fix. If refuted, formulate a new hypothesis based on findings and repeat.
+                *   `3.4.1.c. Enumerate Edge Cases/Errors:` Consider edge cases for the *proposed fix* itself. Does it handle different inputs correctly? Does it introduce new potential errors?
+                *   `3.4.1.d-j:` Apply other relevant checks from Step 3.4.1 (Framework Compatibility, Logic Preservation if refactoring is part of the fix, Config Impact, Testability, etc.) to the *proposed fix*.
+            *   `3.5. / 3.6. Handle Blockers:` If the root cause remains unclear after initial investigation, or if fixing the error requires architectural changes, use the appropriate procedures from Section 5.
+            *   `3.10 / 3.11 (Verification Summary / Preconditions):` Generate the Pre-computation Verification Summary for the *planned fix* before proceeding to Step 4. Verify preconditions for the fix edit.
+        *   **Step 4 (Edit Generation & Verification Cycle):** Apply the verified fix using the standard generate-verify-apply-verify cycle for the relevant file(s). Meticulously verify the applied diff.
+        *   **Step 5 (Adherence Checkpoint):** Confirm all steps (1-6, adapted) were followed for the error resolution.
+        *   **Step 6 (Summarize Deferred Observations):** Note any observations made during debugging that are out of scope for the immediate fix.
+    3.  **Resume Original Task (If Applicable):** Once the error is confirmed fixed and verified (completion of Step 5/6 for the fix), explicitly state this and indicate readiness to resume the original task that was interrupted, potentially re-evaluating its plan (Step 3) if the error/fix impacted it.
+
+---
+
+## 8. References
+
+// ... potentially add references later ...
+
+## Glossary of Key Terms
+
+**Blocker:** A point in the workflow where user input is explicitly required to proceed.
+**Deviation:** An unplanned change to the code that deviates from the intended plan.
+**Edit:** A proposed change to the code.
+**Edit Generation:** The process of creating a proposed edit.
+**Edit Verification:** The process of ensuring that the proposed edit is correct and does not introduce new errors.
+**Framework:** A set of libraries and tools that provide a structure for developing applications.
+**Hypothesis:** A proposed explanation for a phenomenon.
+**Implementation Plan:** A formal plan document outlining the steps to implement a change.
+**Logic Preservation:** The process of ensuring that the original functionality of the code is preserved when changes are made.
+**Plan:** The process of designing and structuring a solution to a problem.
+**Post-Action Verification:** The process of verifying that the changes made to the code have not introduced new errors or regressions.
+**Pre-Action Verification:** The process of verifying that the proposed changes are correct before they are applied to the code.
+**Procedure:** A set of steps to follow to achieve a specific goal.
+**Reapply:** The process of applying a previously verified edit to the code.
+**Reusable Verification Procedure:** A procedure that can be used multiple times to verify different aspects of the code.
+**Root Cause:** The underlying reason for an error or problem.
+**Self-Driven Compliance:** The AI's ability to follow a set of rules and procedures without external prompting.
+**Standard:** A set of rules and guidelines that are followed to ensure consistency and quality.
+**Verification:** The process of confirming that something is correct or accurate.
+
+---

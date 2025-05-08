@@ -2,6 +2,33 @@
 
 ---
 
+## Framework v0.2.17 - 2025-05-08
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+
+**Summary of Changes:**
+Added "Protocol for Runtime Error Diagnosis and Resolution" (Section 7) to guide methodical debugging. Added "Handling Information Discrepancies" guidance to "Work with Facts" principle (Section 2). Added "Meta-Instruction on Reporting Detail" to ensure consistent reporting verbosity (Section 3). Updated Table of Contents and section numbering. (Note: Also includes Glossary section inadvertently added during prior edit).
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Added Section 7: "Protocol for Runtime Error Diagnosis and Resolution":**
+    *   Provides a structured protocol for diagnosing and fixing runtime errors, adapting the standard workflow (Steps 1-6).
+    *   Emphasizes methodical investigation, hypothesis testing, and robust fixes.
+    *   Requires explicit confirmation of resuming the original task post-fix.
+2.  **Enhanced "Work with Facts" Core Principle (Section 2):**
+    *   Added "Handling Information Discrepancies" subsection detailing how to manage conflicting data from tracebacks, logs, and tool outputs (e.g., `read_file`).
+3.  **Added "Meta-Instruction on Reporting Detail" (Section 3):**
+    *   Reinforces the requirement for consistent, explicit, and thorough reporting for all steps (1-6) across all task types (development, refactoring, debugging).
+4.  **Updated Table of Contents & Section Numbering:** Reflected addition of Section 7 and renumbering of References to Section 8.
+5.  **Retained Glossary (Section 6):** Includes Glossary section added as a side-effect of a previous edit attempt.
+6.  **Version Bump:** Toolkit Component Version updated to v0.2.17.
+
+**Reason for Changes:**
+Based on collaborative review and debugging experiences, these changes enhance `CLIPPY.MD`'s robustness by: providing a formal, rigorous protocol for handling runtime errors; improving guidance on managing conflicting information sources; and ensuring consistent reporting detail regardless of task type.
+
+---
+
 ## Framework v0.2.16 - 2025-05-07
 
 **Affected Document(s):**
@@ -30,7 +57,7 @@ Enhanced `CLIPPY.md` to improve robustness against AI internal state inconsisten
 1.  **Revised Issue Entry ("AI's Internal File State Inconsistency..."):**
     *   Updated the existing issue regarding `read_file` to more accurately reflect the core problem observed: the AI's internal model of a file can be inconsistent or outdated even after a purported full read, leading to erroneous conclusions.
     *   Clarified the distinction between the tool's potentially misleading output display and the AI's internal state management failure.
-    *   Rewrote the "Recount of `CLIPPY.md` Experience" to highlight the AI's incorrect assertions about duplicate procedures persisting after full reads, and how targeted "no change" edits were needed to force correction.
+    *   Rewritten the "Recount of `CLIPPY.md` Experience" to highlight the AI's incorrect assertions about duplicate procedures persisting after full reads, and how targeted "no change" edits were needed to force correction.
     *   Updated "Status/Mitigation" to include the need for better AI self-correction and state integrity checks.
 
 **Reason for Changes:**
