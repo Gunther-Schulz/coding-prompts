@@ -35,6 +35,13 @@ Coding-Clippy offers a set of guides and resources to improve AI-assisted coding
 *   **Example Project Configuration** (in `templates/` folder): Example reference files showing how to define code standards and architecture for your project.
     *   `PROJECT_STANDARDS.md`: Example coding style guide - demonstrates how to document project principles, patterns, and testing approach.
     *   `PROJECT_ARCHITECTURE.md`: Example project blueprint - shows how to document architecture, components, and structure.
+*   **Supporting Modules for `CLIPPY.MD`** (in `clippy_modules/`):
+    *   `01_GENERAL_WORKFLOW.md`: Defines the step-by-step coding process.
+    *   `02_REUSABLE_PROCEDURES.md`: Contains common verification and action procedures.
+    *   `03_EXCEPTION_HANDLING.md`: Outlines how to deal with errors and exceptions.
+    *   `04_RUNTIME_ERROR_PROTOCOL.md`: Specific steps for diagnosing and resolving runtime errors.
+    *   `05_GLOSSARY.md`: Definitions of key terms used in the workflow.
+    *   `06_REFERENCES.md`: Links to external resources.
 *   **Supporting Resources**:
     *   `learning_resources/`: Educational materials on AI behavior and best practices.
     *   `CHANGELOG.md`: Tracks updates to the toolkit.
@@ -76,7 +83,6 @@ For the best results, integrate Coding-Clippy into your project and customize it
     ```bash
     # In your project's root directory:
     git submodule add https://github.com/Gunther-Schulz/coding-clippy
-    git submodule update --init --recursive
     ```
 
 *   **Create Your Project-Specific Documents:**
