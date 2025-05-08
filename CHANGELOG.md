@@ -2,6 +2,47 @@
 
 ---
 
+**(Note for AI Assistant: Use `date +%F` for current date. Future entries will list changed documents under the Framework Version.)**
+
+---
+
+## Framework v0.3.0 - 2025-05-08
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.MD` (Refactored)
+*   `coding-prompts/clippy_modules/01_GENERAL_WORKFLOW.md` (New)
+*   `coding-prompts/clippy_modules/02_REUSABLE_PROCEDURES.md` (New)
+*   `coding-prompts/clippy_modules/03_EXCEPTION_HANDLING.md` (New)
+*   `coding-prompts/clippy_modules/04_RUNTIME_ERROR_PROTOCOL.md` (New)
+*   `coding-prompts/clippy_modules/05_GLOSSARY.md` (New)
+*   `coding-prompts/clippy_modules/06_REFERENCES.md` (New)
+
+**Summary of Changes:**
+Major structural refactoring of the AI Coding Process documentation (`CLIPPY.MD`). The previously monolithic document has been modularized to improve AI manageability, maintainability, and clarity as the process grows in complexity.
+
+**Detailed Changes:**
+
+1.  **`coding-prompts/CLIPPY.MD` Refactored:**
+    *   Now serves as a shorter "umbrella" document.
+    *   Retains the "Introduction & Goal" and "Core Principles & Critical Checks Summary".
+    *   Adds a new "Overall Process Structure" section explaining the modular design.
+    *   Updates the "Table of Contents" to point to new module files using relative links.
+    *   Removes the detailed content for sections moved to modules.
+    *   Toolkit Component Version updated to `v0.3.0`.
+
+2.  **New Module Files Created in `coding-prompts/clippy_modules/`:**
+    *   `01_GENERAL_WORKFLOW.md`: Contains the detailed Steps 0-6 of the main coding workflow (previously Section 3).
+    *   `02_REUSABLE_PROCEDURES.md`: Contains the detailed Reusable Verification Procedures (previously Section 4).
+    *   `03_EXCEPTION_HANDLING.md`: Contains the detailed Exception Handling Procedures (previously Section 5).
+    *   `04_RUNTIME_ERROR_PROTOCOL.md`: Contains the detailed Protocol for Runtime Error Diagnosis and Resolution (previously Section 7).
+    *   `05_GLOSSARY.md`: Contains the Glossary of Key Terms (previously Section 6).
+    *   `06_REFERENCES.md`: Contains the References section (previously Section 8).
+
+**Reason for Changes:**
+To address concerns about the increasing size and complexity of the monolithic `CLIPPY.MD` potentially hindering AI processing and adherence. Modularization aims to improve context management, attention focus, maintainability, and scalability of the AI coding process documentation.
+
+---
+
 ## Framework v0.2.18 - 2025-05-08
 
 **Affected Document(s):**
