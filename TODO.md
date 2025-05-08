@@ -6,3 +6,4 @@
 - remove code instead of comment out. teh apply tool/ai has a etendecy to sommt out code instead of actually removing it.
 - 4.4.1 Verify Edit Application: b. Post-edit_file Verification: -> make the branch better. this looks like "a" was skipped.
 - consisten enforcement levels. (mus, crritical, etc)
+- emphasize autonomy. no need to check in with user for every single thing. only check in when you have to.
