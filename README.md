@@ -39,11 +39,10 @@ Example of `CLIPPY.md` verification step:
 
 ### Process Guides
 * 🤖 **`CLIPPY.md`**: A process that guides AI coding tools through planning, verification, and implementation of code changes while preventing common pitfalls.
-  * Usage: `@CLIPPY.md Refactor this function...`
+  * Usage: *`@CLIPPY.md Add a new API endpoint for /users`*
 
 * 📜 **`PLANNER.md`**: For when a formal, standalone implementation plan is needed before diving into code.
-  * Usage: `@PLANNER.md Create a plan for adding OAuth...`
-  * Example usage: "`@PLANNER.md` Create a plan for adding OAuth 2.0 authentication across our microservice architecture."
+  * Usage: *`@PLANNER.md Create a plan for adding OAuth...`*
   * (Currently in Alpha status - see `KNOWN_ISSUES.md` for details)
 
 ### Example Project Configuration (in `templates/`)
@@ -68,7 +67,7 @@ Coding-Clippy is designed for immediate use, helping AI coding tools follow a st
 
 1.  **Try It Out Immediately:**
     *   The easiest way to start is to invoke `CLIPPY.md` directly in your requests to the AI.
-    *   For example: "`@CLIPPY.md` Refactor this function to improve performance."
+    *   For example: *`@CLIPPY.md Add a new API endpoint for /users`*
     *   `CLIPPY.md` will enforce its core structured process and verification checks, even without project-specific configurations.
 
 2.  **Integrate and Customize for Best Results:**
