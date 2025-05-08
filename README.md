@@ -75,14 +75,14 @@ For the best results, integrate Coding-Clippy into your project and customize it
     This keeps the toolkit updated and separate from your project's codebase.
     ```bash
     # In your project's root directory:
-    git submodule add https://github.com/Gunther-Schulz external/coding-clippy
+    git submodule add https://github.com/Gunther-Schulz/coding-clippy
     git submodule update --init --recursive
     ```
 
 *   **Create Your Project-Specific Documents:**
     *   Develop `PROJECT_STANDARDS.md` and `PROJECT_ARCHITECTURE.md` files **within your own project**.
     *   **Note:** Do not rename these files. `CLIPPY.md` and `PLANNER.md` refer to them by these exact names.
-    *   Use the examples in this toolkit's `templates/` folder (e.g., `external/coding-clippy/templates/`) as a starting point.
+    *   Use the examples in this toolkit's `templates/` folder (e.g., `coding-clippy/templates/`) as a starting point.
     *   When using `@CLIPPY.md` or `@PLANNER.md`, include your project-specific documents by adding them to the chat prompt using the `@` mention (e.g., `@PROJECT_STANDARDS.md` and `@PROJECT_ARCHITECTURE.md`).
     *   Tailoring these documents allows `CLIPPY.md` to guide the AI with much greater relevance to your codebase.
     *   **Example of using `CLIPPY.md` with custom project documents:**
