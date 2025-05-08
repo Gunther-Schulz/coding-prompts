@@ -5,9 +5,8 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.18. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.19. See CHANGELOG.md for detailed history.**
 
-we
 ---
 
 ## Table of Contents
@@ -85,6 +84,7 @@ A superficial approach to codebase analysis that results in poor integration, du
     - Implement based *only* on specified requirements or approved proposals. *Suggest* potential improvements, necessary deviations, or alternative approaches (based on broader knowledge or identified shortcomings) *for discussion and confirmation* before implementation.
     - Ask for clarification if information is missing; do not guess or make assumptions.
     - Do not introduce default values or fallback behaviors unless specifically required.
+    - **Plan Directives Override Ambiguous Tool Output:** When an implementation plan provides an explicit instruction regarding a specific source location (e.g., to read, adapt, or investigate), this instruction takes precedence over initial tool outputs that might appear incomplete or contradictory (e.g., a `list_dir` command not showing expected files). Further investigation **MUST** be performed to satisfy the plan's directive before concluding that the required source information is unavailable.
     - **Handling Information Discrepancies:**
         *   When different sources of information appear to conflict (e.g., runtime errors/tracebacks vs. `read_file` tool output vs. previously applied edits vs. logs), the AI **MUST**:
             1.  Explicitly acknowledge the discrepancy observed.
@@ -155,7 +155,14 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Trigger:** Before generating a multi-step plan or proposing a specific code edit (`edit_file` call).
 *   **Action:**
 
-    `3.1.` **Search for Existing Logic:** Before planning implementation details (especially for utilities, validation, calculations), perform a preliminary search (`grep_search`, `codebase_search`) for existing implementations of the required functionality (referencing Audit Sections 1.B, 1.C). Briefly document findings, **explicitly stating the tool(s) used, query term(s), and specific key findings (files/functions) or confirming none found.** (e.g., "`grep_search` for `format_date`: Found existing utility `utils.format_date`, will reuse." or "`codebase_search` for `validate_user_input`: No specific existing validator found, planning new implementation.").
+    `3.1.` **Search for Existing Logic:** Before planning implementation details (especially for utilities, validation, calculations), perform a preliminary search (`grep_search`, `codebase_search`) for existing implementations of the required functionality **within the target codebase** (referencing Audit Sections 1.B, 1.C). Briefly document findings, **explicitly stating the tool(s) used, query term(s), and specific key findings (files/functions) or confirming none found.** (e.g., "`grep_search` for `format_date`: Found existing utility `utils.format_date`, will reuse." or "`codebase_search` for `validate_user_input`: No specific existing validator found, planning new implementation."). **Also consider if the plan specifies adapting code from external sources and proceed to Step 3.1.1 if applicable.**
+
+    `3.1.1.` **Investigate Specified Refactoring Sources (If Applicable):**
+        *   **Trigger:** If the active plan (e.g., `REFACTORPLAN.MD`) explicitly mentions refactoring, migrating, or adapting logic/configuration from a specific external source directory or file (e.g., 'Adapt logic from `OLADPP/src/export/shapefile/`').
+        *   **Action:**
+            a.  **MUST** treat this as a directive to investigate that source.
+            b.  **Before** proceeding with detailed implementation planning for the new component, use necessary tools (`list_dir` recursively, `grep_search`, `read_file` on discovered `.py` files) to sufficiently understand the structure, key logic, and types within that specified source location. Adhere to the principle "Plan Directives Override Ambiguous Tool Output" if initial tool results seem incomplete.
+            c.  **Report Findings:** Briefly summarize key findings relevant to the refactoring task (e.g., "Investigated `OLADPP/src/export/shapefile/`: Found `writer.py` containing shapefile writing logic using library X. Key classes/functions noted: `ShapeExporter`, `_write_record`." or "Investigation of `OLADPP/src/config/` revealed existing schema structure Y."). If investigation confirms no relevant code exists despite the plan directive, report that clearly.
 
     `3.2.` **Identify Standards & Verify Alignment:** Explicitly identify the Core Principles or specific sections from `PROJECT_STANDARDS.md` **and relevant technical patterns/structures from the project's `PROJECT_ARCHITECTURE.md`** that are most pertinent to the request. Briefly state how the proposed plan/edit aligns with these standards, **citing the primary relevant section/pattern name(s)**. **Confirm the plan prioritizes the simplest, clearest solution that fully meets requirements and adheres to all standards. Furthermore, when the plan involves generating new functions, methods, or significant blocks of new logic, the AI MUST ensure this planned new code itself will be structured for simplicity (e.g., appropriate length, limited nesting, clear control flow) and adhere to the Single Responsibility Principle. If a conceptual unit of new code seems inherently complex, the plan SHOULD proactively include its decomposition into smaller, more focused units.**
         *   *Example 1 (DI Focus): "Planning to add component X. This requires adhering to the Dependency Injection principles (`PROJECT_STANDARDS.md`) and specific DI configuration guidelines (`PROJECT_ARCHITECTURE.md`). Plan involves updating the DI config module per standard practice."*
