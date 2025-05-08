@@ -213,6 +213,14 @@ When responding to user requests involving code analysis, planning, or modificat
 
         **IMMEDIATE NEXT ACTION (Unless Blocked in Step 3):** Upon outputting this summary, and if no `**BLOCKER:**` from Step 3 has halted the process, you **MUST** immediately and autonomously continue to Step 4.1 (Generate Proposed `code_edit` Diff Text) for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
 
+    `3.11.` **Verify Action Preconditions (Before Generating Edit):** Before proceeding to Step 4.1 for a file, explicitly re-verify the *immediate preconditions* for the planned action based on the most recent file content obtained (ideally in Step 3.0). Examples:
+        *   If planning to *delete* specific lines/code blocks, **MUST** briefly re-confirm using `grep_search` or targeted `read_file` that those elements *currently exist*.
+        *   If planning to *add* a specific function/class/import, **MUST** briefly re-confirm it does *not already exist* in the intended form/location.
+        *   If planning to *modify* a block, **MUST** briefly re-confirm the block exists and appears structurally compatible with the planned change.
+        If a precondition is not met (e.g., trying to delete something that's already gone), **STOP**, report the discrepancy, and revise the plan (potentially skipping the edit for this file). This check must be explicitly confirmed in the response before Step 4.1.
+
+        **IMMEDIATE NEXT ACTION (Unless Blocked in Step 3 or Precondition Check Failed):** Upon successful completion and confirmation of the Precondition Check (3.11) (or if it was N/A), and if no `**BLOCKER:**` from Step 3 has halted the process, you **MUST** immediately and autonomously continue to Step 4.1 (Generate Proposed `code_edit` Diff Text) for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
+
 ### 4. Edit Generation & Verification Cycle
 
 *   **Purpose:** This step covers the critical cycle of generating a proposed code edit, verifying it rigorously *before* application, applying it, and verifying the result *after* application.
@@ -264,10 +272,10 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 
         `4.4.1` **Verify Edit Application:**
             *   `a.` Post-Reapply Verification:** ** **CRITICAL:** If modification resulted from `reapply`:
-                *   **Perform `Procedure: Verify Reapply Diff` (Section 5)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
+                *   **Perform `Procedure: Verify Reapply Diff` (Section 4)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
             *   `b.` Post-edit_file Verification:** ** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
                 *   **WARNING:** Treat Diff Output with Extreme Skepticism.
-                *   **Perform `Procedure: Verify Edit File Diff` (Section 5)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
+                *   **Perform `Procedure: Verify Edit File Diff` (Section 4)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
             *   `c.` No Introduced Redundancy:** ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
 
         `4.4.2` **Check for Leftover Code & Dependencies:**
@@ -289,6 +297,7 @@ In all such cases where the tool's changes significantly exceed or deviate from 
                     d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.6 / `Procedure: Handle Architectural Decisions`).
                     e.  Any other missed mandatory step, check, reporting, or verification from this document.
                     f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
+                    g.  The `edit_file` or `reapply` tool reported that "no changes were made" when the AI's plan explicitly intended to make a modification (e.g., deleting specific lines, adding specific lines).
                 d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action. **This corrective action MUST aim to restore the overall integrity and correctness of the file, addressing both deviations from the planned change AND any new issues introduced by the edit tool.** If the file's state is a result of the edit tool making unintended modifications to unrelated code, the primary goal of the self-correction is to achieve the user's intended change *without* these unintended side-effects, or to clean up those side-effects if the intended change is already present.
                 e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
                     Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
@@ -305,7 +314,7 @@ In all such cases where the tool's changes significantly exceed or deviate from 
     *   `b.` Action:** **MUST** generate a **Post-Action Verification Summary**. Confirms post-apply checks were **performed and documented**. Structure using the following format. Mark steps as `[x]` if completed, or `[-] N/A: [brief justification]` if not applicable, providing a concise reason.
         ```markdown
         **Post-Action Verification Summary:**
-        - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.4.1.a (if `reapply`), **4.4.1.b (via `Procedure: Verify Edit File Diff`, Section 5)**, 4.4.1.c (redundancy) done. State: 'Applied diff matches final intent.' OR 'Applied diff discrepancies: [List/Justification].'.]*
+        - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.4.1.a (if `reapply`), **4.4.1.b (via `Procedure: Verify Edit File Diff`, Section 4)**, 4.4.1.c (redundancy) done. State: 'Applied diff matches final intent.' OR 'Applied diff discrepancies: [List/Justification].'.]*
         - `[x/-] 2. Leftover Code & Dependency Analysis:` *[Brief confirm check **4.4.2.a (artifacts)** and **4.4.2.b (explicit dependency re-verification/deletion checks)** done. Outcome: e.g., "Cleanup OK", "Re-verification confirmed no missed updates".]*
         - `[x/-] 3. Correction Assessment:` *[Brief confirm check 4.4.3 performed. State if corrections were needed/made. Mark `[x]` if checked & OK, `[-]` if N/A.]*
         - `[x] 4. Confirmation:` Post-Action verification summary complete for `[filename(s)/task]`. *(Always `[x]`)*
@@ -511,40 +520,6 @@ In all such cases where the tool's changes significantly exceed or deviate from 
     1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal from Step 4.2 (specifically, the verified proposed `code_edit` diff after `Procedure: Verify Diff` execution in Step 4.2.1.b)* (incorporating any handled deviations from the pre-apply check).
     2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
 
-**`Procedure: Request Manual Edit`**
-*   **Trigger:** Called by Step 4.4.3.b.e if tool failures persist or edit application requires complex cleanup.
-*   **Advisory for "Unacceptable Original Edit Application with Failed Cleanup" Trigger:**
-    *   When this procedure is invoked because an automated edit achieved the primary goal but introduced unacceptable side-effects (churn, new errors in unrelated code) which a subsequent focused cleanup attempt also failed to resolve (as per Step 4.4.3.b.e.ii):
-        *   The explanation in "State Tool Failure" (Step 2 below) **MUST** clearly differentiate between the successful primary change and the failed cleanup of the unacceptable side-effects.
-        *   The primary goal of "Provide Specific Edit Details for Manual Application" (Step 3 below) **MUST** be to provide the user with the **original, minimal, and correct planned change** that was initially intended, presented cleanly with its necessary context, as if the side-effects had not occurred. This allows the user to apply the core intended change cleanly.
-1.  **STOP** tool attempts.
-2.  **State Tool Failure:** Explain the issue and the presumed incorrect file state based on last tool output.
-3.  **Provide Specific Edit Details for Manual Application:**
-    *   **MUST** clearly specify the target file.
-    *   **MUST** clearly state whether the action is an insertion, replacement, or deletion.
-    *   If an insertion or replacement, **MUST** provide the precise code block to be inserted/used as replacement.
-    *   If a deletion, **MUST** clearly describe or show the exact lines to be deleted.
-    *   **MUST** include sufficient surrounding context (a few lines before and after the change area) to uniquely identify the location of the edit.
-    *   **MUST** present this (for insertions/replacements) as a single, clearly demarcated code block, using the language's comment style for `// ... existing code ...` where appropriate, that the user can easily copy and paste to represent the *final state* of the edited section.
-    *   *Example (for insertion/replacement): "To manually apply the fix to `src/example.py`, please modify the relevant section to match the following (or insert at the indicated location):"*
-        ```python
-        // ... existing code ...
-        // Context line before change
-        // New code to be inserted / This block replaces the old code
-        // Further new code if applicable
-        // Context line after change
-        // ... existing code ...
-        ```
-    *   *Example (for deletion): "To manually apply the fix to `src/example.py`, please delete the following lines:"*
-        ```python
-        // ... existing code ...
-        // Context line before deletion
-        // Line to be deleted
-        // Another line to be deleted
-        // Context line after deletion
-        // ... existing code ...
-        ```
-
 ---
 
 ## Exception Handling Procedures
@@ -596,21 +571,6 @@ In all such cases where the tool's changes significantly exceed or deviate from 
     1.  **Fact-check Deviation:** Use tools to confirm the existence and correctness of the deviation.
     2.  **Justify Deviation:** If deviation is intentional, justify it. If not, state it's unplanned and report it.
     3.  **Integrate or Revise:** If the deviation is verified, justified as beneficial/necessary, and accepted: **formally update the current working plan and the intended `code_edit` to incorporate this deviation.** The `code_edit` can then be considered aligned with the *updated* plan. If the deviation is not acceptable, **revise the proposed `code_edit` to remove the deviation** and align with the original (or a newly revised) plan.
-
-**`Procedure: Verify Reapply Diff`**
-*   **Purpose:** To meticulously verify the diff applied by the `reapply` tool.
-*   **Trigger:** Called by Step 4.4.1.a immediately after a `reapply` tool call completes.
-*   **Steps:**
-    1.  **Treat Diff as New:** Approach with extreme skepticism.
-    2.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `reapply`*. The 'intent' for this verification is the file state *before* the `reapply` call. **Emphasize extra scrutiny due to `reapply` context.**
-    3.  **Structured Log:** **Immediately after `reapply` result,** **MUST** generate structured log confirming the execution and **overall outcome** of `Procedure: Verify Diff` (Step 2), explicitly mentioning the handling of any deviations. Use format similar to Step 4.2.2, noting it's post-reapply.
-
-**`Procedure: Verify Edit File Diff`**
-*   **Purpose:** To meticulously verify the diff applied by the standard `edit_file` tool.
-*   **Trigger:** Called by Step 4.4.1.b immediately after a standard `edit_file` tool call completes.
-*   **Steps:**
-    1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal from Step 4.2 (specifically, the verified proposed `code_edit` diff after `Procedure: Verify Diff` execution in Step 4.2.1.b)* (incorporating any handled deviations from the pre-apply check).
-    2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
 
 **`Procedure: Request Manual Edit`**
 *   **Trigger:** Called by Step 4.4.3.b.e if tool failures persist or edit application requires complex cleanup.

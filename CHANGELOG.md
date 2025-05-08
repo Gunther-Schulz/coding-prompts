@@ -2,6 +2,47 @@
 
 ---
 
+## Framework v0.2.16 - 2025-05-07
+
+**Affected Document(s):**
+*   `coding-prompts/CLIPPY.md`
+*   `coding-prompts/KNOWN_ISSUES.md`
+
+**Summary of Changes:**
+Enhanced `CLIPPY.md` to improve robustness against AI internal state inconsistencies after file reads. Added a pre-edit precondition check (Step 3.11), improved self-correction triggers (Step 4.4.3), and corrected procedure call site references. Documented related failure modes and experiences in `KNOWN_ISSUES.md`.
+
+**Detailed Changes to `coding-prompts/CLIPPY.md`:**
+
+1.  **Added Step `3.11 Verify Action Preconditions`:**
+    *   Introduced a new mandatory step before generating an edit (Step 4.1).
+    *   Requires the AI to explicitly re-verify the immediate preconditions for the planned action (e.g., existence of code to be deleted, non-existence of code to be added) against the latest file content.
+    *   If preconditions fail, the AI must STOP, report the discrepancy, and revise the plan.
+    *   The "IMMEDIATE NEXT ACTION" instruction to proceed to Step 4.1 was moved to after this step.
+
+2.  **Enhanced Step `4.4.3.b.c` (Triggers for Self-Correction):**
+    *   Added a new trigger (item `g.`): Self-correction is now also required if the `edit_file` or `reapply` tool reports "no changes were made" when the AI's plan expected modifications. This forces investigation into why the AI's understanding of the pre-edit state was incorrect.
+
+3.  **Updated Procedure Call Site References:**
+    *   Corrected section number references in Steps `4.4.1.a`, `4.4.1.b`, and `4.5` (item 1) to accurately point to the final de-duplicated locations of `Procedure: Verify Reapply Diff` (Section 4) and `Procedure: Verify Edit File Diff` (Section 4).
+
+**Detailed Changes to `coding-prompts/KNOWN_ISSUES.md`:**
+
+1.  **Revised Issue Entry ("AI's Internal File State Inconsistency..."):**
+    *   Updated the existing issue regarding `read_file` to more accurately reflect the core problem observed: the AI's internal model of a file can be inconsistent or outdated even after a purported full read, leading to erroneous conclusions.
+    *   Clarified the distinction between the tool's potentially misleading output display and the AI's internal state management failure.
+    *   Rewrote the "Recount of `CLIPPY.md` Experience" to highlight the AI's incorrect assertions about duplicate procedures persisting after full reads, and how targeted "no change" edits were needed to force correction.
+    *   Updated "Status/Mitigation" to include the need for better AI self-correction and state integrity checks.
+
+**Reason for Changes:**
+Stemming directly from a collaborative debugging and refactoring session of `CLIPPY.md`, these changes address several related issues:
+*   A subtle but critical AI failure mode where the AI claimed to have read the full file but repeatedly made incorrect conclusions about its content (specifically, the presence of already-deleted duplicates). This led to inefficient loops and highlighted the need for:
+    *   More rigorous pre-edit checks by the AI against the actual file state (new Step 3.11).
+    *   Explicit handling of "no changes made" edits as a signal of the AI's incorrect state understanding (new trigger in 4.4.3).
+    *   Clearer documentation of this failure mode and its nuances in `KNOWN_ISSUES.md`.
+*   Correction of internal cross-references within `CLIPPY.md` after confirming the correct de-duplicated locations of several procedures.
+
+---
+
 ## Framework v0.2.15 - 2025-05-07
 
 **Affected Document(s):**
@@ -58,7 +99,7 @@ Refined recent additions to `CLIPPY.md` to enhance language/framework agnosticis
 
 **Detailed Changes to `coding-prompts/CLIPPY.md`:**
 
-1.  **Made `Procedure: Verify Framework Compatibility` More Agnostic (Section 4):
+1.  **Made `Procedure: Verify Framework Compatibility` More Agnostic (Section 4):**
     *   Replaced specific examples like "Typer/Click app callbacks, middleware" and "`ctx.obj`" with more general terms like "registered callback functions or handlers" and "execution context or shared state".
     *   Generalized the example RuntimeWarning.
     *   Removed specific library examples from Step 2 (Interaction Pattern Check) to keep it focused on the pattern itself.
