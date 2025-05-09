@@ -1,4 +1,31 @@
+<!-- INSTRUCTIONS FOR MAINTAINERS:
+     When adding a new version entry, please use the output of the `date +%Y-%m-%d` command
+     for the date to ensure consistency. Place the newest version entry directly below
+     the '## [Unreleased]' heading.
+-->
 ## [Unreleased]
+
+## [0.2.20] - YYYY-MM-DD
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Clarified AI turn management for Steps 4.1-4.3 (Propose, Pre-Verify, Apply) and reinforced that Step 4.4 (Post-Apply Verification) must verify the actual tool output diff, not the original proposal. This aims to improve AI adherence to the sequential verification process.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Enhanced Step 4 ("Edit Generation & Verification Cycle") - "Sequential Execution and Autonomous Operation" subsection:**
+    *   Restructured to define an explicit two-turn process:
+        *   **Turn 1: Propose Edit (Step 4.1):** AI solely generates and presents the `code_edit` diff text.
+        *   **Turn 2: Pre-Verify Proposal & Initiate Apply (Steps 4.2 & 4.3):** AI performs pre-verification on the proposal from Turn 1, then issues the tool call.
+
+2.  **Enhanced Step 4.4 ("Post-Apply Verification (Mandatory After 4.3 Tool Call Result)")**:
+    *   Added a "CRITICAL INSTRUCTION FOR AI" at the beginning to conceptually discard memory of the proposed edit and focus exclusively on the tool's actual output diff.
+    *   Updated the "Purpose" and "Action" descriptions to emphasize that verification uses "ONLY the diff provided in the tool's output from Step 4.3".
+    *   Updated sub-steps `4.4.1.a` (Post-Reapply Verification) and `4.4.1.b` (Post-edit_file Verification) to explicitly state that the diff being verified is from the respective tool's output.
+
+3.  **Toolkit Component Version Update:**
+    *   Incremented version in `CLIPPY.MD` from `v0.2.19` to `v0.2.20`.
 
 ## [0.2.19] - YYYY-MM-DD
 ### Added

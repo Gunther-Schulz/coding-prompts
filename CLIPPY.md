@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.19. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.20. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -272,9 +272,13 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Sequential Execution and Autonomous Operation:**
     *   The sub-steps within this section (4.1 through 4.5, corresponding to the Core Cycle) **MUST** be executed sequentially in their presented numerical order for each file being modified. No sub-step may be skipped or reordered during the processing of a file.
     *   **Autonomous Execution and Turn Management for Steps 4.1 to 4.3:**
-        *   Step 4.1 (Generate Proposed `code_edit` Diff Text) and Step 4.2 (Pre-Apply Verification – including the execution and full reporting of `Procedure: Verify Diff` as per Step 4.2.1.b, and the "Pre-Edit Confirmation Statement" as per Step 4.2.2) **MUST** be completed sequentially and fully reported before proceeding to Step 4.3.
-        *   After the "Pre-Edit Confirmation Statement" (Step 4.2.2) is output, thereby confirming the successful completion of all Pre-Apply Verification checks:
-            *   The AI **MUST** proceed to Step 4.3 (Apply Edit) by initiating the relevant tool call (e.g., `edit_file`, `reapply`) within the **same response turn** in which the "Pre-Edit Confirmation Statement" (Step 4.2.2) is output. The AI's response turn will conclude with the tool call being issued. No other statements, planning activities, or user prompts are permitted between the full completion and reporting of Step 4.2 and the initiation of the Step 4.3 tool call.
+        *   **Turn 1: Propose Edit (Step 4.1)**
+            *   The AI's response turn for Step 4.1 **MUST** focus *solely* on generating and presenting the `code_edit` diff text and the `instructions` field.
+            *   This turn **MUST** conclude *after* presenting this proposed diff text. The AI **MUST NOT** proceed to Pre-Apply Verification (Step 4.2) or Apply Edit (Step 4.3) in this same response turn.
+        *   **Turn 2: Pre-Verify Proposal & Initiate Apply (Steps 4.2 & 4.3)**
+            *   In the subsequent response turn, the AI **MUST** first perform and fully report all sub-steps of Step 4.2 (Pre-Apply Verification), including the execution and full reporting of `Procedure: Verify Diff` on the *proposed `code_edit` text from Turn 1*, and culminate in the "Pre-Edit Confirmation Statement" (Step 4.2.2).
+            *   Immediately after the "Pre-Edit Confirmation Statement" (Step 4.2.2) is output, and within this **same response turn (Turn 2)**, the AI **MUST** then proceed to Step 4.3 (Apply Edit) by initiating the relevant tool call (e.g., `edit_file`, `reapply`).
+            *   This turn (Turn 2) **MUST** conclude with the tool call being issued. No other statements or planning activities are permitted between the full completion and reporting of Step 4.2 and the initiation of the Step 4.3 tool call.
         *   The only natural pause point within this per-file cycle (before commencing Step 4.4) is while awaiting the result of the tool call made in Step 4.3.
         *   **Do not pause for general user input during this per-file cycle (Steps 4.1 through 4.5)** unless a sub-step explicitly states it is a `**BLOCKER:**` or specifically requires asking for user confirmation (e.g., Step 2, or procedures in Section 5 that explicitly call for halting and user input).
     *   **Application to Multi-File Changes:** When a single user request or task necessitates changes to multiple files, this entire [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize] cycle (Steps 4.1 through 4.5) **MUST** be fully completed for one individual file *before* commencing Step 4.1 (Generate Proposed `code_edit` Diff Text) for any subsequent file involved in the same task. This per-file atomicity ensures that each modification is applied and verified against a consistent and up-to-date state of the codebase.
@@ -311,15 +315,16 @@ In all such cases where the tool's changes significantly exceed or deviate from 
     *   After successful completion and reporting of Step 4.2 (Pre-Apply Verification), **MUST** call the appropriate edit tool (e.g., `edit_file` or `reapply`).
 
     #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
-    *   **Purpose:** To meticulously verify the *actual diff applied* to the file.
-    *   **Action:** After a successful `edit_file` or `reapply` call result, explicitly check **and report the outcome of each** of the following:
+    *   **CRITICAL INSTRUCTION FOR AI:** Upon receiving the result from the tool call in Step 4.3, you **MUST** conceptually discard your memory of the *proposed `code_edit` text* from Step 4.1. Your entire analysis in Step 4.4 **MUST** be based *exclusively* on the **actual diff content provided in the output of the `edit_file` or `reapply` tool call from Step 4.3.** Do not refer back to the proposal from Step 4.1 except where `Procedure: Verify Edit File Diff` explicitly requires comparing the applied diff *to* that verified proposal. The primary object of scrutiny now is the *tool's reported action*.
+    *   **Purpose:** To meticulously verify the **actual diff resulting from the tool's execution in Step 4.3**, as reported in the tool's output. This diff reflects what was *actually applied* to the file, which may differ from the original proposal.
+    *   **Action:** After a successful `edit_file` or `reapply` call result, **using ONLY the diff provided in the tool's output from Step 4.3**, explicitly check and report the outcome of each of the following:
 
         `4.4.1` **Verify Edit Application:**
             *   `a.` Post-Reapply Verification:** ** **CRITICAL:** If modification resulted from `reapply`:
-                *   **Perform `Procedure: Verify Reapply Diff` (Section 4)**. This involves treating the diff as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
+                *   **Perform `Procedure: Verify Reapply Diff` (Section 4)**. This involves treating the **diff from the `reapply` tool's output** as new, re-performing full pre-edit verification (4.2.1 checks) on the applied diff, explicitly handling deviations, and logging confirmation.
             *   `b.` Post-edit_file Verification:** ** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
-                *   **WARNING:** Treat Diff Output with Extreme Skepticism.
-                *   **Perform `Procedure: Verify Edit File Diff` (Section 4)**. This includes: diff match, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
+                *   **WARNING:** Treat **Diff Output from the `edit_file` tool** with Extreme Skepticism.
+                *   **Perform `Procedure: Verify Edit File Diff` (Section 4)**. This includes: comparing the **diff from the `edit_file` tool's output** against the final proposal from Step 4.2, semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
             *   `c.` No Introduced Redundancy:** ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
 
         `4.4.2` **Check for Leftover Code & Dependencies:**
