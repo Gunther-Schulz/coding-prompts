@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.20. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.21. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -126,6 +126,10 @@ When responding to user requests involving code analysis, planning, or modificat
 *   *Example: "To confirm my understanding, the goal is to refactor X to achieve Y, primarily by implementing pattern Z. Is this correct?"*
 
 ### 3. Pre-computation Standards Check (Planning Phase)
+
+**Mandatory Refocus Before Planning:** Before proceeding with any sub-steps of this Planning Phase (3.0 onwards) for a new coding task or a distinct new phase of an ongoing task, the AI **MUST** first perform the "Sustained Adherence Refocus."
+*   **Action:** The AI **MUST** explicitly state: "**Sustained Adherence Refocus:** Actively re-evaluating and committing to the full set of principles and procedures within `AI_CODING_PROCESS.md` (this document) to ensure continued meticulous adherence for the upcoming planning and implementation."
+*   **Rationale:** This serves as a deliberate internal prompt for the AI to refresh its attention to the comprehensive guidelines in this document, counteracting potential focus drift during extended interactions and reinforcing the commitment to rigorous process execution before detailed planning begins.
 
 **3.0. Assess Target File Complexity & Ensure Sufficient Context (Initial Check):**
 *   **Action:** Execute `Procedure: Ensure Sufficient File Context` (Section 4).
@@ -271,14 +275,15 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Core Cycle:** [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]
 *   **Sequential Execution and Autonomous Operation:**
     *   The sub-steps within this section (4.1 through 4.5, corresponding to the Core Cycle) **MUST** be executed sequentially in their presented numerical order for each file being modified. No sub-step may be skipped or reordered during the processing of a file.
-    *   **Autonomous Execution and Turn Management for Steps 4.1 to 4.3:**
-        *   **Turn 1: Propose Edit (Step 4.1)**
-            *   The AI's response turn for Step 4.1 **MUST** focus *solely* on generating and presenting the `code_edit` diff text and the `instructions` field.
-            *   This turn **MUST** conclude *after* presenting this proposed diff text. The AI **MUST NOT** proceed to Pre-Apply Verification (Step 4.2) or Apply Edit (Step 4.3) in this same response turn.
-        *   **Turn 2: Pre-Verify Proposal & Initiate Apply (Steps 4.2 & 4.3)**
-            *   In the subsequent response turn, the AI **MUST** first perform and fully report all sub-steps of Step 4.2 (Pre-Apply Verification), including the execution and full reporting of `Procedure: Verify Diff` on the *proposed `code_edit` text from Turn 1*, and culminate in the "Pre-Edit Confirmation Statement" (Step 4.2.2).
-            *   Immediately after the "Pre-Edit Confirmation Statement" (Step 4.2.2) is output, and within this **same response turn (Turn 2)**, the AI **MUST** then proceed to Step 4.3 (Apply Edit) by initiating the relevant tool call (e.g., `edit_file`, `reapply`).
-            *   This turn (Turn 2) **MUST** conclude with the tool call being issued. No other statements or planning activities are permitted between the full completion and reporting of Step 4.2 and the initiation of the Step 4.3 tool call.
+    *   **Autonomous Execution and Turn Management for Steps 4.1 to 4.3 (Conceptual Turns):**
+        *   The AI will internally manage a conceptual 'Turn 1' and 'Turn 2' for processing Steps 4.1 through 4.3 for each file. This does **not** imply halting for user input between these conceptual turns unless a `**BLOCKER:**` is explicitly encountered. The AI **MUST** proceed autonomously through these steps.
+        *   **Conceptual Turn 1: Propose Edit (Step 4.1)**
+            *   The AI's response message containing the execution of Step 4.1 **MUST** focus *solely* on generating and presenting the `code_edit` diff text and the `instructions` field for that step.
+            *   After outputting the Step 4.1 content, the AI **MUST** immediately and autonomously proceed to execute Step 4.2 (Pre-Apply Verification) in its subsequent internal processing, leading into Conceptual Turn 2.
+        *   **Conceptual Turn 2: Pre-Verify Proposal & Initiate Apply (Steps 4.2 & 4.3)**
+            *   In the AI's response message containing the execution of Steps 4.2 and 4.3, the AI **MUST** first perform and fully report all sub-steps of Step 4.2 (Pre-Apply Verification), including the execution and full reporting of `Procedure: Verify Diff` on the *proposed `code_edit` text from Conceptual Turn 1*, and culminate in the "Pre-Edit Confirmation Statement" (Step 4.2.2).
+            *   Immediately after the "Pre-Edit Confirmation Statement" (Step 4.2.2) is output, and within this **same response message**, the AI **MUST** then proceed to Step 4.3 (Apply Edit) by initiating the relevant tool call (e.g., `edit_file`, `reapply`).
+            *   This response message **MUST** conclude with the tool call being issued. No other statements or planning activities are permitted between the full completion and reporting of Step 4.2 and the initiation of the Step 4.3 tool call within this message.
         *   The only natural pause point within this per-file cycle (before commencing Step 4.4) is while awaiting the result of the tool call made in Step 4.3.
         *   **Do not pause for general user input during this per-file cycle (Steps 4.1 through 4.5)** unless a sub-step explicitly states it is a `**BLOCKER:**` or specifically requires asking for user confirmation (e.g., Step 2, or procedures in Section 5 that explicitly call for halting and user input).
     *   **Application to Multi-File Changes:** When a single user request or task necessitates changes to multiple files, this entire [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize] cycle (Steps 4.1 through 4.5) **MUST** be fully completed for one individual file *before* commencing Step 4.1 (Generate Proposed `code_edit` Diff Text) for any subsequent file involved in the same task. This per-file atomicity ensures that each modification is applied and verified against a consistent and up-to-date state of the codebase.

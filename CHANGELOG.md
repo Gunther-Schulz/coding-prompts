@@ -5,6 +5,23 @@
 -->
 ## [Unreleased]
 
+## [0.2.21] - 2025-05-10
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Added a "Sustained Adherence Refocus" mandatory action at the beginning of the Planning Phase (Step 3) in `CLIPPY.md`. This requires the AI to explicitly state its commitment to re-evaluating and adhering to the full set of principles in `CLIPPY.md` before starting detailed planning for a new task or a new phase of an ongoing task. This aims to counteract focus drift during extended interactions.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Added "Mandatory Refocus Before Planning" to Section 3 ("Pre-computation Standards Check (Planning Phase)")**:
+    *   Inserted a new instructional block before Step 3.0.
+    *   **Action:** Requires the AI to explicitly state: "**Sustained Adherence Refocus:** Actively re-evaluating and committing to the full set of principles and procedures within `AI_CODING_PROCESS.md` (this document) to ensure continued meticulous adherence for the upcoming planning and implementation."
+    *   **Rationale:** Serves as a deliberate internal prompt for the AI to refresh its attention to the comprehensive guidelines, counteracting potential focus drift and reinforcing rigorous process execution.
+
+2.  **Toolkit Component Version Update:**
+    *   Incremented version in `CLIPPY.MD` from `v0.2.20` to `v0.2.21`.
+
 ## [0.2.20] - YYYY-MM-DD
 **Affected Document(s):**
 *   `coding-clippy/CLIPPY.md`

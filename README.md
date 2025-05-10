@@ -39,7 +39,6 @@ Coding-Clippy offers a set of guides and resources to improve AI-assisted coding
     *   `learning_resources/`: Educational materials on AI behavior and best practices.
     *   `CHANGELOG.md`: Tracks updates to the toolkit.
     *   `KNOWN_ISSUES.md`: Lists current limitations.
-    *   `CLIPPY_Optional_Additions.md`: Experimental ideas for `CLIPPY.md`.
     *   `TODO.md`: Planned enhancements and features.
 
 ## Getting Started with Coding-Clippy
