@@ -5,6 +5,22 @@
 -->
 ## [Unreleased]
 
+## [0.2.22] - 2025-05-10
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Updated `Procedure: Ensure Sufficient File Context` in `CLIPPY.md` to strengthen the bias towards attempting full file reads when partial views might be insufficient for the task, aiming to improve contextual understanding before planning or editing.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Modified `Procedure: Ensure Sufficient File Context` (Section 4):**
+    *   **Step 1 (Prioritize Complete View):** Added a sentence to explicitly state that when in doubt about the sufficiency of a partial view, the AI should default to attempting a full file read as per Step 2.
+    *   **Step 2 (Attempt Full File Read):** Rephrased to reinforce that this step is the default action when Step 1 indicates a need for more comprehensive context, especially when doubt exists regarding the adequacy of partial views.
+
+2.  **Toolkit Component Version Update:**
+    *   Incremented version in `CLIPPY.MD` from `v0.2.21` to `v0.2.22`.
+
 ## [0.2.21] - 2025-05-10
 **Affected Document(s):**
 *   `coding-clippy/CLIPPY.md`

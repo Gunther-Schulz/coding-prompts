@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.21. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.22. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -352,6 +352,14 @@ In all such cases where the tool's changes significantly exceed or deviate from 
                     e.  Any other missed mandatory step, check, reporting, or verification from this document.
                     f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
                     g.  The `edit_file` or `reapply` tool reported that "no changes were made" when the AI's plan explicitly intended to make a modification (e.g., deleting specific lines, adding specific lines).
+                        *   **If `reapply` also returns "no changes" for this trigger (g):**
+                            i.  The AI **MUST** state that both `edit_file` and `reapply` attempts failed with "no changes made."
+                            ii. **Mandatory Re-verification of File State:** Before hypothesizing other reasons or attempting further edits, the AI **MUST** immediately re-read the relevant section(s) of the target file (using `read_file`, potentially with `should_read_entire_file=True` if necessary and permitted for full context) and compare its current state against the *specific intended change* of the failed `code_edit`.
+                                *   **If Re-verification Shows Change is Present:** If this check reveals the intended change is already accurately present in the file, the AI **MUST** report this finding, state that the "no changes made" report from the tool was correct (as the file was already in the desired state for this specific planned modification), and consider this specific part of the edit plan successfully completed. It should then proceed with the workflow (e.g., to Step 4.5 for this part of the task, or to the next planned edit if part of a sequence).
+                                *   **If Re-verification Confirms Change is NOT Present:** If the change is confirmed to be *absent* from the file, then the AI **MUST** proceed to the subsequent steps (iii, iv, v) to attempt to apply the change.
+                            iii. The AI **MUST** briefly hypothesize why the tools might have failed to apply the (now confirmed absent) change (e.g., the `code_edit` was subtly flawed, the file is somehow write-protected at the tool level, internal diffing logic issue by the tool).
+                            iv. **Mandatory Autonomous Strategy 1: Granular Edit.** As the next corrective action, the AI **MUST** then autonomously attempt to revise its plan to break down the original intended (and now confirmed absent) change for the problematic file into *smaller, more granular `code_edit` operations*. It **MUST** then re-attempt the edit cycle (Steps 4.1-4.5) for the *first* of these smaller pieces. This action falls under revising the plan as per sub-step 'd' below.
+                            v.  **Escalation if Granular Edit Fails:** If attempts to apply these smaller, granular edits also consistently fail (e.g., 2 consecutive "no changes made" reports for a specific granular piece, or if the overall set of granular changes cannot be completed successfully after a reasonable number of attempts per piece, typically not exceeding 2-3 attempts for the entire set of granular changes for the original intended modification), THEN the AI **MUST** proceed to `Procedure: Request Manual Edit` (Section 5), explaining the situation and the strategies attempted.
                 d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action. **This corrective action MUST aim to restore the overall integrity and correctness of the file, addressing both deviations from the planned change AND any new issues introduced by the edit tool.** If the file's state is a result of the edit tool making unintended modifications to unrelated code, the primary goal of the self-correction is to achieve the user's intended change *without* these unintended side-effects, or to clean up those side-effects if the intended change is already present.
                 e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
                     Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
@@ -413,8 +421,8 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 *   **Purpose:** To ensure the AI has adequate file content for safe and accurate planning and editing, especially for critical or complex files.
 *   **Trigger:** Called by Step 3.0 when assessing target file complexity or if initial partial reads are insufficient.
 *   **Steps:**
-    1.  **Prioritize Complete View:** If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), a file previously identified as complex or sensitive to edits, OR if an initial partial file read (e.g., from `read_file` without `should_read_entire_file=True`) proves insufficient to confidently locate all necessary code sections for planning and executing the required change, the AI **MUST** prioritize obtaining a complete and sufficient view of the target file.
-    2.  **Attempt Full File Read:** The AI **SHOULD** first attempt to obtain the full file content using `read_file` with `should_read_entire_file=True` (or by specifying a line range covering the entire file). (Note: Per tool constraints, reading entire files is generally only allowed if it has been edited or manually attached by the user. The AI should be mindful of this constraint when deciding to use this option).
+    1.  **Prioritize Complete View:** If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), a file previously identified as complex or sensitive to edits, OR if an initial partial file read (e.g., from `read_file` without `should_read_entire_file=True`) proves insufficient to confidently locate all necessary code sections for planning and executing the required change, the AI **MUST** prioritize obtaining a complete and sufficient view of the target file. **When in doubt about the sufficiency of a partial view for the task at hand, the AI should default to attempting a full file read as per Step 2.**
+    2.  **Attempt Full File Read:** As the default approach when a more comprehensive view is indicated by Step 1 (especially when any doubt exists regarding the adequacy of partial views), the AI **SHOULD** first attempt to obtain the full file content using `read_file` with `should_read_entire_file=True` (or by specifying a line range covering the entire file). (Note: Per tool constraints, reading entire files is generally only allowed if it has been edited or manually attached by the user. The AI should be mindful of this constraint when deciding to use this option).
     3.  **Verify Full Content Receipt & Handle Incompleteness:**
         a.  **Mandatory Check:** After the `read_file` call in Step 2, if the intent was to read the entire file, the AI **MUST** scrutinize the tool's response to confirm the *entire* file content was returned. This includes:
             i.  Checking if the tool's textual description explicitly states only partial content (e.g., "Showing the first X lines", "Outline of the rest of the file:", "Contents of ... from line X-Y (total Z lines):" where Y-X+1 is less than Z).
@@ -659,6 +667,22 @@ In all such cases where the tool's changes significantly exceed or deviate from 
         // Context line after deletion
         // ... existing code ...
         ```
+    *   **After providing these details, the AI MUST explicitly state: "Please let me know once you have applied this manual edit."**
+    *   **BLOCKER:** The AI **MUST NOT** proceed until the user confirms they have applied the manual edit.
+
+**4.  Verify Manual Edit Application (Mandatory after User Confirmation):**
+    *   **Trigger:** After the user confirms they have completed the manual edit.
+    *   **Action:**
+        *   `a.` **Acknowledge User Action:** Thank the user for applying the edit.
+        *   `b.` **Re-Read Modified File:** The AI **MUST** immediately use `read_file` (potentially with `should_read_entire_file=True` if necessary for full context and permitted) to get the current content of the manually edited file.
+        *   `c.` **Verify Against Intended State:** The AI **MUST** then compare the re-read content against the *specific intended state* that the manual edit was supposed to achieve (as described in Step 3 of this procedure). This verification should focus on:
+            *   Confirming that the specified lines were correctly inserted, replaced, or deleted.
+            *   Ensuring no obvious unintended changes were made in the immediate vicinity of the edit.
+            *   A basic syntax check (if feasible through linting or simple parsing, though full compilation might be out of scope for this quick check).
+        *   `d.` **Report Verification Outcome:**
+            *   **If Verified:** State, "Verification successful. The manual edit appears to be correctly applied, and the file `[filename]` is now in the expected state regarding this change. Resuming workflow." The AI can then proceed with its original task, potentially re-running relevant parts of Step 4 (Post-Apply Verification) or Step 5 (Adherence Checkpoint) for the overall task if the manual edit was a critical step.
+            *   **If Discrepancies Found:** State, "Verification of manual edit for `[filename]` found discrepancies: [Describe discrepancies briefly, e.g., 'The intended deletion on line X seems to be missing,' or 'An unexpected character was found at line Y']. Could you please double-check the manual application against the details provided?"
+            *   **BLOCKER (If Discrepancies):** The AI **MUST NOT** proceed with the main task assuming the edit is correct until discrepancies are resolved or the user explicitly instructs to proceed despite them. The AI may offer to provide the manual edit details again if helpful.
 
 ---
 
