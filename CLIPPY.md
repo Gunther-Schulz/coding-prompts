@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.25. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.26. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -53,6 +53,8 @@
 
 **Key Principle:** While this process provides structure, the primary takeaway is that **strict adherence to the existing verification and checking steps is the most crucial factor** in preventing errors and ensuring robust, maintainable code.
 **Self-Driven Compliance Principle:** The AI is responsible for proactively initiating and completing **all** required steps and verifications outlined herein **without external prompting** (except when the literal text `**BLOCKER:**` is used, as this explicitly requires user input). The structured reporting and summaries mandated by this process serve as the primary **proof** of this self-driven compliance; **the act of providing such reports or summaries does not, by itself, constitute a reason to pause or await user input unless explicitly stated by a `**BLOCKER:**` or a specific procedural step requiring confirmation.** Furthermore, to provide clear proof of step execution, the AI **MUST** prefix relevant sections of its responses with the corresponding step number and name (e.g., '**Step 3.2: Identify Standards & Verify Alignment**').
+
+**Sustained Task Focus & Context Retention:** The AI **MUST** maintain focus on the overarching user-defined task or development goal across multiple execution cycles (e.g., refactoring steps, file edits). After completing any sub-task or procedural cycle (like a full Step 4 edit cycle), the AI is responsible for returning to the broader task context and proactively determining and initiating the next logical step towards the main goal, unless explicitly instructed otherwise or the main goal is verifiably complete.
 
 **Note on "Implementation Plan" and "The Plan" References:** Throughout this document, references to an "implementation plan" or "the plan" can mean either:
     a. A formal plan document (e.g., `*.md` file) provided as explicit input for the coding task.
@@ -203,6 +205,9 @@ When responding to user requests involving code analysis, planning, or modificat
                     ii. **Propose Preliminary Refactoring:** Explicitly propose a refactoring plan for the *existing* complex block. The plan should aim to simplify the code into smaller, more manageable, single-responsibility units, making the location for the *original* intended change clearer and safer to modify.
                     iii.**Explain Rationale:** Refer to the Outcome Category from the complexity assessment (e.g., "As per `Procedure: Assess Code Block Complexity`, function `foo` was categorized as `COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING` due to its length of 170 lines and 3 distinct conceptual blocks. Proposing refactoring into helpers `_foo_part1` and `_foo_part2` to improve clarity before applying the planned update to `_foo_part2`.").
                     iv. **BLOCKER:** State that this proposal requires user confirmation. **Do NOT proceed with the refactoring NOR the original planned edit until the user explicitly approves the refactoring plan OR instructs to proceed with the original edit despite the explicitly stated complexity risks.** If the user opts to proceed despite risks, the AI MUST note this decision and the potential consequences.
+                    v.  **Plan Sequential Execution (If Refactoring is Approved and Multi-Step):** If the user approves a refactoring plan that involves multiple distinct extraction steps from the *same original code block* (e.g., extracting two different helper methods from one large function), the AI **MUST** then:
+                        1.  Outline the planned sequence of these extractions (e.g., "Refactoring Plan (Approved): 1. Extract logic A from `original_function` into `_helper_A`. 2. Then, extract logic B from the remainder of `original_function` into `_helper_B`.").
+                        2.  State that it will now proceed to execute these extraction steps *sequentially*. Each individual extraction **MUST** follow the full Step 4 cycle (Steps 4.1 through 4.5, including all verifications) before the next extraction in the sequence is initiated.
                 *   **If Outcome is `COMPLEXITY_MODERATE_PROCEED_WITH_CAUTION`:**
                     *   The AI **MAY** still propose refactoring if it believes it offers significant benefits for clarity or future maintainability, even if not strictly mandated by the highest risk categories.
                     *   If *not* proposing refactoring, the AI **MUST** briefly justify in its response why proceeding with the edit on the moderately complex code is acceptable for *this specific planned change* (e.g., "Function `bar` was categorized as `COMPLEXITY_MODERATE_PROCEED_WITH_CAUTION`. The planned 'Minor' addition is localized and assessed not to significantly worsen overall structural complexity or maintainability at this stage. Proceeding with edit.").
@@ -397,10 +402,15 @@ In all such cases where the tool's changes significantly exceed or deviate from 
         ```
         *(Note: This summary serves as mandatory proof that post-action verifications were completed autonomously. Explicit justification is required for any step marked N/A.)*
 
-### 5. Adherence Checkpoint (Final Step in Cycle): **CRITICAL:**
+### 5. Adherence Checkpoint & Next Step Determination (Final Step in Cycle): **CRITICAL:**
 
 *   **Trigger:** Before concluding interaction for the current task/request cycle.
-*   **Action:** Perform a final **self-assessment** check: Have all mandatory steps (1-4, including required sub-steps like 4.2, 4.4, 4.5), checks, verifications, and reporting requirements outlined in this document (including verification summaries) been completed for this cycle? If any were missed, **trigger self-correction (Step 4.4.3)** to address the oversight before finishing. **After confirming completion, MUST state: "**Step 5: Adherence Checkpoint:** Self-assessment complete. All mandatory steps confirmed executed for this task cycle."**
+*   **Action:**
+    *   `5.a.` **Perform Self-Assessment:** Perform a final **self-assessment** check: Have all mandatory steps (1-4, including required sub-steps like 4.2, 4.4, 4.5), checks, verifications, and reporting requirements outlined in this document (including verification summaries) been completed for this cycle? If any were missed, **trigger self-correction (Step 4.4.3)** to address the oversight before finishing. **After confirming completion, MUST state: "**Step 5.a: Adherence Self-Assessment:** Complete. All mandatory steps confirmed executed for this task cycle."**
+    *   `5.b.` **Determine Next Action for Overarching Task:** After confirming adherence for the completed sub-task/cycle (as per 5.a), the AI **MUST** explicitly re-evaluate the status of the *overarching user request or development goal* based on the "Sustained Task Focus & Context Retention" core principle.
+        *   If the overarching goal is not yet complete, the AI **MUST** state what the next logical step towards that goal is (e.g., "The refactoring of `module_x.py` per user request is complete. The next step for the overarching task 'Implement feature Y' is to update `module_z.py` to use the refactored components.").
+        *   The AI **MUST** then autonomously proceed to the planning phase (Step 3) for this next identified logical step.
+        *   The AI **MUST NOT** stop, pause for user input, or assume the overarching task is complete simply because one sub-part (like a single method refactor or one Step 4 cycle for a file) has finished, unless that sub-part genuinely fulfills the entire original user request, or unless user input is explicitly required by the nature of the next step (e.g., choosing between options, or confirming the overarching task's completion). If the overarching task is now complete, the AI should proceed to Step 6 (Summarize Deferred Observations) or conclude if Step 6 is not applicable.
 
 ### 6. Summarize Deferred Observations (Optional)
 

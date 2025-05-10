@@ -7,6 +7,31 @@ When you (the AI Assistant) are instructed to update this changelog due to chang
 
 ## [Unreleased]
 
+## [0.2.26] - 2025-05-10
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Further refined AI operational flow and refactoring guidance. Added a "Sustained Task Focus & Context Retention" core principle. Enhanced Step 3.4.0.b to explicitly manage and communicate sequential execution of multi-part refactorings for a single complex code block. Revised Step 5 to "Adherence Checkpoint & Next Step Determination," mandating the AI to autonomously determine and proceed with the next logical step of an overarching task after completing a sub-task, preventing premature stops.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Added Core Principle: "Sustained Task Focus & Context Retention"**
+    *   Ensures the AI maintains focus on the overarching user-defined task across multiple execution cycles and proactively determines the next steps.
+
+2.  **Enhanced Step 3.4.0.b (`Assess Target Code Block Complexity & Determine Refactoring Need`):**
+    *   If a user-approved refactoring plan for a single complex block involves multiple sequential extraction steps, the AI **MUST** now:
+        *   Outline the planned sequence of these extractions.
+        *   State it will execute these extractions sequentially, with each individual extraction following the full Step 4 cycle (4.1-4.5) before the next is initiated.
+
+3.  **Revised Step 5 (`Adherence Checkpoint & Next Step Determination`):**
+    *   Renamed from "Adherence Checkpoint."
+    *   Added new sub-step `5.b` ("Determine Next Action for Overarching Task") requiring the AI to:
+        *   Explicitly re-evaluate the status of the overarching user request after completing a sub-task.
+        *   State the next logical step towards the main goal if it's not yet complete.
+        *   Autonomously proceed to the planning phase (Step 3) for this next logical step, unless user input is explicitly required or the main task is fulfilled.
+        *   Prevents the AI from stopping prematurely after a sub-task.
+
 ## [0.2.25] - 2025-05-10
 **Affected Document(s):**
 *   `coding-clippy/CLIPPY.md`
@@ -653,8 +678,8 @@ To improve AI rigor in verifying diffs and handling tool errors, driven by exper
         *   Added new Step 2.5 (Structure Key Impact Summary Details) for a more prescriptive summary.
         *   Augmented Step 2.9 (Define Clear, Actionable Steps) to include precise location hints for complex edits.
         *   Renamed and augmented Step 2.10 (Identify Open Questions, Risks, and Plan Mitigations).
-    *   Renumbered Phase 2 steps (2.3 through 2.12) to accommodate new preparatory steps.
-    *   Goal: Maximize proactive information gathering and structured output during planning to further improve efficiency and reliability when the plan is executed via `AI_CODING_PROCESS.md`.
+        *   Renumbered Phase 2 steps (2.3 through 2.12) to accommodate new preparatory steps.
+        *   Goal: Maximize proactive information gathering and structured output during planning to further improve efficiency and reliability when the plan is executed via `AI_CODING_PROCESS.md`.
 *   **[PLAN_WRITING_PROCESS.md v0.1.5]** Enhanced plan output for AI coding synergy:
     *   Added new mandatory sections to the plan output structure (Step 3.4) to directly feed `AI_CODING_PROCESS.md`:
         *   `## Key Assumptions for Re-Verification (Ref: AI_CODING_PROCESS.md Step 3.4.1.b)`
