@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.26. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.27. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -305,12 +305,12 @@ In all such cases where the tool's changes significantly exceed or deviate from 
     *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the proposed diff text) and associated `instructions`.
         *   Apply `Procedure: Prepare Robust Edit Tool Input` (Section 4) for guidelines on constructing the `code_edit` string and `instructions` field.
         *   **Output of this Step:** The AI **MUST** present the formulated `code_edit` string and `instructions` clearly in its response. This presentation is for the AI's *own subsequent verification in Step 4.2*.
-        *   The AI **MUST** also state: "Step 4.1: The above `code_edit` proposal for `[filename]` (and its `instructions`) has been formulated and is now internally staged for verification. The file's actual content currently remains unchanged. I will now proceed to Step 4.2 to verify this staged proposal."
+        *   The AI **MUST** conclude its textual output for Step 4.1 with the statement: "Step 4.1: The above `code_edit` proposal for `[filename]` (and its `instructions`) has been formulated and is now internally staged. The file's actual content currently remains unchanged. I will now immediately proceed to Step 4.2 (Pre-Apply Verification) and report its execution and outcome as the next part of this response."
         *   This step ONLY involves formulating and presenting the `code_edit` text content for subsequent verification. You **MUST NOT** call `edit_file` or `reapply` during this step. Application occurs *only* in Step 4.3 after successful verification in Step 4.2.
         *   **CRITICAL AI STATE MANAGEMENT:** The generation and presentation of the `code_edit` text in this step is a *proposal for the AI's own verification process*. The AI **MUST NOT** internally register this action or its content as an actual modification to the file state. The AI's internal understanding of the file's content **MUST** remain based on the last actual read or confirmed edit application. This staged proposal is NOT the file's current state.
 
     #### 4.2 Pre-Apply Verification (Mandatory Before 4.3)
-    *   **Initiation:** This step is initiated by the AI autonomously and immediately following the completion of Step 4.1 in the same response turn, unless a `BLOCKER` from Step 3 has halted the process.
+    *   **Initiation and Output:** As the immediate next part of the AI's response following the conclusion of Step 4.1's textual output, the AI **MUST** autonomously execute this Step 4.2 (Pre-Apply Verification), unless a `BLOCKER` from Step 3 has halted the process. All actions and reporting required by Step 4.2 (including the execution of `Procedure: Verify Diff` and the Pre-Edit Confirmation Statement) **MUST** be fully completed and presented as text in the current AI response turn *before* any part of Step 4.3 is initiated.
     *   The following verification steps **MUST** be successfully completed and reported *before* proceeding to Step 4.3 (Apply Edit).
     *   **Purpose:** To meticulously scrutinize the *internally staged `code_edit` diff (presented in Step 4.1)* against the verified plan *before* calling the `edit_file` tool.
     *   **Mandate:** **DO NOT SKIP OR RUSH.** Treat proposed diffs skeptically.
@@ -335,8 +335,7 @@ In all such cases where the tool's changes significantly exceed or deviate from 
             *   *Example (Deviation Handling): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on the staged proposal (from Step 4.1) against plan (Outcome: Verified, deviations handled - reported in `Procedure: Handle Deviation`). Key assumption 'Model Y' verified (Outcome: Confirmed). Logic Preservation: N/A. Proceeding to Apply Edit (4.3)."*
 
     #### 4.3 Apply Edit (After Successful 4.2)
-    *   After successful completion and reporting of Step 4.2 (Pre-Apply Verification), **MUST** call the appropriate edit tool (e.g., `edit_file` or `reapply`) using the *verified staged `code_edit` and `instructions` (from Step 4.1)*.
-    *   The AI **MUST** report: "Step 4.3: Applying the verified staged edit to `[filename]`." followed immediately by the tool call.
+    *   **Initiation and Output:** After the successful completion and full textual reporting of Step 4.2 (Pre-Apply Verification) *within the current AI response turn*, the AI **MUST** then, as the next part of the same continuous AI response, initiate Step 4.3. The AI **MUST** first report: "Step 4.3: Applying the verified staged edit to `[filename]`." followed immediately by the tool call for `edit_file` or `reapply` using the verified staged `code_edit` and `instructions` from Step 4.1.
 
     #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
     *   **CRITICAL INSTRUCTION FOR AI:** Upon receiving the result from the tool call in Step 4.3, you **MUST** conceptually discard your memory of the *proposed `code_edit` text* from Step 4.1. Your entire analysis in Step 4.4 **MUST** be based *exclusively* on the **actual diff content provided in the output of the `edit_file` or `reapply` tool call from Step 4.3.** Do not refer back to the proposal from Step 4.1 except where `Procedure: Verify Edit File Diff` explicitly requires comparing the applied diff *to* that verified proposal. The primary object of scrutiny now is the *tool's reported action*.
