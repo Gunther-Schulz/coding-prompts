@@ -7,6 +7,36 @@ When you (the AI Assistant) are instructed to update this changelog due to chang
 
 ## [Unreleased]
 
+## [0.2.25] - 2025-05-10
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Refined Step 4 (Edit Generation & Verification Cycle) to improve AI state management and clarity. Implemented an "Internal Staging WITH Self-Visible Proposal" strategy for Steps 4.1-4.3 to ensure the AI presents its proposed edit for its own verification before application, while maintaining autonomous flow. Also simplified the introductory "Sequential Execution and Autonomous Operation" subsection of Step 4, removing redundant conceptual turn descriptions.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Enhanced Step 4.1 ("Generate Proposed `code_edit` Diff Text")**:
+    *   Modified to instruct the AI to present the `code_edit` string and `instructions` for its *own subsequent verification in Step 4.2*.
+    *   Added a mandatory statement for the AI: "Step 4.1: The above `code_edit` proposal for `[filename]` (and its `instructions`) has been formulated and is now internally staged for verification. The file's actual content currently remains unchanged. I will now proceed to Step 4.2 to verify this staged proposal."
+    *   Reinforced the "CRITICAL AI STATE MANAGEMENT" note to emphasize the proposal is for the AI's own verification and not an actual modification to file state.
+
+2.  **Revised Step 4.2 ("Pre-Apply Verification (Mandatory Before 4.3)")**:
+    *   Updated "Initiation" to clarify autonomous execution immediately following Step 4.1.
+    *   Changed "Purpose" and "Action" to refer to scrutinizing/checking the *internally staged `code_edit` diff (presented in Step 4.1)*.
+    *   Updated example confirmation statements to reflect verification of the "staged proposal (from Step 4.1)".
+
+3.  **Revised Step 4.3 ("Apply Edit (After Successful 4.2)")**:
+    *   Clarified that the edit tool is called using the *verified staged `code_edit` and `instructions` (from Step 4.1)*.
+    *   Added a mandatory reporting line before the tool call: "Step 4.3: Applying the verified staged edit to `[filename]`."
+
+4.  **Simplified "Sequential Execution and Autonomous Operation" Subsection (Start of Step 4)**:
+    *   Removed the detailed discussion of "Conceptual Turn 1" and "Conceptual Turn 2".
+    *   The subsection now concisely reiterates: sequential execution of 4.1-4.5, autonomous AI operation (governed by new 4.1-4.3 mechanics), and per-file atomicity.
+
+5.  **Toolkit Component Version Update:**
+    *   Incremented version in `CLIPPY.MD` from `v0.2.24` to `v0.2.25` (already completed in a prior step).
+
 ## [0.2.24] - 2025-05-10
 **Affected Document(s):**
 *   `coding-clippy/CLIPPY.md`
