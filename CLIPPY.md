@@ -190,14 +190,24 @@ When responding to user requests involving code analysis, planning, or modificat
             *   This is not a full audit of existing code, but a focused check on immediate interaction points critical for the success of the planned changes.
             *   *Example: 'The plan involves adding new CLI groups. Existing CLI group registration in `app.py` occurs late in a complex callback. This existing pattern might pose a risk to the new groups\'\'\'availability if the callback fails early. Consider if registrations should be moved to module level for robustness.'*
 
-        `3.4.0.b` **Assess Target Code Complexity & Propose Refactoring (If Needed):** Before generating an edit for a specific code block (e.g., a function, method), the AI **MUST** assess its complexity (considering factors like length, nesting depth, number of responsibilities, overall clarity).
-            *   **Trigger:** If the target code block is deemed excessively complex, making it difficult to modify reliably with automated tools or challenging to maintain.
-            *   **Action:**
-                i.  **STOP** proceeding with the originally planned edit on the complex block.
-                ii. **Propose Preliminary Refactoring:** Explicitly propose a refactoring plan to break down the complex block into smaller, more manageable units (e.g., helper functions, smaller methods).
-                iii.**Explain Rationale:** Clearly state why refactoring is recommended (e.g., "Refactoring function `X` into smaller helpers is proposed to improve clarity, testability, and significantly reduce the risk of automated edit tool errors during the planned modification.").
-                iv. **BLOCKER:** State that this proposal requires user confirmation. **Do NOT proceed with the refactoring NOR the original planned edit on the complex code until the user explicitly approves the refactoring plan OR instructs to proceed with the original edit despite the complexity risks.**
-            *   *Example Proposal:* "**Step 3.4.0.b: Assess Target Code Complexity:** The target function `_perform_mapping` in `review.py` is highly complex (significant length, multiple nested conditions handling different entity types and actions). **Proposal:** Before applying the planned logging addition, I propose refactoring `_perform_mapping` into smaller helper functions (e.g., `_find_target_canonical`, `_upsert_map_entry`, `_cleanup_unresolved_logs`). **Rationale:** This will improve readability and maintainability, and critically, it will significantly increase the likelihood of the subsequent logging addition being applied correctly by the edit tool without unintended side-effects. **BLOCKER:** Do you approve this preliminary refactoring plan, or should I attempt the original edit on the existing complex function (with increased risk)?*"
+        `3.4.0.b` **Assess Target Code Complexity & Determine Refactoring Need (Mandatory):** Before generating an edit for a specific code block (e.g., a function, method), the AI **MUST** assess its complexity to determine if pre-emptive refactoring is necessary.
+
+            1.  **Execute `Procedure: Assess Code Block Complexity` (Section 4):**
+                *   Provide the target code block's content.
+                *   Provide a description of the planned edit's nature and estimated complexity (Trivial, Minor, Significant).
+                *   Provide the language context.
+            2.  **Report Procedure Outcome:** Include the inline summary from `Procedure: Assess Code Block Complexity` (showing factors considered and the final Outcome Category) in the AI's response.
+            3.  **Action Based on Complexity Outcome Category:**
+                *   **If Outcome is `COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING` or `COMPLEXITY_HIGH_POTENTIAL_REFACTORING`:**
+                    i.  **STOP** proceeding with the originally planned edit.
+                    ii. **Propose Preliminary Refactoring:** Explicitly propose a refactoring plan for the *existing* complex block. The plan should aim to simplify the code into smaller, more manageable, single-responsibility units, making the location for the *original* intended change clearer and safer to modify.
+                    iii.**Explain Rationale:** Refer to the Outcome Category from the complexity assessment (e.g., "As per `Procedure: Assess Code Block Complexity`, function `foo` was categorized as `COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING` due to its length of 170 lines and 3 distinct conceptual blocks. Proposing refactoring into helpers `_foo_part1` and `_foo_part2` to improve clarity before applying the planned update to `_foo_part2`.").
+                    iv. **BLOCKER:** State that this proposal requires user confirmation. **Do NOT proceed with the refactoring NOR the original planned edit until the user explicitly approves the refactoring plan OR instructs to proceed with the original edit despite the explicitly stated complexity risks.** If the user opts to proceed despite risks, the AI MUST note this decision and the potential consequences.
+                *   **If Outcome is `COMPLEXITY_MODERATE_PROCEED_WITH_CAUTION`:**
+                    *   The AI **MAY** still propose refactoring if it believes it offers significant benefits for clarity or future maintainability, even if not strictly mandated by the highest risk categories.
+                    *   If *not* proposing refactoring, the AI **MUST** briefly justify in its response why proceeding with the edit on the moderately complex code is acceptable for *this specific planned change* (e.g., "Function `bar` was categorized as `COMPLEXITY_MODERATE_PROCEED_WITH_CAUTION`. The planned 'Minor' addition is localized and assessed not to significantly worsen overall structural complexity or maintainability at this stage. Proceeding with edit.").
+                *   **If Outcome is `COMPLEXITY_ACCEPTABLE`:**
+                    *   Proceed with the planned edit. No special justification regarding complexity is typically needed unless other specific concerns (unrelated to these general complexity metrics) arise.
 
         **Data Integrity Priority:** When encountering **unexpectedly missing or invalid data** from external sources or between internal components:
             *   **Default Action:** Treat as a **critical error**. Log clearly and raise an appropriate, specific error (e.g., `ConversionError`, `ValidationError`) to halt processing for the affected item.
@@ -591,6 +601,46 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 *   **Steps:**
     1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal from Step 4.2 (specifically, the verified proposed `code_edit` diff after `Procedure: Verify Diff` execution in Step 4.2.1.b)* (incorporating any handled deviations from the pre-apply check).
     2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
+
+**`Procedure: Assess Code Block Complexity`**
+
+*   **Purpose:** To systematically assess the complexity of a target code block (e.g., function, method) and determine if pre-emptive refactoring is warranted before applying a planned edit.
+*   **Trigger:** Called by Step `3.4.0.b` before generating an edit for a specific code block.
+*   **Inputs (Conceptual):**
+    *   `target_code_block_content`: The actual source code of the function/method being assessed.
+    *   `planned_edit_description`: A summary of the nature and estimated size/complexity of the changes to be made (e.g., "Trivial: typo fix", "Minor: add simple conditional", "Significant: add new loop and 25 lines of logic").
+    *   `language_context`: (e.g., "Python", "JavaScript") to allow for language-specific heuristics.
+*   **Assessment Factors (Non-Exhaustive):**
+    1.  **Length:**
+        *   *Guideline (Python example, adapt per `language_context`):*
+            *   **Short & Simple:** < 30-40 lines.
+            *   **Moderate:** 40-80 lines.
+            *   **Long:** 80-150 lines.
+            *   **Excessive:** >150 lines.
+    2.  **Nesting Depth:** Maximum clearly discernible levels of nested control structures (loops, conditionals, try/except). More than 2-3 levels is a concern.
+    3.  **Number of Responsibilities / Conceptual Blocks:** Identify distinct logical stages or sub-tasks. A high number suggests a Single Responsibility Principle violation.
+    4.  **Clarity of Control Flow:** Subjective assessment of the ease of tracing execution paths.
+    5.  **Number of Parameters:** A high number (e.g., >5-7 for many languages) can be an indicator.
+    6.  **Complexity of `planned_edit_description`:** Categorized as "Trivial", "Minor", or "Significant".
+
+*   **Complexity Outcome Categories & Determination Logic (Example):**
+    1.  **`COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING`:**
+        *   Length is "Excessive".
+        *   OR Length is "Long" AND `planned_edit_description` is "Significant".
+        *   OR Length is "Long" AND scores poorly on 2+ other factors (Nesting, Responsibilities, etc.).
+    2.  **`COMPLEXITY_HIGH_POTENTIAL_REFACTORING`:**
+        *   Length is "Long" (and not meeting "Excessive" triggers).
+        *   OR Length is "Moderate" AND `planned_edit_description` is "Significant".
+        *   OR Length is "Moderate" AND scores poorly on 2+ other factors.
+    3.  **`COMPLEXITY_MODERATE_PROCEED_WITH_CAUTION`:**
+        *   Length is "Moderate" (and not meeting "High Potential" triggers).
+        *   OR Length is "Short & Simple" BUT `planned_edit_description` is "Significant" (potentially making the resulting function "Moderate" or "Long").
+    4.  **`COMPLEXITY_ACCEPTABLE`:**
+        *   Length is "Short & Simple" AND `planned_edit_description` is "Minor" or "Trivial".
+        *   Other cases not meeting higher complexity categories.
+
+*   **Return Value:** One of the complexity outcome category strings (e.g., `COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING`).
+*   **Execution Reporting:** When executing this procedure, the AI response **MUST** include an inline summary documenting the key assessment factors evaluated (e.g., Length: 160 lines (Excessive), Nesting: 3, Responsibilities: 4, Planned Edit: Significant) and the final determined **Outcome Category**.
 
 ---
 
