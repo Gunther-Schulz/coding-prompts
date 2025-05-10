@@ -7,4 +7,5 @@
 - 4.4.1 Verify Edit Application: b. Post-edit_file Verification: -> make the branch better. this looks like "a" was skipped.
 - consisten enforcement levels. (mus, crritical, etc)
 - emphasize autonomy. no need to check in with user for every single thing. only check in when you have to.
-- when in doubt, prefer to request afull read
+- PLan is often too specific and teher are conflicts with thed details in the plan and then clippy gets into conflict with teh actual codebase. PLAN only describe high-level concept with no or minimal code. let let clippy decide on the actual implementation based on the codebase and the task at hand.
+- better context for maunal edit requets. should include line numbers and context before and after.

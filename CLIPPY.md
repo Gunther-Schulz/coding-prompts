@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.23. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.24. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -311,8 +311,10 @@ In all such cases where the tool's changes significantly exceed or deviate from 
         *   Apply `Procedure: Prepare Robust Edit Tool Input` (Section 4) for guidelines on constructing the `code_edit` string (including context, anchoring, handling of sensitive files, block movements, deprecated code handling) and the `instructions` field.
         *   **Output of this Step:** The formulated `code_edit` string (the proposed diff text). **You MUST present this string clearly as the output of Step 4.1 before proceeding to Step 4.2.**
         *   This step ONLY involves formulating the `code_edit` text content. You **MUST NOT** call `edit_file` or `reapply` during this step. Application occurs *only* in Step 4.3 after successful verification in Step 4.2.
+        *   **CRITICAL AI STATE MANAGEMENT:** The generation and presentation of the `code_edit` text in this step is a *proposal* only. The AI **MUST NOT** internally register this action as an actual modification to the file state. The AI's internal understanding of the file's content **MUST** remain based on the last actual read or confirmed edit application. This is crucial to prevent misinterpreting subsequent tool outputs (e.g., "no changes made" from an `edit_file` call in Step 4.3) if the proposal happens to match the file's true current state.
 
     #### 4.2 Pre-Apply Verification (Mandatory Before 4.3)
+    *   **Initiation:** This step is initiated by the AI in a new conversational turn, after the user has had the opportunity to review the textual proposal from Step 4.1.
     *   The following verification steps **MUST** be successfully completed and reported *before* proceeding to Step 4.3 (Apply Edit).
     *   **Purpose:** To meticulously scrutinize the *proposed `code_edit` diff* against the verified plan *before* calling the `edit_file` tool.
     *   **Mandate:** **DO NOT SKIP OR RUSH.** Treat proposed diffs skeptically.

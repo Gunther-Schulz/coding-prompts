@@ -7,6 +7,25 @@ When you (the AI Assistant) are instructed to update this changelog due to chang
 
 ## [Unreleased]
 
+## [0.2.24] - 2025-05-10
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Clarified AI's internal state management regarding proposed edits (Step 4.1) and ensured fully autonomous operation from Step 4.1 through 4.3 by removing a previously added user review pause. This addresses AI confusion about proposal vs. actual edit state and restores the intended autonomous edit cycle.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Enhanced Step 4.1 ("Generate Proposed `code_edit` Diff Text"):**
+    *   Added a new bullet point: `*   **CRITICAL AI STATE MANAGEMENT:** The generation and presentation of the \`code_edit\` text in this step is a *proposal* only. The AI **MUST NOT** internally register this action as an actual modification to the file state. The AI\'s internal understanding of the file\'s content **MUST** remain based on the last actual read or confirmed edit application. This is crucial to prevent misinterpreting subsequent tool outputs (e.g., "no changes made" from an \`edit_file\` call in Step 4.3) if the proposal happens to match the file's true current state.`
+
+2.  **Revised Step 4.2 ("Pre-Apply Verification (Mandatory Before 4.3)"):**
+    *   Removed the previously added first bullet point: `*   **Initiation:** This step is initiated by the AI in a new conversational turn, after the user has had the opportunity to review the textual proposal from Step 4.1.`
+    *   The first bullet point of Step 4.2 is now: `*   The following verification steps **MUST** be successfully completed and reported *before* proceeding to Step 4.3 (Apply Edit).` (This restores it to its original state before the temporary change).
+
+3.  **Toolkit Component Version Update:**
+    *   Incremented version in `CLIPPY.MD` from `v0.2.23` to `v0.2.24` (already completed in a prior step).
+
 ## [0.2.23] - 2025-05-10
 
 ### Changed
