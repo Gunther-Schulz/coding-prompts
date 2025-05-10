@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.27. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.29. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -72,6 +72,8 @@ A superficial approach to codebase analysis that results in poor integration, du
     a. The intended planned change is correctly implemented.
     b. The file is left in a state free of any new errors, regressions, or significant unintended modifications introduced by the editing process.
     c. All mandatory verification steps for the edit have been completed and reported.
+
+**Principle of Contextual Data Utilization within Planning:** Data gathered and verified in earlier sub-steps of the Planning Phase (Step 3), such as file contents from Step 3.0 or search results from Step 3.1, **MUST** be actively utilized by subsequent sub-steps of Step 3 for the same task. These subsequent sub-steps **MUST NOT** make assumptions or perform redundant data gathering if the necessary information is already available from a prior verified step in the current planning cycle. The AI is responsible for recalling and applying this context.
 
 **Absolute Critical Checks (Non-Negotiable):**
 
@@ -192,11 +194,13 @@ When responding to user requests involving code analysis, planning, or modificat
             *   This is not a full audit of existing code, but a focused check on immediate interaction points critical for the success of the planned changes.
             *   *Example: 'The plan involves adding new CLI groups. Existing CLI group registration in `app.py` occurs late in a complex callback. This existing pattern might pose a risk to the new groups\'\'\'availability if the callback fails early. Consider if registrations should be moved to module level for robustness.'*
 
-        `3.4.0.b` **Assess Target Code Complexity & Determine Refactoring Need (Mandatory):** Before generating an edit for a specific code block (e.g., a function, method), the AI **MUST** assess its complexity to determine if pre-emptive refactoring is necessary.
+        `3.4.0.b` **Assess Target Code Complexity & Determine Refactoring Need (Mandatory):** Before generating an edit for a specific code block (e.g., a function, method), the AI **MUST** assess its complexity to determine if pre-emptive refactoring is necessary. This assessment **MUST** use the actual `target_code_block_content` of the function/method, which **MUST** be sourced from the file content obtained and verified as sufficient during Step 3.0 (`Procedure: Ensure Sufficient File Context`). The AI **MUST NOT** make assumptions about the code block's content or complexity if its source file has already been read and verified in Step 3.0.
+
+                        `3.4.0.b` **Assess Target Code Complexity & Determine Refactoring Need (Mandatory):** Before generating an edit for a specific code block (e.g., a function, method), the AI **MUST** assess its complexity to determine if pre-emptive refactoring is necessary.
 
             1.  **Execute `Procedure: Assess Code Block Complexity` (Section 4):**
-                *   Provide the target code block's content.
-                *   Provide a description of the planned edit's nature and estimated complexity (Trivial, Minor, Significant).
+                *   Provide the `target_code_block_content` (obtained as mandated by the "Principle of Contextual Data Utilization within Planning" using data from Step 3.0).
+                *   Provide a description of the planned edit\'s nature and estimated complexity (Trivial, Minor, Significant).
                 *   Provide the language context.
             2.  **Report Procedure Outcome:** Include the inline summary from `Procedure: Assess Code Block Complexity` (showing factors considered and the final Outcome Category) in the AI's response.
             3.  **Action Based on Complexity Outcome Category:**

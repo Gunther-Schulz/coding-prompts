@@ -7,6 +7,40 @@ When you (the AI Assistant) are instructed to update this changelog due to chang
 
 ## [Unreleased]
 
+## [0.2.29] - 2025-05-10
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Refined Step `3.4.0.b` ("Assess Target Code Complexity & Determine Refactoring Need") to be more concise. The explicit instructions on using `target_code_block_content` from Step 3.0 and not making assumptions were removed from this specific step, as this is now covered by the more general "Principle of Contextual Data Utilization within Planning" (added in v0.2.28). The first sub-bullet under `3.4.0.b.1` was also updated to refer to this principle.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Modified Step `3.4.0.b` (Assess Target Code Complexity & Determine Refactoring Need):**
+    *   The main description of step `3.4.0.b` was shortened to remove redundant explicit instructions regarding the sourcing of `target_code_block_content` and the prohibition of assumptions if data from Step 3.0 is available.
+    *   The first sub-bullet under `3.4.0.b.1` (Execute `Procedure: Assess Code Block Complexity`) was changed from `Provide the target_code_block_content (obtained as mandated above).` to `Provide the target_code_block_content (obtained as mandated by the "Principle of Contextual Data Utilization within Planning" using data from Step 3.0).`
+
+## [0.2.28] - 2025-05-10
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Enhanced `CLIPPY.md` to ensure better utilization of previously gathered information within the planning phase (Step 3). Added a new core principle ("Principle of Contextual Data Utilization within Planning") and modified Step 3.4.0.b ("Assess Target Code Complexity & Determine Refactoring Need") to explicitly mandate using actual code content obtained in Step 3.0 for complexity assessment, preventing assumptions when data is already available.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Added Core Principle: "Principle of Contextual Data Utilization within Planning" (Section 2)**
+    *   Mandates that data gathered and verified in earlier sub-steps of the Planning Phase (Step 3), such as file contents from Step 3.0, **MUST** be actively utilized by subsequent sub-steps of Step 3.
+    *   Prohibits making assumptions or performing redundant data gathering if the necessary information is already available from a prior verified step in the current planning cycle.
+
+2.  **Enhanced Step `3.4.0.b` ("Assess Target Code Complexity & Determine Refactoring Need")**
+    *   The assessment **MUST** now use the actual `target_code_block_content` sourced from file content obtained and verified as sufficient during Step 3.0 (`Procedure: Ensure Sufficient File Context`).
+    *   Explicitly states the AI **MUST NOT** make assumptions about the code block's content or complexity if its source file has already been read and verified in Step 3.0.
+    *   The input `target_code_block_content` for `Procedure: Assess Code Block Complexity` is now specified as "(obtained as mandated above)".
+
+3.  **Toolkit Component Version Update:**
+    *   Incremented version in `CLIPPY.MD` from `v0.2.27` to `v0.2.28`.
+
 ## [0.2.27] - 2025-05-10
 **Affected Document(s):**
 *   `coding-clippy/CLIPPY.md`
@@ -31,7 +65,7 @@ Further refined AI operational flow and refactoring guidance. Added a "Sustained
 1.  **Added Core Principle: "Sustained Task Focus & Context Retention"**
     *   Ensures the AI maintains focus on the overarching user-defined task across multiple execution cycles and proactively determines the next steps.
 
-2.  **Enhanced Step 3.4.0.b (`Assess Target Code Block Complexity & Determine Refactoring Need`):**
+2.  **Enhanced Step 3.4.0.b (`Assess Target Code Complexity & Determine Refactoring Need`):**
     *   If a user-approved refactoring plan for a single complex block involves multiple sequential extraction steps, the AI **MUST** now:
         *   Outline the planned sequence of these extractions.
         *   State it will execute these extractions sequentially, with each individual extraction following the full Step 4 cycle (4.1-4.5) before the next is initiated.
