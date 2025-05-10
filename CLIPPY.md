@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.22. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.23. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -143,7 +143,8 @@ When responding to user requests involving code analysis, planning, or modificat
         *   `grep_search`/`codebase_search`: Do the results appear complete, or is there indication of truncation (e.g., "results capped at 50 matches") that might hide relevant information?
         *   `list_dir`: Was the directory listing provided for the correct path?
     2.  **Assess Sufficiency & Clarity:** Evaluate if the *content* of the output is adequate and unambiguous for the *specific planning task or hypothesis verification at hand*.
-    3.  **Handle Discrepancies/Insufficiencies:**
+    3.  **Re-evaluate Prior Planning with New/Sufficient Information:** **If new and more complete/sufficient information for a key file/component becomes available (e.g., after a `BLOCKER` resolution or a more successful tool call) *after* some initial planning sub-steps (e.g., 3.1 through 3.9, especially complexity assessments like 3.4.0.b) were provisionally addressed based on previously incomplete/insufficient data, the AI MUST explicitly re-evaluate any of those prior sub-steps whose conclusions would be materially impacted by the new, complete information. This re-evaluation MUST occur before proceeding as if the prior conclusions are still fully valid and before reaching the Pre-computation Verification Summary (Step 3.10).**
+    4.  **Handle Discrepancies/Insufficiencies:**
         *   If output is incongruent with the request (e.g., wrong lines returned, unexpected truncation not acceptable for the task) or if the content is insufficient/ambiguous for the immediate purpose:
             *   **MUST** explicitly state the issue.
             *   **MUST** take corrective action *before* proceeding to use this data. Corrective actions may include:
@@ -151,7 +152,7 @@ When responding to user requests involving code analysis, planning, or modificat
                 *   Using an alternative tool to gather the necessary information.
                 *   If ambiguity persists, requesting clarification from the user.
             *   If proceeding with potentially incomplete data is unavoidable and deemed acceptable after consideration, this **MUST** be explicitly stated along with potential risks.
-    4.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "Output of `read_file` for `xyz.py` verified, content is sufficient for planning.", "Initial `grep_search` for '\''MyClass'\'' was truncated; re-running with `include_pattern='*.py'` for better focus. Output verified and sufficient.", "Output of `list_dir` for `src/utils` verified and sufficient.").
+    5.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "Output of `read_file` for `xyz.py` verified, content is sufficient for planning.", "Initial `grep_search` for '\''MyClass'\'' was truncated; re-running with `include_pattern='*.py'` for better focus. Output verified and sufficient.", "Output of `list_dir` for `src/utils` verified and sufficient.").
 *   **Next Step:** Only after successful verification (or explicit acknowledgment of proceeding with limitations), use the tool's output for subsequent planning sub-steps (e.g., 3.1, 3.2, etc.).
 
 **NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
@@ -311,6 +312,15 @@ In all such cases where the tool's changes significantly exceed or deviate from 
             *   **WARNING:** AI model may add unrequested lines.
             *   `a.` **Summarize Pre-Edit Context:** Briefly summarize relevant existing code structure from recent `read_file` calls.
             *   `b.` **Perform Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *proposed `code_edit` diff*. The 'intent' for this verification is the plan established in Step 3. **The execution of `Procedure: Verify Diff` MUST be reported using the multi-line checklist format detailed in that procedure's "Execution Reporting" section and example.**
+            *   `d.` **Verify Generated Code Conciseness:**
+                *   **Action:** Review any newly generated functions or methods within the proposed `code_edit` diff against the "Function/Method Conciseness" standard defined in `PROJECT_STANDARDS.MD`.
+                *   **Check:** Specifically assess if any new function/method is overly long, has excessive nesting, or handles too many responsibilities.
+                *   **Handle Violation:** If a violation is found:
+                    i.  **MUST NOT** proceed with the current `code_edit`.
+                    ii. **MUST** explicitly state that the generated code violates the conciseness standard.
+                    iii.**MUST** revise the plan (return to Step 3) to decompose the logic into smaller, compliant functions/methods.
+                    iv. **MUST** then re-execute Step 4.1 to generate a new, compliant `code_edit` diff.
+                *   **Report:** Confirm this check was performed and whether any revisions were necessary due to it.
 
         `4.2.2` **Generate Pre-Edit Confirmation Statement:** Before proceeding to 4.3, **MUST** provide brief statement confirming 4.2.1 checks (Context Summary and Diff Verification), **mentioning explicit verification of key assumptions/dependencies** and logic preservation if applicable.
             *   *Example (Refactoring): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on proposed edit against plan (Outcome: Verified, no deviations). Key assumption 'API X' verified (Outcome: Confirmed). Logic Preservation: Confirmed plan preserves behavior. Proceeding to Apply Edit (4.3)."*
