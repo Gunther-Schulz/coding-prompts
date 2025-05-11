@@ -5,7 +5,7 @@
 **Goal:** To improve consistency and proactively catch deviations from standards by incorporating explicit checks **and reporting** into the workflow, ensuring a strong emphasis on fundamentally robust solutions over quick fixes or workarounds.
 **Interaction Model:** This process assumes **autonomous execution** by the AI, with user intervention primarily reserved for points explicitly marked with the literal text `**BLOCKER:**`. These points are identified within the procedures. Therefore, meticulous self-verification and clear, proactive reporting as outlined below are paramount for demonstrating adherence.
 
-**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.29. See CHANGELOG.md for detailed history.**
+**Toolkit Component Version: Belongs to AI Collaboration Toolkit v0.2.30. See CHANGELOG.md for detailed history.**
 
 ---
 
@@ -192,31 +192,7 @@ When responding to user requests involving code analysis, planning, or modificat
         `3.4.0.a` **Assess Interacting Existing Patterns (SUGGESTION 1):** When planned changes significantly interact with or depend upon existing architectural patterns or critical execution paths within the target file(s) (e.g., application startup, core callbacks, central configuration), the AI **MUST** briefly assess these *existing* patterns for obvious robustness concerns that could be exacerbated by the planned changes (e.g., late initializations, potential for shared state issues, overly complex existing logic that the new code will plug into).
             *   **If significant concerns directly relevant to the stability of the planned integration are identified, they should be highlighted.**
             *   This is not a full audit of existing code, but a focused check on immediate interaction points critical for the success of the planned changes.
-            *   *Example: 'The plan involves adding new CLI groups. Existing CLI group registration in `app.py` occurs late in a complex callback. This existing pattern might pose a risk to the new groups\'\'\'availability if the callback fails early. Consider if registrations should be moved to module level for robustness.'*
-
-        `3.4.0.b` **Assess Target Code Complexity & Determine Refactoring Need (Mandatory):** Before generating an edit for a specific code block (e.g., a function, method), the AI **MUST** assess its complexity to determine if pre-emptive refactoring is necessary. This assessment **MUST** use the actual `target_code_block_content` of the function/method, which **MUST** be sourced from the file content obtained and verified as sufficient during Step 3.0 (`Procedure: Ensure Sufficient File Context`). The AI **MUST NOT** make assumptions about the code block's content or complexity if its source file has already been read and verified in Step 3.0.
-
-                        `3.4.0.b` **Assess Target Code Complexity & Determine Refactoring Need (Mandatory):** Before generating an edit for a specific code block (e.g., a function, method), the AI **MUST** assess its complexity to determine if pre-emptive refactoring is necessary.
-
-            1.  **Execute `Procedure: Assess Code Block Complexity` (Section 4):**
-                *   Provide the `target_code_block_content` (obtained as mandated by the "Principle of Contextual Data Utilization within Planning" using data from Step 3.0).
-                *   Provide a description of the planned edit\'s nature and estimated complexity (Trivial, Minor, Significant).
-                *   Provide the language context.
-            2.  **Report Procedure Outcome:** Include the inline summary from `Procedure: Assess Code Block Complexity` (showing factors considered and the final Outcome Category) in the AI's response.
-            3.  **Action Based on Complexity Outcome Category:**
-                *   **If Outcome is `COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING` or `COMPLEXITY_HIGH_POTENTIAL_REFACTORING`:**
-                    i.  **STOP** proceeding with the originally planned edit.
-                    ii. **Propose Preliminary Refactoring:** Explicitly propose a refactoring plan for the *existing* complex block. The plan should aim to simplify the code into smaller, more manageable, single-responsibility units, making the location for the *original* intended change clearer and safer to modify.
-                    iii.**Explain Rationale:** Refer to the Outcome Category from the complexity assessment (e.g., "As per `Procedure: Assess Code Block Complexity`, function `foo` was categorized as `COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING` due to its length of 170 lines and 3 distinct conceptual blocks. Proposing refactoring into helpers `_foo_part1` and `_foo_part2` to improve clarity before applying the planned update to `_foo_part2`.").
-                    iv. **BLOCKER:** State that this proposal requires user confirmation. **Do NOT proceed with the refactoring NOR the original planned edit until the user explicitly approves the refactoring plan OR instructs to proceed with the original edit despite the explicitly stated complexity risks.** If the user opts to proceed despite risks, the AI MUST note this decision and the potential consequences.
-                    v.  **Plan Sequential Execution (If Refactoring is Approved and Multi-Step):** If the user approves a refactoring plan that involves multiple distinct extraction steps from the *same original code block* (e.g., extracting two different helper methods from one large function), the AI **MUST** then:
-                        1.  Outline the planned sequence of these extractions (e.g., "Refactoring Plan (Approved): 1. Extract logic A from `original_function` into `_helper_A`. 2. Then, extract logic B from the remainder of `original_function` into `_helper_B`.").
-                        2.  State that it will now proceed to execute these extraction steps *sequentially*. Each individual extraction **MUST** follow the full Step 4 cycle (Steps 4.1 through 4.5, including all verifications) before the next extraction in the sequence is initiated.
-                *   **If Outcome is `COMPLEXITY_MODERATE_PROCEED_WITH_CAUTION`:**
-                    *   The AI **MAY** still propose refactoring if it believes it offers significant benefits for clarity or future maintainability, even if not strictly mandated by the highest risk categories.
-                    *   If *not* proposing refactoring, the AI **MUST** briefly justify in its response why proceeding with the edit on the moderately complex code is acceptable for *this specific planned change* (e.g., "Function `bar` was categorized as `COMPLEXITY_MODERATE_PROCEED_WITH_CAUTION`. The planned 'Minor' addition is localized and assessed not to significantly worsen overall structural complexity or maintainability at this stage. Proceeding with edit.").
-                *   **If Outcome is `COMPLEXITY_ACCEPTABLE`:**
-                    *   Proceed with the planned edit. No special justification regarding complexity is typically needed unless other specific concerns (unrelated to these general complexity metrics) arise.
+            *   *Example: 'The plan involves adding new CLI groups. Existing CLI group registration in `app.py` occurs late in a complex callback. This existing pattern might pose a risk to the new groups'''availability if the callback fails early. Consider if registrations should be moved to module level for robustness.'*
 
         **Data Integrity Priority:** When encountering **unexpectedly missing or invalid data** from external sources or between internal components:
             *   **Default Action:** Treat as a **critical error**. Log clearly and raise an appropriate, specific error (e.g., `ConversionError`, `ValidationError`) to halt processing for the affected item.
@@ -284,7 +260,7 @@ When responding to user requests involving code analysis, planning, or modificat
     `3.11.` **Verify Action Preconditions (Before Generating Edit):** Before proceeding to Step 4.1 for a file, explicitly re-verify the *immediate preconditions* for the planned action based on the most recent file content obtained (ideally in Step 3.0). Examples:
         *   If planning to *delete* specific lines/code blocks, **MUST** briefly re-confirm using `grep_search` or targeted `read_file` that those elements *currently exist*.
         *   If planning to *add* a specific function/class/import, **MUST** briefly re-confirm it does *not already exist* in the intended form/location.
-        *   If planning to *modify* a block, **MUST** briefly re-confirm the block exists and appears structurally compatible with the planned change.
+        *   If planning to *modify* a block, **MUST** briefly re-confirm the block exists and appears structurably compatible with the planned change.
         If a precondition is not met (e.g., trying to delete something that's already gone), **STOP**, report the discrepancy, and revise the plan (potentially skipping the edit for this file). This check must be explicitly confirmed in the response before Step 4.1.
 
         **IMMEDIATE NEXT ACTION (Unless Blocked in Step 3 or Precondition Check Failed):** Upon successful completion and confirmation of the Precondition Check (3.11) (or if it was N/A), and if no `**BLOCKER:**` from Step 3 has halted the process, you **MUST** immediately and autonomously continue to Step 4.1 (Generate Proposed `code_edit` Diff Text) for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
@@ -384,6 +360,17 @@ In all such cases where the tool's changes significantly exceed or deviate from 
                             v.  **Escalation if Granular Edit Fails:** If attempts to apply these smaller, granular edits also consistently fail (e.g., 2 consecutive "no changes made" reports for a specific granular piece, or if the overall set of granular changes cannot be completed successfully after a reasonable number of attempts per piece, typically not exceeding 2-3 attempts for the entire set of granular changes for the original intended modification), THEN the AI **MUST** proceed to `Procedure: Request Manual Edit` (Section 5), explaining the situation and the strategies attempted.
                 d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action. **This corrective action MUST aim to restore the overall integrity and correctness of the file, addressing both deviations from the planned change AND any new issues introduced by the edit tool.** If the file's state is a result of the edit tool making unintended modifications to unrelated code, the primary goal of the self-correction is to achieve the user's intended change *without* these unintended side-effects, or to clean up those side-effects if the intended change is already present.
                 e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
+                    (Reactive Complexity-Driven Refactoring Consideration):** Before triggering `Procedure: Request Manual Edit` due to persistent correction failure on a specific code block (as further detailed in sub-step 'i' below), the AI **SHOULD** first:
+                    1.  Consider if the complexity of the target code block (e.g., function, method where edits are failing) is a likely contributing factor to the persistent edit failures.
+                    2.  If the AI judges that high complexity (e.g., due to excessive length, deep nesting, or too many responsibilities) is indeed the likely primary reason for the edit failures:
+                        i.  **Explain Rationale:** Briefly explain why it believes complexity is the issue for this specific block (e.g., "The function `xyz` is over 150 lines with 4 levels of nesting, which may be making precise automated edits difficult.").
+                        ii. **Propose Preliminary Refactoring:** Propose a refactoring plan for the *existing* complex block. The plan should aim to simplify the code into smaller, more manageable, single-responsibility units.
+                        iii.Explain that this refactoring, if approved, would be performed first (following a full Step 4 cycle for each refactoring edit). After successful refactoring, the original intended edit (that was previously failing) would be re-attempted on the simplified code.
+                        iv. **BLOCKER:** State that this refactoring proposal requires user confirmation. **Do NOT proceed with the refactoring NOR a re-attempt of the original failed edit on the complex code until the user explicitly approves the refactoring plan OR instructs to proceed directly to `Procedure: Request Manual Edit` (or suggests another course of action).**
+                        v.  If refactoring is approved by the user and subsequently applied successfully by the AI, the AI should then re-initiate planning (Step 3, focusing on the original goal for the now-refactored code) and execution (Step 4) for the *original intended edit*.
+                        vi. If the user declines the refactoring proposal, or if the AI's attempt to apply the approved refactoring itself fails persistently (e.g., meets the criteria in sub-step 'i' below for the refactoring attempt), then the AI **MUST** proceed to trigger `Procedure: Request Manual Edit` for the *original intended edit* (or for the failed refactoring step, if that's where it got stuck), explaining the situation.
+                    3.  If the AI does not determine complexity to be the primary driver of the persistent edit failures, or if the nature of the failure isn't clearly tied to a specific block's complexity, it should then proceed directly to evaluate the conditions in sub-steps 'i' and 'ii' below for triggering `Procedure: Request Manual Edit`.
+
                     Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
                     i.  **Persistent Correction Failure:** Repeated attempts (e.g., >3 attempts for the same planned logical change to a specific file section, or if **2 consecutive `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome without significant unintended side-effects**) to apply a *necessary and planned correction* fail **(SUGGESTION 4 STARTS HERE) (especially if the failed edits involve large structural block movements or changes in files known to be particularly complex or sensitive, and the `edit_file` tool consistently fails to place these accurately). (SUGGESTION 4 ENDS HERE)**
                     ii. **Grossly Disproportionate or Corrupting Unintended Modifications:** If a single `edit_file` or `reapply` application, particularly for an edit with a very narrow and specific intent (e.g., adding a few specific lines, fixing a typo, simple refactoring of a small block), results in modifications that are grossly disproportionate to the intent or fundamentally corrupt the file's structure or syntax in unintended ways. This includes, but is not limited to:
@@ -608,46 +595,6 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 *   **Steps:**
     1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal from Step 4.2 (specifically, the verified proposed `code_edit` diff after `Procedure: Verify Diff` execution in Step 4.2.1.b)* (incorporating any handled deviations from the pre-apply check).
     2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
-
-**`Procedure: Assess Code Block Complexity`**
-
-*   **Purpose:** To systematically assess the complexity of a target code block (e.g., function, method) and determine if pre-emptive refactoring is warranted before applying a planned edit.
-*   **Trigger:** Called by Step `3.4.0.b` before generating an edit for a specific code block.
-*   **Inputs (Conceptual):**
-    *   `target_code_block_content`: The actual source code of the function/method being assessed.
-    *   `planned_edit_description`: A summary of the nature and estimated size/complexity of the changes to be made (e.g., "Trivial: typo fix", "Minor: add simple conditional", "Significant: add new loop and 25 lines of logic").
-    *   `language_context`: (e.g., "Python", "JavaScript") to allow for language-specific heuristics.
-*   **Assessment Factors (Non-Exhaustive):**
-    1.  **Length:**
-        *   *Guideline (Python example, adapt per `language_context`):*
-            *   **Short & Simple:** < 30-40 lines.
-            *   **Moderate:** 40-80 lines.
-            *   **Long:** 80-150 lines.
-            *   **Excessive:** >150 lines.
-    2.  **Nesting Depth:** Maximum clearly discernible levels of nested control structures (loops, conditionals, try/except). More than 2-3 levels is a concern.
-    3.  **Number of Responsibilities / Conceptual Blocks:** Identify distinct logical stages or sub-tasks. A high number suggests a Single Responsibility Principle violation.
-    4.  **Clarity of Control Flow:** Subjective assessment of the ease of tracing execution paths.
-    5.  **Number of Parameters:** A high number (e.g., >5-7 for many languages) can be an indicator.
-    6.  **Complexity of `planned_edit_description`:** Categorized as "Trivial", "Minor", or "Significant".
-
-*   **Complexity Outcome Categories & Determination Logic (Example):**
-    1.  **`COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING`:**
-        *   Length is "Excessive".
-        *   OR Length is "Long" AND `planned_edit_description` is "Significant".
-        *   OR Length is "Long" AND scores poorly on 2+ other factors (Nesting, Responsibilities, etc.).
-    2.  **`COMPLEXITY_HIGH_POTENTIAL_REFACTORING`:**
-        *   Length is "Long" (and not meeting "Excessive" triggers).
-        *   OR Length is "Moderate" AND `planned_edit_description` is "Significant".
-        *   OR Length is "Moderate" AND scores poorly on 2+ other factors.
-    3.  **`COMPLEXITY_MODERATE_PROCEED_WITH_CAUTION`:**
-        *   Length is "Moderate" (and not meeting "High Potential" triggers).
-        *   OR Length is "Short & Simple" BUT `planned_edit_description` is "Significant" (potentially making the resulting function "Moderate" or "Long").
-    4.  **`COMPLEXITY_ACCEPTABLE`:**
-        *   Length is "Short & Simple" AND `planned_edit_description` is "Minor" or "Trivial".
-        *   Other cases not meeting higher complexity categories.
-
-*   **Return Value:** One of the complexity outcome category strings (e.g., `COMPLEXITY_EXCESSIVE_REQUIRES_REFACTORING`).
-*   **Execution Reporting:** When executing this procedure, the AI response **MUST** include an inline summary documenting the key assessment factors evaluated (e.g., Length: 160 lines (Excessive), Nesting: 3, Responsibilities: 4, Planned Edit: Significant) and the final determined **Outcome Category**.
 
 ---
 

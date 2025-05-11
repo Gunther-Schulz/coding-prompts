@@ -7,6 +7,35 @@ When you (the AI Assistant) are instructed to update this changelog due to chang
 
 ## [Unreleased]
 
+## [0.2.30] - 2025-05-11
+**Affected Document(s):**
+*   `coding-clippy/CLIPPY.md`
+
+**Summary of Changes:**
+Refined the handling of code complexity within the AI coding process. Removed the mandatory proactive complexity assessment (formerly Step 3.4.0.b) and the detailed `Procedure: Assess Code Block Complexity` (formerly in Section 4). Introduced a more streamlined, reactive approach in Step 4.4.3.b.e, where the AI, upon persistent edit failures, uses its judgment to assess if complexity is the likely cause. If so, it explains its rationale and proposes refactoring as a user-approved (BLOCKER) step before resorting to manual edit requests. This makes complexity handling a targeted intervention for problematic code rather than an upfront mandate for all edits.
+
+**Detailed Changes to `coding-clippy/CLIPPY.md`:**
+
+1.  **Removed Proactive Complexity Assessment (Step `3.4.0.b`):
+    *   The entire Step `3.4.0.b` ("Assess Target Code Complexity & Determine Refactoring Need") was removed from the Pre-computation Standards Check (Planning Phase).
+
+2.  **Simplified Reactive Complexity Handling (Step `4.4.3.b.e`):
+    *   Modified the "(Reactive Complexity-Driven Refactoring)" subsection.
+    *   The AI no longer executes a formal procedure for complexity assessment.
+    *   Instead, if edits persistently fail, the AI should:
+        1.  Consider if the complexity of the target code block is a likely contributing factor.
+        2.  If judged so, briefly explain its rationale (e.g., citing length, nesting).
+        3.  Propose preliminary refactoring as a `BLOCKER` requiring user confirmation.
+        4.  Detail the flow if refactoring is approved (attempt refactor, then re-attempt original edit) or declined (proceed to manual edit request).
+    *   Removed references to specific complexity outcome categories from the former procedure.
+
+3.  **Removed `Procedure: Assess Code Block Complexity` (Section 4):
+    *   The detailed procedure (previously lines 603-648) defining specific assessment factors and outcome categories was deleted from Section 4 (Reusable Verification Procedures).
+
+4.  **Minor Textual Cleanup:**
+    *   Removed a `**(NEW ` marker prefix from the description of the reactive complexity handling in Step `4.4.3.b.e`.
+    *   The `Purpose` and `Trigger` of the (now removed) `Procedure: Assess Code Block Complexity` were briefly updated to reflect a reactive role before the decision was made to remove the procedure entirely (this change to the procedure itself is now superseded by its deletion).
+
 ## [0.2.29] - 2025-05-10
 **Affected Document(s):**
 *   `coding-clippy/CLIPPY.md`
@@ -665,7 +694,7 @@ Enhanced AI's self-verification procedures for code edits, particularly concerni
 **Detailed Changes to `coding-prompts/AI_CODING_PROCESS.md`:**
 
 1.  **Enhanced `Procedure: Verify Diff`:** Clarified 'intent' scope, mandated granular analysis of additions/modifications/deletions against specific intent, and emphasized treating unplanned deletions as major deviations. Restored full 11-point checklist.
-2.  **Refined Trigger for `Procedure: Request Manual Edit`:** Broadened the "Grossly Disproportionate Modifications" condition to cover more general file corruption scenarios and refined self-correction attempts before escalation.
+2.  **Refined Trigger for `Procedure: Request Manual Edit**:** Broadened the "Grossly Disproportionate Modifications" condition to cover more general file corruption scenarios and refined self-correction attempts before escalation.
 3.  **Improved "CRITICAL WARNING" (Step 4):** Replaced single lengthy example with three varied, shorter examples illustrating tool misapplication, plus a reinforcing conclusion.
 
 **Reason for Changes:**
