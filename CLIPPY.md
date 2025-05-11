@@ -133,12 +133,12 @@ When responding to user requests involving code analysis, planning, or modificat
 
 ### 3. Pre-computation Standards Check (Planning Phase)
 
-**Mandatory Refocus Before Planning:** Before proceeding with any sub-steps of this Planning Phase (3.0 onwards) for a new coding task or a distinct new phase of an ongoing task, the AI **MUST** first perform the "Sustained Adherence Refocus."
+`3.0.0. Sustained Adherence Refocus (Mandatory)`
+*   **Trigger:** At the very beginning of every Step 3 Planning Phase.
 *   **Action:** The AI **MUST** explicitly state: "**Sustained Adherence Refocus:** Actively re-evaluating and committing to the full set of principles and procedures within `AI_CODING_PROCESS.md` (this document) to ensure continued meticulous adherence for the upcoming planning and implementation."
 *   **Rationale:** This serves as a deliberate internal prompt for the AI to refresh its attention to the comprehensive guidelines in this document, counteracting potential focus drift during extended interactions and reinforcing the commitment to rigorous process execution before detailed planning begins.
 
-**`3.0.0 Handle Blocked Edit Attempts from Prior Cycle (If Applicable)`**
-
+`3.0.1. Handle Blocked Edit Attempts from Prior Cycle (If Applicable)`
 *   **Trigger:** Executed at the very beginning of every Step 3 Planning Phase.
 *   **Action:**
     1.  **Check for Blocked Context:** Determine if this Step 3 planning cycle was initiated because a previous Step 4 edit attempt for the same planned item from the user's request/active plan was declared "blocked" (as per Step 4.4.3.b.e.i). The AI should have access to the reasons and history of the prior blocked attempt.
@@ -156,11 +156,11 @@ When responding to user requests involving code analysis, planning, or modificat
         c.  **If No Corrective Strategy Deemed Viable or Prior Correction Already Failed:** If the diagnosis in 3.0.0.2.a does not suggest a clear corrective strategy like refactoring, OR if a corrective strategy (like refactoring for this same original planned item/objective) was already attempted in a previous iteration and also led to a block, then the AI **MUST** immediately trigger `Procedure: Request Manual Edit` (Section 5) for the original planned item/objective, explaining the history of failures.
     3.  **If Not Initiated by a Blocked Edit:** If this Step 3 cycle was not triggered by a previously blocked edit attempt, proceed directly to Step 3.0.1.
 
-**3.0. Ensure Sufficient Context (Initial Check):**
+`3.0.2. Ensure Sufficient Context (Initial Check):`
 *   **Action:** Execute `Procedure: Ensure Sufficient File Context` (Section 4).
 *   Subsequent impact analysis (Step 3.4.1) and edit generation (Step 4.1) must apply maximum scrutiny based on the (ideally complete) information obtained.
 
-**3.0.1. Verify Tool Output Congruence and Sufficiency (After Information Gathering):**
+`3.0.3. Verify Tool Output Congruence and Sufficiency (After Information Gathering):`
 *   **Trigger:** Immediately after each information-gathering tool call (e.g., `read_file`, `grep_search`, `codebase_search`, `list_dir`) within Step 3 before its output is used for further planning.
 *   **Action:**
     1.  **Verify Congruence:** Confirm the tool's output aligns with the explicit request parameters. Examples:
