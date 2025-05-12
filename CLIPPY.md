@@ -177,7 +177,8 @@ When responding to user requests involving code analysis, planning, or modificat
                 *   Using an alternative tool to gather the necessary information.
                 *   If ambiguity persists, requesting clarification from the user.
             *   If proceeding with potentially incomplete data is unavoidable and deemed acceptable after consideration, this **MUST** be explicitly stated along with potential risks.
-    5.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "Output of `read_file` for `xyz.py` verified, content is sufficient for planning.", "Initial `grep_search` for '\''MyClass'\'' was truncated; re-running with `include_pattern='*.py'` for better focus. Output verified and sufficient.", "Output of `list_dir` for `src/utils` verified and sufficient.").
+    5.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "Output of `read_file` for `xyz.py` verified, content is sufficient for planning.", "Initial `grep_search` for '\\'MyClass\\'' was truncated; re-running with `include_pattern='*.py'` for better focus. Output verified and sufficient.", "Output of `list_dir` for `src/utils` verified and sufficient.").
+        **Full Read Completeness Check (If `should_read_entire_file=true` used):** **MUST** explicitly report the outcome of the completeness check performed as per `Procedure: Ensure Sufficient File Context`, Step 3. Use format: "**Full Read Completeness Check (`[filename]`):** [Verified Full / Partial Received - BLOCKER Triggered / N/A]".
 *   **Next Step:** Only after successful verification (or explicit acknowledgment of proceeding with limitations), use the tool's output for subsequent planning sub-steps (e.g., 3.1, 3.2, etc.).
 
 **NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
@@ -271,8 +272,9 @@ When responding to user requests involving code analysis, planning, or modificat
         - `[x/-] 3. Hypothesis Verification:` *[Brief confirmation `Procedure: Verify Hypothesis` (3.4.1.b) performed for ALL assumptions. Outcome: e.g., 'All verified', 'Assumption X confirmed'.]*
         - `[x/-] 4. Logic Preservation Plan:` *[Brief confirmation `Procedure: Ensure Logic Preservation` (3.4.1.e) performed if applicable. Mark `[x]` if done, `[-]` if N/A.]*
         - `[x/-] 5. Blocker Checks:` *[Brief confirmation blocker checks (3.5/3.6) performed and guidance sought/received via Section 5 procedures if triggered. Mark `[x]` if checked & resolved/approved, `[-]` if N/A.]*
-        - `[x] 6. Confirmation:` Pre-computation verification summary complete. *(Always `[x]`)*
+        - `[x/-] 6. Confirmation:` Pre-computation verification summary complete. *(Always `[x]`)*
         - `[x/-] 7. Tool Output Verification:` *[Brief confirmation that all tool outputs used in planning were verified for congruence and sufficiency as per Step 3.0.1.]*
+        - `[x/-] 8. Full File Read Verification:` *[Brief confirm checks per Proc: Ensure Sufficient File Context Step 3 performed for all `should_read_entire_file=true` calls in this phase. Outcome: e.g., 'All verified complete', 'Partial read handled for file X'. Mark `[-]` if N/A.]*
         ```
         *(Note: This summary serves as mandatory proof that pre-computation checks were completed autonomously before proceeding. Explicit justification is required for any step marked N/A.)*
 
@@ -399,6 +401,7 @@ In all such cases where the tool's changes significantly exceed or deviate from 
         - `[x/-] 2. Leftover Code & Dependency Analysis:` *[Brief confirm check **4.4.2.a (artifacts)** and **4.4.2.b (explicit dependency re-verification/deletion checks)** done. Outcome: e.g., "Cleanup OK", "Re-verification confirmed no missed updates".]*
         - `[x/-] 3. Correction Assessment:` *[Brief confirm check 4.4.3 performed. State if corrections were needed/made. Mark `[x]` if checked & OK, `[-]` if N/A.]*
         - `[x] 4. Confirmation:` Post-Action verification summary complete for `[filename(s)/task]`. *(Always `[x]`)*
+        - `[x/-] 5. Full File Read Verification:` *[Brief confirm checks per Proc: Ensure Sufficient File Context Step 3 performed for any `should_read_entire_file=true` calls in this action phase (e.g., post-manual edit). Outcome: e.g., 'All verified complete'. Mark `[-]` if N/A.]*
         ```
         *(Note: This summary serves as mandatory proof that post-action verifications were completed autonomously. Explicit justification is required for any step marked N/A.)*
 
