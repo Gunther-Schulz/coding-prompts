@@ -37,6 +37,7 @@
     *   [`Procedure: Verify Configuration Usage Impact`](#procedure-verify-configuration-usage-impact)
     *   [`Procedure: Verify Reapply Diff`](#procedure-verify-reapply-diff)
     *   [`Procedure: Verify Edit File Diff`](#procedure-verify-edit-file-diff)
+    *   [`Procedure: Verify Tool Output`](#procedure-verify-tool-output)
 5.  [Exception Handling Procedures](#exception-handling-procedures)
     *   [`Procedure: Handle Unclear Root Cause / Missing Info`](#procedure-handle-unclear-root-cause--missing-info)
     *   [`Procedure: Handle Architectural Decisions`](#procedure-handle-architectural-decisions)
@@ -162,24 +163,7 @@ When responding to user requests involving code analysis, planning, or modificat
 
 `3.0.3. Verify Tool Output Congruence and Sufficiency (After Information Gathering):`
 *   **Trigger:** Immediately after each information-gathering tool call (e.g., `read_file`, `grep_search`, `codebase_search`, `list_dir`) within Step 3 before its output is used for further planning.
-*   **Action:**
-    1.  **Verify Congruence:** Confirm the tool's output aligns with the explicit request parameters. Examples:
-        *   `read_file`: Was the requested line range or full file content returned as expected?
-        *   `grep_search`/`codebase_search`: Do the results appear complete, or is there indication of truncation (e.g., "results capped at 50 matches") that might hide relevant information?
-        *   `list_dir`: Was the directory listing provided for the correct path?
-    2.  **Assess Sufficiency & Clarity:** Evaluate if the *content* of the output is adequate and unambiguous for the *specific planning task or hypothesis verification at hand*.
-    3.  **Re-evaluate Prior Planning with New/Sufficient Information:** **If new and more complete/sufficient information for a key file/component becomes available (e.g., after a `BLOCKER` resolution or a more successful tool call) *after* some initial planning sub-steps (e.g., 3.1 through 3.9, especially complexity assessments like 3.4.0.b) were provisionally addressed based on previously incomplete/insufficient data, the AI MUST explicitly re-evaluate any of those prior sub-steps whose conclusions would be materially impacted by the new, complete information. This re-evaluation MUST occur before proceeding as if the prior conclusions are still fully valid and before reaching the Pre-computation Verification Summary (Step 3.10).**
-    4.  **Handle Discrepancies/Insufficiencies:**
-        *   If output is incongruent with the request (e.g., wrong lines returned, unexpected truncation not acceptable for the task) or if the content is insufficient/ambiguous for the immediate purpose:
-            *   **MUST** explicitly state the issue.
-            *   **MUST** take corrective action *before* proceeding to use this data. Corrective actions may include:
-                *   Re-running the tool with adjusted parameters (e.g., more specific query, different line numbers).
-                *   Using an alternative tool to gather the necessary information.
-                *   If ambiguity persists, requesting clarification from the user.
-            *   If proceeding with potentially incomplete data is unavoidable and deemed acceptable after consideration, this **MUST** be explicitly stated along with potential risks.
-    5.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "Output of `read_file` for `xyz.py` verified, content is sufficient for planning.", "Initial `grep_search` for '\\'MyClass\\'' was truncated; re-running with `include_pattern='*.py'` for better focus. Output verified and sufficient.", "Output of `list_dir` for `src/utils` verified and sufficient.").
-        **Full Read Completeness Check (If `should_read_entire_file=true` used):** **MUST** explicitly report the outcome of the completeness check performed as per `Procedure: Ensure Sufficient File Context`, Step 3. Use format: "**Full Read Completeness Check (`[filename]`):** [Verified Full / Partial Received - BLOCKER Triggered / N/A]".
-*   **Next Step:** Only after successful verification (or explicit acknowledgment of proceeding with limitations), use the tool's output for subsequent planning sub-steps (e.g., 3.1, 3.2, etc.).
+*   **Action:** Execute `Procedure: Verify Tool Output` (Section 4).
 
 **NOTE:** Foundational checks (Steps 3.4, 3.5, 3.6) take precedence. If analysis reveals underlying issues (robustness, unknown root cause, architectural conflicts), these **MUST** be addressed by **STOPPING the standard plan and executing the appropriate procedure from Section 5: `Exception Handling Procedures`** *before* proceeding with the original task. Embrace necessary detours.
 
@@ -273,7 +257,7 @@ When responding to user requests involving code analysis, planning, or modificat
         - `[x/-] 4. Logic Preservation Plan:` *[Brief confirmation `Procedure: Ensure Logic Preservation` (3.4.1.e) performed if applicable. Mark `[x]` if done, `[-]` if N/A.]*
         - `[x/-] 5. Blocker Checks:` *[Brief confirmation blocker checks (3.5/3.6) performed and guidance sought/received via Section 5 procedures if triggered. Mark `[x]` if checked & resolved/approved, `[-]` if N/A.]*
         - `[x/-] 6. Confirmation:` Pre-computation verification summary complete. *(Always `[x]`)*
-        - `[x/-] 7. Tool Output Verification:` *[Brief confirmation that all tool outputs used in planning were verified for congruence and sufficiency as per Step 3.0.1.]*
+        - `[x/-] 7. Tool Output Verification:` *[Brief confirmation `Procedure: Verify Tool Output` (Section 4) was executed for all tool outputs used in planning.]*
         - `[x/-] 8. Full File Read Verification:` *[Brief confirm checks per Proc: Ensure Sufficient File Context Step 3 performed for all `should_read_entire_file=true` calls in this phase. Outcome: e.g., 'All verified complete', 'Partial read handled for file X'. Mark `[-]` if N/A.]*
         ```
         *(Note: This summary serves as mandatory proof that pre-computation checks were completed autonomously before proceeding. Explicit justification is required for any step marked N/A.)*
@@ -611,6 +595,27 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 *   **Steps:**
     1.  **Perform Core Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *actual diff applied by `edit_file`*. The 'intent' for this verification is the *final intended proposal from Step 4.2 (specifically, the verified proposed `code_edit` diff after `Procedure: Verify Diff` execution in Step 4.2.1.b)* (incorporating any handled deviations from the pre-apply check).
     2.  **Discrepancy Handling:** If the overall outcome of `Procedure: Verify Diff` (Step 1) is not 'Verified' (or 'Verified with handled deviations') and cannot be justified/corrected, **trigger self-correction (Step 4.4.3)**.
+
+**`Procedure: Verify Tool Output`**
+*   **Purpose:** To verify that the output of an information-gathering tool (e.g., `read_file`, `grep_search`) is congruent with the request and sufficient for the current task.
+*   **Trigger:** Called by Step 3.0.3 immediately after an information-gathering tool call.
+*   **Steps:**
+    1.  **Verify Congruence:** Confirm the tool's output aligns with the explicit request parameters. Examples:
+        *   `read_file`: Was the requested line range or full file content returned as expected?
+        *   `grep_search`/`codebase_search`: Do the results appear complete, or is there indication of truncation (e.g., "results capped at 50 matches") that might hide relevant information?
+        *   `list_dir`: Was the directory listing provided for the correct path?
+    2.  **Assess Sufficiency & Clarity:** Evaluate if the *content* of the output is adequate and unambiguous for the *specific planning task or hypothesis verification at hand*.
+    3.  **Re-evaluate Prior Planning with New/Sufficient Information:** **If new and more complete/sufficient information for a key file/component becomes available (e.g., after a `BLOCKER` resolution or a more successful tool call) *after* some initial planning sub-steps (e.g., 3.1 through 3.9, especially complexity assessments like 3.4.0.b) were provisionally addressed based on previously incomplete/insufficient data, the AI MUST explicitly re-evaluate any of those prior sub-steps whose conclusions would be materially impacted by the new, complete information. This re-evaluation MUST occur before proceeding as if the prior conclusions are still fully valid and before reaching the Pre-computation Verification Summary (Step 3.10).**
+    4.  **Handle Discrepancies/Insufficiencies:**
+        *   If output is incongruent with the request (e.g., wrong lines returned, unexpected truncation not acceptable for the task) or if the content is insufficient/ambiguous for the immediate purpose:
+            *   **MUST** explicitly state the issue.
+            *   **MUST** take corrective action *before* proceeding to use this data. Corrective actions may include:
+                *   Re-running the tool with adjusted parameters (e.g., more specific query, different line numbers).
+                *   Using an alternative tool to gather the necessary information.
+                *   If ambiguity persists, requesting clarification from the user.
+            *   If proceeding with potentially incomplete data is unavoidable and deemed acceptable after consideration, this **MUST** be explicitly stated along with potential risks.
+    5.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "`Procedure: Verify Tool Output` (`read_file` for `xyz.py`): Verified, content sufficient.", "`Procedure: Verify Tool Output` (`grep_search` for \'\\\\\'MyClass\\\\\'\'): Verified, sufficient after re-run with `include_pattern=\'*.py\'`.", "`Procedure: Verify Tool Output` (`list_dir` for `src/utils`): Verified, sufficient.").
+*   **Next Step:** Only after successful verification (or explicit acknowledgment of proceeding with limitations), use the tool's output for subsequent planning sub-steps (e.g., 3.1, 3.2, etc.).
 
 ---
 
