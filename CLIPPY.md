@@ -136,8 +136,8 @@ When responding to user requests involving code analysis, planning, or modificat
 
 `3.0. Sustained Adherence Refocus (Mandatory)`
 *   **Trigger:** At the very beginning of every Step 3 Planning Phase.
-*   **Action:** The AI **MUST** explicitly state: "**Sustained Adherence Refocus:** Actively re-evaluating and committing to the full set of principles and procedures within `AI_CODING_PROCESS.md` (this document) to ensure continued meticulous adherence for the upcoming planning and implementation."
-*   **Rationale:** This serves as a deliberate internal prompt for the AI to refresh its attention to the comprehensive guidelines in this document, counteracting potential focus drift during extended interactions and reinforcing the commitment to rigorous process execution before detailed planning begins.
+*   **Action:** The AI **MUST** explicitly state: "**Sustained Adherence Refocus:** I have performed a full re-read of `AI_CODING_PROCESS.md` (this document) and am actively re-evaluating and committing to its full set of principles and procedures to ensure continued meticulous adherence for the upcoming planning and implementation."
+*   **Rationale:** This serves as a deliberate internal prompt and confirmation for the AI to refresh its attention to the comprehensive guidelines in this document via a complete re-read. This helps counteract potential focus drift during extended interactions and reinforces the commitment to rigorous process execution before detailed planning begins.
 
 `3.1. Handle Blocked Edit Attempts from Prior Cycle (If Applicable)`
 *   **Trigger:** Executed at the very beginning of every Step 3 Planning Phase.
