@@ -254,25 +254,28 @@ When responding to user requests involving code analysis, planning, or modificat
         ```markdown
         **Pre-computation Verification Summary:**
         - `[x/-] 1. Standards Alignment:` *[Brief confirmation 3.5 performed.]*
-        - `[x/-] 2. Impact Analysis:` *[Brief confirmation `Procedure: Analyze Impact` (3.7.1.a) performed. Outcome: e.g., \'Standard impact checked\', \'Core impact N/A\'.]*
-        - `[x/-] 3. Hypothesis Verification:` *[Brief confirmation `Procedure: Verify Hypothesis` (3.7.1.b) performed for ALL assumptions. Outcome: e.g., \'All verified\', \'Assumption X confirmed\'.]*
+        - `[x/-] 2. Impact Analysis:` *[Brief confirmation `Procedure: Analyze Impact` (3.7.1.a) performed. Outcome: e.g., 'Standard impact checked', 'Core impact N/A'.]*
+        - `[x/-] 3. Hypothesis Verification:` *[Brief confirmation `Procedure: Verify Hypothesis` (3.7.1.b) performed for ALL assumptions. Outcome: e.g., 'All verified', 'Assumption X confirmed'.]*
         - `[x/-] 4. Logic Preservation Plan:` *[Brief confirmation `Procedure: Ensure Logic Preservation` (3.7.1.e) performed if applicable. Mark `[x]` if done, `[-]` if N/A.]*
-        - `[x/-] 5. Blocker Checks:` *[Brief confirmation blocker checks (3.8/3.9) performed and guidance sought/received via Section 5 procedures if triggered. Mark `[x]` if checked & resolved/approved, `[-]` if N/A.]*
-        - `[x/-] 6. Confirmation:` Pre-computation verification summary complete. *(Always `[x]`)*
-        - `[x/-] 7. Tool Output Verification:` *[Brief confirmation `Procedure: Verify Tool Output` (Section 4) was executed for all tool outputs used in planning.]*
-        - `[x/-] 8. Full File Read Verification:` *[Brief confirm checks per Proc: Ensure Sufficient File Context Step 3 performed for all `should_read_entire_file=true` calls in this phase. Outcome: e.g., \'All verified complete\', \'Partial read handled for file X\'. Mark `[-]` if N/A.]*
+        - `[x/-] 5. Confirmation:` Pre-computation verification summary complete. *(Always `[x]`)*
+        - `[x/-] 6. Tool Output Verification:` *[Brief confirmation `Procedure: Verify Tool Output` (Section 4) was executed for all tool outputs used in planning.]*
+        - `[x/-] 7. Full File Read Verification:` *[Brief confirm checks per Proc: Ensure Sufficient File Context Step 3 performed for all `should_read_entire_file=true` calls in this phase. Outcome: e.g., 'All verified complete', 'Partial read handled for file X'. Mark `[-]` if N/A.]*
         ```
         *(Note: This summary serves as mandatory proof that pre-computation checks were completed autonomously before proceeding. Explicit justification is required for any step marked N/A.)*
 
         **NEXT ACTION (Unless Blocked in Step 3):** Upon outputting this summary, and if no `**BLOCKER:**` from Step 3 has halted the process, continue to Step 4.1 (Generate Proposed `code_edit` Diff Text) for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
 
-    `3.14.` **Verify Action Preconditions (Before Generating Edit):** Before proceeding to Step 4.1 for a file, explicitly re-verify the *immediate preconditions* for the planned action based on the most recent file content obtained (ideally in Step 3.2). Examples:
+    `3.14.` **Perform Planning Phase Self-Assessment (After Summary):**
+        *   **Trigger:** Immediately following the output of the Pre-computation Verification Summary (Step 3.13).
+        *   **Action:** Execute `Procedure: Perform Self-Assessment` (Section 4), specifying the scope as `Planning Phase`. This ensures comprehensive process adherence (including blocker rules and context sufficiency review) is confirmed before proceeding to edit generation.
+
+    `3.15.` **Verify Action Preconditions (Before Generating Edit):** Before proceeding to Step 4.1 for a file, explicitly re-verify the *immediate preconditions* for the planned action based on the most recent file content obtained (ideally in Step 3.2). Examples:
         *   If planning to *delete* specific lines/code blocks, **MUST** briefly re-confirm using `grep_search` or targeted `read_file` that those elements *currently exist*.
         *   If planning to *add* a specific function/class/import, **MUST** briefly re-confirm it does *not already exist* in the intended form/location.
         *   If planning to *modify* a block, **MUST** briefly re-confirm the block exists and appears structurably compatible with the planned change.
         If a precondition is not met (e.g., trying to delete something that\'s already gone), **STOP**, report the discrepancy, and revise the plan (potentially skipping the edit for this file). This check must be explicitly confirmed in the response before Step 4.1.
 
-        **NEXT ACTION (Unless Blocked in Step 3 or Precondition Check Failed):** Upon successful completion and confirmation of the Precondition Check (3.14) (or if it was N/A), and if no `**BLOCKER:**` from Step 3 has halted the process, autonomously continue to Step 4.1 (Generate Proposed `code_edit` Diff Text) for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
+        **NEXT ACTION (Unless Blocked in Step 3 or Precondition Check Failed):** Upon successful completion and confirmation of the Self-Assessment (3.14) and Precondition Check (3.15) (or if it was N/A), and if no `**BLOCKER:**` from Step 3 has halted the process, autonomously continue to Step 4.1 (Generate Proposed `code_edit` Diff Text) for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
 
 ### 4. Edit Generation & Verification Cycle
 
@@ -392,20 +395,17 @@ In all such cases where the tool's changes significantly exceed or deviate from 
         ```
         *(Note: This summary serves as mandatory proof that post-action verifications were completed autonomously. Explicit justification is required for any step marked N/A.)*
 
+    #### 4.6 Perform Mid-Cycle Self-Assessment (After Each File Edit)
+    *   **Trigger:** After Step 4.5 (Post-Action Verification Summary) is completed for *each individual file* modified within the task.
+    *   **Action:** Execute `Procedure: Perform Self-Assessment` (Section 4), specifying the scope as `Edit Cycle for [filename]`. This ensures adherence is checked immediately after each file modification cycle.
+
 ### 5. Adherence Checkpoint & Next Step Determination (Final Step in Cycle): **CRITICAL:**
 
-*   **Trigger:** Before concluding interaction for the current task/request cycle.
+*   **Trigger:** Before concluding interaction for the current task/request cycle, after all planned files have been processed through Step 4.
 *   **Action:**
-    *   `5.a.` **Perform Self-Assessment:** Perform a final **self-assessment** check: Have all mandatory steps (1-4, including required sub-steps like 4.2, 4.4, 4.5), checks, verifications, and reporting requirements outlined in this document (including verification summaries) been completed for this cycle?
-        *   `5.a.i.` **Critical Blocker Adherence Review:** **MUST** specifically review the execution history for this cycle to verify that all `BLOCKER:` conditions encountered (especially within `Procedure: Ensure Sufficient File Context` Step 3.c.iii / 3.d, `Procedure: Handle Architectural Decisions`, `Procedure: Handle Necessary Workaround`, `Procedure: Consult on Ambiguous Missing Dependency`, `Procedure: Request Manual Edit`) were strictly adhered to.
-            *   **If a deviation is found (e.g., a `BLOCKER` was bypassed without the required explicit user confirmation/guidance):**
-                *   **MUST** immediately report this as a critical process deviation: \"`Step 5.a.i: Critical Blocker Adherence Review: CRITICAL DEVIATION FOUND: Blocker [Specify Blocker, e.g., '\'Incomplete Data for file X\'', '\'Architectural Decision Y\'] was improperly bypassed. [Briefly explain deviation]. Halting for guidance.`\"
-                *   **STOP** processing and await user guidance. (**BLOCKER:**)
-            *   **If adherence confirmed:** Report: \"`Step 5.a.i: Critical Blocker Adherence Review: Confirmed.`\"
-        *   If any mandatory steps (beyond blockers checked in 5.a.i) were missed, **trigger self-correction (Step 4.4.3)** to address the oversight before finishing.
-        *   **After confirming completion and adherence (including 5.a.i), MUST state: \"**Step 5.a: Adherence Self-Assessment:** Complete. All mandatory steps confirmed executed for this task cycle.\"**
+    *   `5.a.` **Perform Final Self-Assessment:** Execute `Procedure: Perform Self-Assessment` (Section 4), specifying the scope as `Overall Task Cycle`. This serves as the final verification that all steps across the entire task were completed according to the process.
     *   `5.b.` **Determine and Initiate Next Action (If Applicable):** After confirming adherence for the completed action/sub-task (as per 5.a), if the user's main request or active plan (e.g., a checklist from a review document or a multi-step instruction) indicates further sequential actions are pending:
-        *   The AI **MUST** identify and state the next specific action from the request/plan (e.g., \"From `TASK_LIST.md` (or the task list document), the next item is: Implement ComponentY.\" or \"The user's request to 'refactor A then update B' indicates the next action is: Update B.\").
+        *   The AI **MUST** identify and state the next specific action from the request/plan (e.g., "From `TASK_LIST.md` (or the task list document), the next item is: Implement ComponentY." or "The user's request to 'refactor A then update B' indicates the next action is: Update B.").
         *   **Immediately following this statement, and within the same AI response turn, the AI MUST then autonomously initiate the planning phase (Step 3) for this next identified action, including starting its textual output for this new Step 3.**
         *   The AI **MUST NOT** stop or pause for user input simply because one action/sub-part has finished, unless that action genuinely fulfills the entire main request/active plan, or if user input is explicitly required for the next action (e.g., choosing between options, or confirming the main request/active plan's completion). If the main request/active plan is now complete, the AI should proceed to Step 6 (Summarize Deferred Observations) or conclude if Step 6 is not applicable.
 
@@ -633,6 +633,24 @@ In all such cases where the tool's changes significantly exceed or deviate from 
             *   If proceeding with potentially incomplete data is unavoidable and deemed acceptable after consideration, this **MUST** be explicitly stated along with potential risks.
     5.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "`Procedure: Verify Tool Output` (`read_file` for `xyz.py`): Verified, content sufficient.", "`Procedure: Verify Tool Output` (`grep_search` for \'\\\\\'MyClass\\\\\'\'): Verified, sufficient after re-run with `include_pattern=\'*.py\'`.", "`Procedure: Verify Tool Output` (`list_dir` for `src/utils`): Verified, sufficient.").
 *   **Next Step:** Only after successful verification (or explicit acknowledgment of proceeding with limitations), use the tool's output for subsequent planning sub-steps (e.g., 3.1, 3.2, etc.).
+
+**`Procedure: Perform Self-Assessment`**
+*   **Purpose:** To perform a structured self-check ensuring all mandatory steps, checks, verifications, and reporting requirements for a specific phase or the overall cycle have been completed, with critical focus on BLOCKER adherence.
+*   **Trigger:** Called at the end of Step 3 (Planning), end of Step 4 (after each file edit cycle), and end of Step 5 (Overall task cycle).
+*   **Input Parameter:** `scope` (String: e.g., "Planning Phase", "Edit Cycle for [filename]", "Overall Task Cycle").
+*   **Steps:**
+    1.  **Scope Identification:** State the scope of the self-assessment being performed (using the `scope` parameter).
+    2.  **Mandatory Step Completion Check:** Review the execution history for the specified `scope`. Verify that all mandatory steps, required sub-steps, checks, verifications, and reporting requirements (including summaries like Pre-computation or Post-Action Verification Summaries relevant to the scope) outlined in this document for that `scope` have been completed.
+    2.a. **Context Sufficiency Review (if scope includes Planning Phase):** If the assessment `scope` is "Planning Phase" or "Overall Task Cycle" (which includes Planning), explicitly re-evaluate the file context obtained during Step 3 (`Procedure: Ensure Sufficient File Context`). **MUST** confirm whether the level of context obtained (full or partial, based on the execution of that procedure) was demonstrably adequate for the complexity and nature of the planned changes according to the guidelines in `Procedure: Ensure Sufficient File Context`. If proceeding with partial context (even if explicitly approved via Step 3.d of the procedure), briefly reaffirm the justification and that associated risks were considered during planning. If, upon reflection, the context now seems insufficient (e.g., the plan's complexity implies a higher risk from partial context than initially assessed), report this and suggest re-entering Step 3 to gather more context before proceeding.
+    3.  **Critical Blocker Adherence Review:** **MUST** specifically review the execution history within the specified `scope` to verify that all `BLOCKER:` conditions encountered (especially within `Procedure: Ensure Sufficient File Context` Step 3.c.iii / 3.d, `Procedure: Handle Architectural Decisions`, `Procedure: Handle Necessary Workaround`, `Procedure: Consult on Ambiguous Missing Dependency`, `Procedure: Request Manual Edit`) were strictly adhered to.
+        *   **If a deviation is found (e.g., a `BLOCKER` was bypassed without the required explicit user confirmation/guidance):**
+            *   **MUST** immediately report this as a critical process deviation: "`Procedure: Perform Self-Assessment ([scope]): CRITICAL DEVIATION FOUND: Blocker [Specify Blocker, e.g., ''Incomplete Data for file X'', ''Architectural Decision Y'] was improperly bypassed. [Briefly explain deviation]. Halting for guidance.`"
+            *   **STOP** processing and await user guidance. (**BLOCKER:**)
+        *   **If adherence confirmed:** Report: "`Procedure: Perform Self-Assessment ([scope]): Critical Blocker Adherence Review: Confirmed.`"
+    4.  **Handle Missed Steps:** If any mandatory steps (beyond blockers checked in Step 3) relevant to the `scope` were missed:
+        *   **MUST** report the specific missed step(s).
+        *   **MUST** trigger self-correction (e.g., return to execute the missed step, potentially restarting the relevant phase if necessary, similar logic to Step 4.4.3). Explain the corrective action being taken. **STOP** proceeding until the oversight is addressed.
+    5.  **Confirmation Statement:** After confirming completion and adherence (including Steps 3 & 4), **MUST** state: "**Procedure: Perform Self-Assessment ([scope]):** Complete. All mandatory steps confirmed executed for this scope."
 
 ---
 
