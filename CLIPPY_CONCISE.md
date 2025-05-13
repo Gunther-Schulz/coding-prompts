@@ -129,9 +129,9 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
     *   **3.4.3. Self-Correct if Necessary:**
         *   Triggered by: Violations, incorrect application, redundancy, leftovers, new errors/regressions from edit, missed mandatory steps, or tool reporting "no changes made" when changes were intended and absent.
         *   Action: STOP. State flaw.
-            *   If "no changes made" inappropriately: Re-read file, compare to intent. If change IS present, tool was accurate, proceed. If change IS NOT present: Hypothesize cause. Attempt granular edit strategy (break into smaller pieces, re-attempt 3.1-3.5 for first piece). If granular attempts also fail (max 2 "no changes" for one piece, or 3 total for original modification), state failure and trigger `Procedure: Request Manual Edit`.
+            *   If "no changes made" inappropriately: Re-read file, compare to intent. If change IS present, tool was accurate, proceed. If change IS NOT present: Hypothesize cause. Attempt granular edit strategy (break into smaller pieces, re-attempt 3.1-3.5 for first piece). If the 3rd attempt for the original modification (or any piece thereof) still results in "no changes made" when changes are expected, state failure and trigger `Procedure: Request Manual Edit`.
             *   For other flaws: Revise plan for correction/cleanup.
-            *   If tool failure persists or cleanup is complex (e.g., >3 attempts for same planned change fail, or single edit causes gross unintended modifications not cleanly fixable): Current edit is **blocked**. Trigger `Procedure: Request Manual Edit`.
+            *   If a tool failure persists (e.g., if the 3rd attempt for the same planned change fails), or if cleanup is complex (e.g., a single edit causes gross unintended modifications not cleanly fixable): Current edit is **blocked**. Trigger `Procedure: Request Manual Edit`.
 
 *   **3.5. Generate Post-Action Verification Summary:** After successful 3.4.
     ```markdown
@@ -226,7 +226,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
 **`Procedure: Verify Reapply Diff`** (After `reapply` tool call)
 1.  Treat diff as new.
-2.  Execute `Procedure: Verify Diff` on `reapply` tool's diff (intent = file state before `reapply`).
+2.  Execute `Procedure: Verify Diff` on `reapply` tool's diff (intent = the final proposal from Step 3.2 that was being attempted by the original `edit_file` call).
 3.  Log confirmation and outcome.
 
 **`Procedure: Verify Edit File Diff`** (After `edit_file` tool call)
