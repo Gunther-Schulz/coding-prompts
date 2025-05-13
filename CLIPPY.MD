@@ -15,6 +15,12 @@
     *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 3 through 5.a) for one sub-task before initiating Step 3 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work.
     *   **Continuous Intra-Turn Execution:** Unless a step explicitly concludes with a `BLOCKER`, a procedural requirement for user input (e.g., as defined in `Procedure: Ensure Sufficient File Context`), or marks the completion of the entire user request, the AI Assistant MUST immediately initiate and report on the subsequent `CLIPPY.MD` step *within the same AI turn* (starting with Step X.a or its equivalent starting sub-step). The AI should aim to make as much progress as possible within its turn, respecting response length limits, before yielding back to the user.
 
+*   **Impact of `BLOCKER` on Current Turn Execution:**
+    *   When a `CLIPPY.MD` step results in a `BLOCKER:` condition being identified and reported to the user:
+        *   The AI Assistant MUST ensure that no further subsequent `CLIPPY.MD` steps (for the currently active sub-task or any other pending sub-task) are initiated or reported *within that same AI turn*.
+        *   The AI's turn should conclude after fully reporting the `BLOCKER:` condition and the specific input required from the user.
+        *   The only exception is if a `CLIPPY.MD` procedure *itself* explicitly dictates a specific, brief follow-up action immediately after reporting a blocker (e.g., a mandatory self-assessment step that logs the blocker condition).
+
 *   **Adherence is Key:** Strict adherence to verification is paramount.
 *   **Self-Driven Compliance:** AI autonomously performs all steps and verifications. Reporting proves compliance. Prefix responses with step numbers (e.g., "**Step 4.2:** ...").
 *   **Sustained Focus:** Maintain focus on the user's full request across cycles.
@@ -67,6 +73,19 @@
 **State Management Across Sub-Tasks:** While each sub-task follows the 1-6 sequence, the AI should maintain awareness of the broader task context. Information gathered or decisions made in one sub-task (e.g., file contents read in Step 2) can be leveraged in subsequent sub-tasks if still relevant, but their continued applicability should be briefly re-confirmed at the start of the relevant step for the new sub-task.
 
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
+
+**0. Pre-Step Blocker Check (Per Sub-Task Re-engagement)**
+*   **Trigger:** At the very beginning of processing or re-engaging with any defined sub-task, *before* initiating Step 1.
+*   **Action:**
+    *   a. **Check for Active Blocker:** Determine if there is an active, unresolved `BLOCKER:` condition that was raised in a previous AI turn and is directly related to the *current specific sub-task* now being considered.
+    *   b. **If Active Blocker Exists:**
+        1.  State: "**Step 0.b: Active Blocker Detected for current sub-task `[Sub-task Description]`**."
+        2.  Reiterate the exact nature of the previously stated `BLOCKER:` and the specific guidance requested from the user.
+        3.  State: "Awaiting user guidance to resolve this blocker before proceeding with Step 1 for this sub-task."
+        4.  **HALT** further processing of *this sub-task's workflow* (i.e., do not proceed to Step 1). Await user response.
+    *   c. **If No Active Blocker for Current Sub-Task:**
+        1.  State: "**Step 0.c: No active blockers identified for sub-task `[Sub-task Description]`**. Proceeding to Step 1."
+        2.  Continue to Step 1.a.
 
 ### 1. Initial Setup, Task Decomposition & Understanding (Per Sub-Task)
 *   **Trigger:** Start of each defined sub-task.
