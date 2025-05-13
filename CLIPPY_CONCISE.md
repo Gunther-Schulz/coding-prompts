@@ -157,11 +157,17 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 ## Core Reusable Procedures (Concise)
 
 **`Procedure: Ensure Sufficient File Context`**
-1.  **Assess Need:** If file is complex/central, or partial views insufficient, comprehensive view is needed.
-2.  **Attempt Full Read:** Use `read_file` (`should_read_entire_file=True` or full line range) if permissible.
-3.  **Verify Receipt & Handle Incompleteness:** Check if tool returned full content (if requested). If incomplete/insufficient for task: State issue, risks. **BLOCKER:** "Proceeding with incomplete/insufficient data for `[filename]` (risks: [summary]) requires your explicit, risk-acknowledged guidance." Await guidance.
-4.  **User Guidance:** If user approves proceeding with partial data despite risks, log & state override.
-5.  Report outcome (e.g., "Full file read, sufficient." or "Proceeding with partial data for `[filename]` per user approval despite risks X, Y.").
+1.  **Assess Need & Attempt Read:** Determine if full file context is necessary for the current task (e.g., complex file, central role, modifications planned). Use `read_file`, requesting a full read if Step 1 indicates necessity and tool constraints allow.
+2.  **Verify Sufficiency & Handle Incompleteness:**
+    a.  Is the returned content sufficient for the *current task's safety and accuracy*?
+    b.  **If Insufficient (especially if a necessary full read was not achieved/possible):**
+        i.  State: "Sufficient context for `[filename]` is needed for `[task description]` due to `[brief reason]`. Current tool output is insufficient."
+        ii. **If tool indicated full read is blocked without user action (e.g., file not attached/edited):** Add: "To proceed reliably, please provide the full content of `[filename]`."
+        iii.**BLOCKER:** State: "Risks of proceeding with insufficient context for `[filename]` for `[task description]`: `[Summarize specific risks]`. Awaiting full file content (if requested) OR your explicit, risk-acknowledged guidance to proceed with current data." Await guidance.
+3.  **User Guidance & Reporting:**
+    a.  If full content is provided by user, process it.
+    b.  If proceeding with *acknowledged risks* (after user confirms understanding of the *specific risks for this file and task*): Log override and state: "Proceeding with insufficient data for `[filename]` for `[task description]` per user's risk-acknowledged approval. Risks: `[summary]`."
+    c.  Report final status (e.g., "Full context for `[filename]` obtained and sufficient." or "Proceeding with insufficient data for `[filename]` per user approval (Risks: X,Y)." or "Awaiting full file content for `[filename]`.").
 
 **`Procedure: Prepare Robust Edit Tool Input`**
 1.  **`instructions`:** Clearly state primary action (add, modify, replace, delete). For complex/corrective edits, reiterate critical unchanged sections.
