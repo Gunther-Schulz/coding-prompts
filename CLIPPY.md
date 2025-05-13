@@ -76,8 +76,8 @@
 *   **2.10. Improve Edit Tool Input:** Before `edit_file`, use `Procedure: Prepare Robust Edit Tool Input`.
 *   **2.11. Diagnostics Exception:** For temporary changes (e.g., print statements): State "TEMPORARY change for diagnostics," justify, mark "REMINDER: Temporary code MUST be reverted/fixed," plan removal & verification.
 *   **2.12. Pre-computation Verification Summary:** Before Step 3, provide summary:
-    ```markdown
-    **Pre-computation Verification Summary:**
+        ```markdown
+        **Pre-computation Verification Summary:**
     - `[x/-] 1. Standards Alignment:` [Brief confirm 2.5]
     - `[x/-] 2. Impact Analysis:` [Brief confirm 2.7.a]
     - `[x/-] 3. Hypothesis Verification:` [Brief confirm 2.7.b]
@@ -96,7 +96,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
 *   **3.1. Generate Proposed `code_edit` Diff Text:**
     *   Formulate `code_edit` content and `instructions` per `Procedure: Prepare Robust Edit Tool Input`.
-    *   Output literal `code_edit` and `instructions`. Conclude with: "Step 3.1: The following `code_edit` is proposed for `[filename]`. **This is a proposal only.** I will now proceed to Step 3.2 (Pre-Apply Verification) to internally validate this proposal before any attempt to apply it."
+    *   Output literal `code_edit` and `instructions`. Conclude with: "Step 3.1: The following `code_edit` is proposed for `[filename]`. **This is a proposal only.** No `edit_file` tool call is permitted at this stage. I will now proceed to Step 3.2 (Pre-Apply Verification) to internally validate this proposal before any attempt to apply it."
     *   **AI State:** This is a proposal for AI verification; file content understanding remains based on last actual read/confirmed edit.
 
 *   **3.2. Pre-Apply Verification (Mandatory before 3.3):**
@@ -150,8 +150,8 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
         *   Triggered by: 'Fail' outcome in "Overall Post-Apply Verification Outcome", OR violations, incorrect application, redundancy, leftovers, new errors/regressions from edit (identified during checklist), missed mandatory steps, or tool reporting "no changes made" when changes were intended and verifiably absent after a full file read.
 
 *   **3.5. Generate Post-Action Verification Summary:** After successful 3.4.
-    ```markdown
-    **Post-Action Verification Summary:**
+        ```markdown
+        **Post-Action Verification Summary:**
     - `[x/-] 1. Edit Application Analysis:` [Confirm 3.4.a/b/c. State: 'Applied diff matches final intent.' or 'Discrepancies: [List/Justification]'.]
     - `[x/-] 2. Leftover Code & Dependency Analysis:` [Confirm 3.4.2.a/b performed.]
     - `[x/-] 3. Correction Assessment:` [Confirm 3.4.3 performed. State if corrections made.]
