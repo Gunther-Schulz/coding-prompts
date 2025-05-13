@@ -125,19 +125,7 @@
             i.  Use them as the primary guide for covered aspects.
             ii. For gaps, report: "Supplementing with inferred standards for uncovered aspects using `Procedure: Establish Inferred Standards and Architecture`."
             iii. Invoke and follow `Procedure: Establish Inferred Standards and Architecture` for the identified gaps.
-    *   c. **Handling Document Discrepancies:**
-        *   **c.1. Core Document Discrepancy (`PROJECT_STANDARDS.MD`, `PROJECT_ARCHITECTURE.MD`, or user-designated 'core'):** If a discrepancy is identified between the verified current state of the codebase and a statement or definition within a *core document*:
-            1.  Report the specific discrepancy, citing the document location and conflicting codebase evidence.
-            2.  State the AI's assessment (e.g., codebase is factual, or document is correct).
-            3.  If the *core document* needs an update: Propose the specific change to align it.
-            4.  **BLOCKER:** State: "Identified a discrepancy between core document `[document_name]` and the current codebase regarding `[specific item]`. Proposing an update to `[document_name]` / Recommending code changes to align with `[document_name]`. Please advise. Architectural changes will be guided by Step 3.9." Await user confirmation.
-            5.  Simple typos in core documents that don't alter meaning can be corrected as part of a related edit, highlighted in the summary.
-        *   **c.2. Task-List/Review Document Discrepancy:** If a discrepancy is identified where a task item from a *non-core review or task-list document* appears outdated, already resolved, or not applicable based on verified codebase state:
-            1.  Report the specific discrepancy (e.g., "Review item X in `[document_name]` states Y, but current code shows Z, indicating the item is resolved/N/A.").
-            2.  State that no code changes are planned for the current sub-task regarding this specific review item.
-            3.  **No `BLOCKER` for this specific type of discrepancy.** Proceed with the current sub-task's workflow (which might lead to a "No Code Change" path as per Step 3.15).
-            4.  The potential need to update the task-list/review document itself may be noted as a deferred observation in Step 6.
-            5.  However, if the discrepancy in the task-list/review document *reveals a potential misunderstanding or violation of a `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` principle*, then that specific standards/architecture issue MUST be addressed, potentially triggering Step 3.5.c.1 or other relevant planning steps.
+    *   c. **Verify Document Accuracy and Handle Discrepancies:** If discrepancies are identified between core/task-list documents and the verified codebase state, invoke and follow `Procedure: Handle Document Discrepancies`.
 *   **3.6. Work with Facts:** Confirm plan uses only facts/verified info. Ensure file context is sufficient. Reconcile plan with current code state if a plan document exists.
 *   **3.7. Ensure Robust Solutions:** Confirm plan avoids workarounds, addresses root cause. Assess interacting existing patterns. Prioritize data integrity (treat unexpected missing/invalid data as critical error unless workaround is approved via `Procedure: Handle Necessary Workaround`).
     *   **Mandatory Sub-Procedures (Execute & Report):**
@@ -284,8 +272,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
 ---
 
-## Core Reusable Procedures (Concise)
-
+## Core Reusable Procedures
 **`Procedure: Ensure Sufficient File Context`**
 1.  **Assess Need & Attempt Read:** Determine if full file context is necessary for the current task (e.g., complex file, central role, modifications planned). Use `read_file`, requesting a full read if Step 2 indicates necessity and tool constraints allow.
 2.  **Verify Sufficiency & Handle Incompleteness:**
@@ -377,6 +364,22 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 3.  If Yes: State: "Interleaving Check: Yes, completed `[Specific CLIPPY.MD sub-step, e.g., Step 2.7.b for assumption X]`." Immediately report that sub-step fully as per its requirements. Then, return to technical thought or proceed to next `CLIPPY.MD` step.
 4.  If No: State: "Interleaving Check: No, still analyzing `[brief description of ongoing thought process]` towards `[next anticipated reportable CLIPPY.MD sub-step]`." Resume technical thought.
 5.  State: "**`Procedure: Interleaving Check`**: Complete."
+
+**`Procedure: Handle Document Discrepancies`**
+1.  **Identify Scope of Discrepancy:** Determine if the discrepancy relates to a Core Document (`PROJECT_STANDARDS.MD`, `PROJECT_ARCHITECTURE.MD`, user-designated 'core') or a Task-List/Review Document.
+2.  **If Core Document Discrepancy:**
+    a.  Report the specific discrepancy, citing the document location and conflicting codebase evidence.
+    b.  State the AI's assessment (e.g., codebase is factual, or document is correct).
+    c.  If the *core document* needs an update: Propose the specific change to align it.
+    d.  **BLOCKER:** State: "Identified a discrepancy between core document `[document_name]` and the current codebase regarding `[specific item]`. Proposing an update to `[document_name]` / Recommending code changes to align with `[document_name]`. Please advise. Architectural changes will be guided by Step 3.9." Await user confirmation.
+    e.  (Simple typos in core documents that don't alter meaning can be corrected as part of a related edit, highlighted in the summary.)
+3.  **If Task-List/Review Document Discrepancy:**
+    a.  Report the specific discrepancy (e.g., "Review item X in `[document_name]` states Y, but current code shows Z, indicating the item is resolved/N/A.").
+    b.  State that no code changes are planned for the current sub-task regarding this specific review item based on this discrepancy.
+    c.  **No `BLOCKER` for this specific type of discrepancy.** (Allowing workflow to proceed, potentially to a "No Code Change" path via Step 3.15).
+    d.  The potential need to update the task-list/review document itself may be noted as a deferred observation in Step 6.
+    e.  However, if the discrepancy in the task-list/review document *reveals a potential misunderstanding or violation of a `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` principle*, then that specific standards/architecture issue MUST be addressed by returning to Step 3.5.a/b or other relevant planning steps for the core principle, not just by this procedure.
+4.  Report: "`Procedure: Handle Document Discrepancies` complete."
 
 **`Procedure: Establish Inferred Standards and Architecture`** (Used when formal guidance in `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` is missing or incomplete)
 1.  **State Basis:** Confirm the AI's internal plan will establish necessary operational standards and architectural approaches based on general principles, observed codebase patterns (if any), user requirements, and canonical framework best practices.
