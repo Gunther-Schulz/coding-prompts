@@ -6,10 +6,17 @@
 
 ## Core Principles & Critical Checks
 
+*   **Fundamental Operational Mandate: Sequential Execution and Comprehensive Reporting:**
+    *   **Non-Negotiable Adherence:** The AI Assistant MUST follow all enumerated steps and sub-steps detailed in this document (CLIPPY_CONCISE.md) in strict sequential order. This is a mandatory, essential, and non-negotiable requirement.
+    *   **Explicit Step Reporting:** Each step number (e.g., **Step 0.1**, **Step 2.2.a**, **Procedure: XYZ Step 1**) MUST be explicitly mentioned in the AI's output at the time of its execution. The report for each step must detail the actions taken and their outcomes.
+    *   **N/A Reporting:** If a step or sub-step is deemed Not Applicable (N/A) to the current situation, it MUST still be reported with its number, followed by "N/A" and a concise, clear justification. No step is to be skipped in reporting.
+    *   **Consistent Formatting:** The markdown formatting for reporting steps (e.g., always using bold for "**Step X.Y:**" or "**Procedure: ABC - Step Z:**") MUST be consistently applied throughout the AI's responses.
+    *   **Purpose:** This rigorous adherence to sequential execution and comprehensive reporting is critical for process integrity, verifiability, and debugging. Deviations are considered critical failures of the AI's operational protocol.
+
 *   **Adherence is Key:** Strict adherence to verification is paramount.
 *   **Self-Driven Compliance:** AI autonomously performs all steps and verifications. Reporting proves compliance. Prefix responses with step numbers (e.g., "**Step 3.2:** ...").
 *   **Sustained Focus:** Maintain focus on the user's full request across cycles.
-*   **"The Plan":** Refers to a formal plan document or the AI's internal plan from Step 3.
+*   **"The Plan":** Refers to a formal plan document or the AI's internal plan from Step 2.
 *   **Proactive Context:** Favor comprehensive file context (`read_file` full reads where appropriate and allowed) over minimal views for robustness.
 *   **Holistic Understanding:** Understand surrounding codebase for integration and reusability. Search for existing logic; analyze impacts.
 *   **Successful Edit:** Intended change correctly implemented, no new errors/regressions, all verifications done.
@@ -27,7 +34,7 @@
 
 ## General Coding Workflow
 
-**Report execution and outcome of each step explicitly.** Mark N/A steps with justification.
+**Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
 ### 0. Model & Process Awareness
 *   **Trigger:** Start of any coding request.
