@@ -33,7 +33,25 @@
 
 ---
 
-## General Coding Workflow
+## Session/Major Task Initiation Protocol
+
+*   **S.1. Model & Process Awareness:**
+    *   Trigger: Start of any new coding assistance session or a distinct major new request.
+    *   Action:
+        1.  Identify current model.
+        2.  If not `gemini-2.5-pro` (or as specified by project), state model, warn user about potential process incompatibility: "This process is optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
+        3.  **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
+        4.  Acknowledge review and adherence to this document, `PROJECT_STANDARDS.md`, and `PROJECT_ARCHITECTURE.md`.
+    *   Frequency: Typically once per session or major task initiation.
+
+*   **S.2. Confirm Overarching Goal (Recommended):**
+    *   Trigger: Before detailed planning for the initial complex/ambiguous overarching request.
+    *   Action: Restate understanding of user's overall goal, ask for confirmation.
+    *   Frequency: Typically once for the overarching goal; subsequent sub-tasks align with this.
+
+---
+
+## General Coding Workflow (for each Defined Sub-Task)
 
 **Mandatory Full Workflow Execution per Defined Sub-Task:** Each distinct functional unit, feature, or fix identified in the user's request or a governing document (e.g., a review checklist item from `DXFPLANNER_REVIEW.MD`) shall be treated as a "defined sub-task." The AI MUST execute the **entire relevant sequence** of the General Coding Workflow (Steps 0 through 5, including all applicable sub-steps and procedures) for each defined sub-task. A new sub-task MUST NOT be initiated (i.e., re-entering Step 2 Planning) until the previous sub-task has been fully processed through Step 4 (Adherence Checkpoint & Next Step), and Step 5 (Summarize Deferred Observations) has been considered and actioned if necessary. This ensures complete closure and assessment for each unit of work.
 
@@ -49,29 +67,33 @@
 
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
-### 0. Model & Process Awareness
-*   **Trigger:** Start of any coding request.
-*   **Action:**
-    1.  Identify current model.
-    2.  If not `gemini-2.5-pro` (or as specified by project), state model, warn user about potential process incompatibility: "This process is optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
-    3.  **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
-    4.  Acknowledge review and adherence to this document, `PROJECT_STANDARDS.md`, and `PROJECT_ARCHITECTURE.md`.
+### 0. Initial Setup, Task Decomposition & Understanding (Per Sub-Task)
+*   **Trigger:** Start of each defined sub-task.
+*   **Actions:**
+    *   **0.a. Adherence Reaffirmation:** State: "Reaffirming commitment to `CLIPPY.MD` procedures for this sub-task."
+    *   b. Re-evaluate/confirm overall understanding of the parent task goal and how the current sub-task contributes to it, especially referencing the outcome of any immediately preceding sub-task.
+    *   c. Clearly define and report the specific, actionable goal and scope of the *current* sub-task.
+    *   d. If the current sub-task is complex, decompose it into smaller logical steps for planning purposes.
+    *   e. Identify and report any immediate ambiguities or missing information critical for *this sub-task* and plan to address them (e.g., by asking the user or using verification procedures).
+    *   f. Briefly state the primary files or areas of the codebase anticipated to be involved in this sub-task.
 
-### 1. Confirm Goal (Recommended)
-*   **Trigger:** Before detailed planning, for complex/ambiguous requests.
-*   **Action:** Restate understanding of user's goal, ask for confirmation.
+### 1. Ensure Sufficient File Context & Prerequisite Knowledge (Per Sub-Task)
+*   **Trigger:** After defining the sub-task in Step 0.
+*   **Actions:**
+    *   a. Based on the sub-task definition, identify all specific files/modules likely to be read or modified.
+    *   b. For each identified file, use `Procedure: Ensure Sufficient File Context`, prioritizing full reads if modifications are planned or deep understanding is necessary.
+    *   c. If the sub-task involves external libraries, APIs, or complex algorithms not recently used, confirm necessary documentation or knowledge is accessible/recalled. Perform `web_search` if critical knowledge is missing.
+    *   d. Report on the context obtained and its sufficiency for proceeding to Step 2 (Planning).
 
-### 2. Planning & Pre-computation Checks
-*   **2.0. Sustained Adherence Refocus & Internal State Check:**
-    *   a. State: "**Sustained Adherence Refocus:** Re-committing to `CLIPPY.MD` procedures."
-    *   b. **Internal State Check:** Briefly verbalize the *current primary technical goal* (e.g., "Implement Feature X") AND the *current CLIPPY.MD phase/step* the AI believes it is in or about to enter.
-    *   c. **Mental Walkthrough:** Mentally (or briefly state if helpful) list the next 2-3 `CLIPPY.MD` steps or procedures anticipated for the current technical goal.
-    *   d. **Example Output:**
+### 2. Planning & Pre-computation Checks (Per Sub-Task)
+*   **2.0. Planning Kick-off: Internal State Check & Forward Look:**
+    *   a. **Internal State Check:** Briefly verbalize the *current primary technical goal* (e.g., "Implement Feature X") AND the *current CLIPPY.MD phase/step* the AI believes it is in or about to enter.
+    *   b. **Mental Walkthrough:** Mentally (or briefly state if helpful) list the next 2-3 `CLIPPY.MD` steps or procedures anticipated for the current technical goal.
+    *   c. **Example Output:**
         ```
-        **Step 2.0. Sustained Adherence Refocus & Internal State Check:**
-            a. **Sustained Adherence Refocus:** Re-committing to `CLIPPY.MD` procedures.
-            b. Internal State: Primary goal is '[Goal Description]'. I am currently in '[CLIPPY.MD Phase/Step]', about to begin '[Next Specific CLIPPY.MD Step/Procedure]' for `[relevant file/task]`.
-            c. Anticipated Next Steps: After '[Current/Next Step]', I will proceed with '[Step X]', then '[Step Y]'.
+        **Step 2.0. Planning Kick-off: Internal State Check & Forward Look:**
+            a. Internal State: Primary goal is '[Goal Description]'. I am currently in '[CLIPPY.MD Phase/Step]', about to begin '[Next Specific CLIPPY.MD Step/Procedure]' for `[relevant file/task]`.
+            b. Anticipated Next Steps: After '[Current/Next Step]', I will proceed with '[Step X]', then '[Step Y]'.
         ```
 *   **2.0.1. Procedural Anchor Point (Before Complex Analysis):**
     *   **Trigger:** Before undertaking a prolonged or detailed internal analysis for a specific sub-task within Step 2 (e.g., designing a complex algorithm, data structure, or interaction).
