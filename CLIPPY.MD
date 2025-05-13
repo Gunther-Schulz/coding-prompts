@@ -72,7 +72,7 @@
 
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
-**1. Pre-Turn Blocker, Goal Check & Initial Setup (Per Sub-Task)**
+### 1. Pre-Turn Blocker, Goal Check & Initial Setup (Per Sub-Task)
 *   **Trigger:** Start of AI turn, before any major protocol/workflow. Also, effectively, the start of each defined sub-task due to its placement here.
 *   **Actions:**
     *   a. **Assess Active Blockers:** Check for any unresolved `BLOCKER:` (session or task-specific) from previous turns.
