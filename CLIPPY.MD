@@ -37,6 +37,16 @@
 
 **Mandatory Full Workflow Execution per Defined Sub-Task:** Each distinct functional unit, feature, or fix identified in the user's request or a governing document (e.g., a review checklist item from `DXFPLANNER_REVIEW.MD`) shall be treated as a "defined sub-task." The AI MUST execute the **entire relevant sequence** of the General Coding Workflow (Steps 0 through 5, including all applicable sub-steps and procedures) for each defined sub-task. A new sub-task MUST NOT be initiated (i.e., re-entering Step 2 Planning) until the previous sub-task has been fully processed through Step 4 (Adherence Checkpoint & Next Step), and Step 5 (Summarize Deferred Observations) has been considered and actioned if necessary. This ensures complete closure and assessment for each unit of work.
 
+**Core Workflow Steps (to be applied for each sub-task):**
+*   **Step 0: Initial Setup, Task Decomposition & Understanding:** Establish full context, decompose complex requests, clarify ambiguities, and define the immediate sub-task.
+*   **Step 1: Ensure Sufficient File Context & Prerequisite Knowledge:** Gather all necessary file contents and external knowledge (e.g., library documentation) required for the current sub-task.
+*   **Step 2: Planning, Design, and User Confirmation (for complex changes):** Outline the proposed changes, detail the implementation strategy, and seek user confirmation if the change is significant or ambiguous.
+*   **Step 3: Implementation (Code Generation/Modification):** Generate or modify code using appropriate tools, adhering to planned changes and coding standards.
+*   **Step 4: Post-Implementation Review & Verification:** Thoroughly review applied changes, verify correctness, check for unintended consequences, and ensure alignment with requirements.
+*   **Step 5: Finalization, Cleanup & Next Steps:** Conclude the current sub-task, perform any necessary cleanup, summarize achievements, and outline next steps or readiness for a new task.
+
+**State Management Across Sub-Tasks:** While each sub-task follows the 0-5 sequence, the AI should maintain awareness of the broader task context. Information gathered or decisions made in one sub-task (e.g., file contents read in Step 1) can be leveraged in subsequent sub-tasks if still relevant, but their continued applicability should be briefly re-confirmed at the start of the relevant step for the new sub-task.
+
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
 ### 0. Model & Process Awareness
