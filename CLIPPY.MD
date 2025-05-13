@@ -72,27 +72,25 @@
 
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
-**0. Pre-Turn Blocker & Goal Check**
-*   **Trigger:** Start of AI turn, before any major protocol/workflow.
+**1. Pre-Turn Blocker, Goal Check & Initial Setup (Per Sub-Task)**
+*   **Trigger:** Start of AI turn, before any major protocol/workflow. Also, effectively, the start of each defined sub-task due to its placement here.
 *   **Actions:**
     *   a. **Assess Active Blockers:** Check for any unresolved `BLOCKER:` (session or task-specific) from previous turns.
         *   **If Blocker(s) Exist:** Report "**Step 0.a: Active Blocker(s) Detected.**" Reiterate each blocker and its requested user guidance. **HALT** processing of the affected protocol/workflow. Await user input.
     *   b. **If No Blockers Prevent Current Focus:** Report "**Step 0.b: No active blockers impede `[intended action/task]`**."
         *   Briefly restate the confirmed overarching goal (from S.2), if set and relevant to the intended action.
-        *   Proceed to the planned step (e.g., S.1.1, or Workflow Step 1.a).
+        *   (Original Step 0.b actions concluded, proceeding to integrated steps from former Step 1)
+    *   c. **Adherence Reaffirmation:** State: "Reaffirming commitment to `CLIPPY.MD` procedures for this sub-task." (Formerly Step 1.a)
+    *   d. Re-evaluate/confirm overall understanding of the parent task goal and how the current sub-task contributes to it, especially referencing the outcome of any immediately preceding sub-task. (Formerly Step 1.b)
+    *   e. Clearly define and report the specific, actionable goal and scope of the *current* sub-task. (Formerly Step 1.c)
+    *   f. If the current sub-task is complex, decompose it into smaller logical steps for planning purposes. (Formerly Step 1.d)
+    *   g. Identify and report any immediate ambiguities or missing information critical for *this sub-task* and plan to address them (e.g., by asking the user or using verification procedures). (Formerly Step 1.e)
+    *   h. Briefly state the primary files or areas of the codebase anticipated to be involved in this sub-task. (Formerly Step 1.f)
+    *   i. Proceed to the planned step (e.g., S.1.1, or Workflow Step 2.a if continuing directly from this setup).
 
-### 1. Initial Setup, Task Decomposition & Understanding (Per Sub-Task)
-*   **Trigger:** Start of each defined sub-task.
-*   **Actions:**
-    *   **1.a. Adherence Reaffirmation:** State: "Reaffirming commitment to `CLIPPY.MD` procedures for this sub-task."
-    *   b. Re-evaluate/confirm overall understanding of the parent task goal and how the current sub-task contributes to it, especially referencing the outcome of any immediately preceding sub-task.
-    *   c. Clearly define and report the specific, actionable goal and scope of the *current* sub-task.
-    *   d. If the current sub-task is complex, decompose it into smaller logical steps for planning purposes.
-    *   e. Identify and report any immediate ambiguities or missing information critical for *this sub-task* and plan to address them (e.g., by asking the user or using verification procedures).
-    *   f. Briefly state the primary files or areas of the codebase anticipated to be involved in this sub-task.
 
 ### 2. Ensure Sufficient File Context & Prerequisite Knowledge (Per Sub-Task)
-*   **Trigger:** After defining the sub-task in Step 1.
+*   **Trigger:** After defining the sub-task in Step 0.
 *   **Actions:**
     *   a. Based on the sub-task definition, identify all specific files/modules likely to be read or modified.
     *   b. For each identified file, use `Procedure: Ensure Sufficient File Context`, prioritizing full reads if modifications are planned or deep understanding is necessary.
