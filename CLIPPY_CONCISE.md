@@ -89,20 +89,26 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
 *   **3.1. Generate Proposed `code_edit` Diff Text:**
     *   Formulate `code_edit` content and `instructions` per `Procedure: Prepare Robust Edit Tool Input`.
-    *   Output literal `code_edit` and `instructions`. Conclude: "Step 3.1: `code_edit` proposal for `[filename]` formulated and staged. File unchanged. No tool call yet. Proceeding to Step 3.2 (Pre-Apply Verification)."
+    *   Output literal `code_edit` and `instructions`. Conclude with: "Step 3.1: The following `code_edit` is proposed for `[filename]`. **This is a proposal only.** I will now proceed to Step 3.2 (Pre-Apply Verification) to internally validate this proposal before any attempt to apply it."
     *   **AI State:** This is a proposal for AI verification; file content understanding remains based on last actual read/confirmed edit.
 
 *   **3.2. Pre-Apply Verification (Mandatory before 3.3):**
     *   Continue in same AI turn after 3.1. No file-modifying tools here.
-    *   Verify the staged `code_edit` from 3.1:
+    *   Internally verify the staged `code_edit` from 3.1:
         *   `a.` Summarize pre-edit context (from recent `read_file`).
-        *   `b.` Use `Procedure: Verify Diff` on the staged `code_edit` (intent is plan from Step 2). Report with checklist.
+        *   `b.` Use `Procedure: Verify Diff` on the staged `code_edit` (intent is plan from Step 2).
         *   `c.` Verify generated code conciseness (per `PROJECT_STANDARDS.MD`). If violation: STOP, state violation, revise plan (Step 2) for decomposition, re-do 3.1. Report.
-    *   Provide Pre-Edit Confirmation Statement: "Step 3.2: Pre-Apply Verification: Complete. Context summarized. `Procedure: Verify Diff` on staged proposal: [Outcome]. Key assumption/logic check: [Outcome]. Proceeding to Apply Edit (3.3)."
+    *   **Crucially, after performing the internal checks, explicitly output the following Pre-Edit Confirmation Statement:** "Step 3.2: Pre-Apply Verification of the proposal for `[filename]` is now complete.
+    *   Pre-edit context: [Brief summary of context, e.g., relevant lines or existing structure].
+    *   `Procedure: Verify Diff` on staged proposal: [Outcome, e.g., 'Verified', 'Verified with deviations: ...'].
+    *   Conciseness check: [Outcome, e.g., 'Verified'].
+    *   Key assumption/logic check: [Outcome, e.g., 'All assumptions hold'].
+    (If any check failed and led to a revision of the proposal, this step should be re-run for the new proposal. If checks pass:)
+    All pre-apply verifications passed. Proceeding to Step 3.3 (Apply Edit)."
 
 *   **3.3. Apply Edit (After Successful 3.2):**
-    *   In same AI turn, report: "Step 3.3: Applying verified staged edit to `[filename]`."
-    *   Immediately call `edit_file` or `reapply` with staged `code_edit` and `instructions`.
+    *   **Only after successfully completing and explicitly reporting the outcome of Step 3.2,** if all checks passed, continue in the same AI turn and report: "Step 3.3: Applying the verified edit to `[filename]`."
+    *   Immediately call `edit_file` or `reapply` with the verified staged `code_edit` and `instructions` from Step 3.1 (or its revision).
 
 *   **3.4. Post-Apply Verification (Mandatory After 3.3 Tool Call Result):**
     *   **Base analysis ONLY on actual diff from Step 3.3 tool output.**
