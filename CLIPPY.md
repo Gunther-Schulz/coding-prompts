@@ -118,20 +118,36 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
     *   Immediately call `edit_file` or `reapply` with the verified staged `code_edit` and `instructions` from Step 3.1 (or its revision).
 
 *   **3.4. Post-Apply Verification (Mandatory After 3.3 Tool Call Result):**
-    *   **Base analysis ONLY on actual diff from Step 3.3 tool output.**
-    *   Verify actual applied diff:
-        *   `a.` If `reapply`: Use `Procedure: Verify Reapply Diff`.
-        *   `b.` If `edit_file`: Use `Procedure: Verify Edit File Diff`.
-        *   `c.` Check for introduced redundancy.
-    *   Check for leftover code/dependencies:
-        *   `a.` Confirm no old code commented out, temporary comments removed.
-        *   `b.` Re-verify downstream consumers (re-run searches from planning). Verify deletion by searching for dangling refs. Trigger self-correction (3.4.3) if issues.
+    *   **IMMEDIATE ACTION:** After the `edit_file` or `reapply` tool call in Step 3.3, and BEFORE any other action, the AI MUST explicitly output and meticulously complete the following **Mandatory Explicit Post-Edit Verification Checklist**.
+    *   **Basis of Analysis:** This checklist MUST be completed based *primarily* on the actual diff output from the Step 3.3 tool call. However, if the tool's output is ambiguous (e.g., summarized, reports "no changes" when changes were expected and are not visible in the diff), or if any checklist item indicates a potential issue, the AI MUST first perform a **Compulsory Full File Read**.
+        *   **Compulsory Full File Read Procedure:**
+            1.  State: "Step 3.4: Edit tool output is ambiguous/indicates potential issues. Performing Compulsory Full File Read for `[filename]`."
+            2.  Use `read_file` on the `target_file`. Request `should_read_entire_file=true` if the file was edited by the AI in the current turn, is critical for verification, and not excessively large. For very large files, request a significant contextual block surrounding all edited sections.
+            3.  State: "Step 3.4: Full file read for `[filename]` complete. Proceeding with checklist based on fresh content."
+            4.  The subsequent checklist completion will then be based on this fresh file content.
+    *   **Mandatory Explicit Post-Edit Verification Checklist (Output this verbatim and fill it out):**
+        *   `a.` **Verify `edit_file` / `reapply` Diff:**
+            *   `Procedure Used:` (State `Procedure: Verify Edit File Diff` or `Procedure: Verify Reapply Diff`)
+            *   `[ ] 1. Diff vs. Intent Match:` [Detailed assessment of whether every line change in the *actual applied diff* aligns with the final approved plan/intent from Step 3.2.]
+            *   `[ ] 2. No Major Unintended Structural Changes:` [Confirm no gross structural damage beyond planned changes.]
+            *   `[ ] 3. Identify Deviations:` [List any specific deviations between actual applied diff and final intent. State "None" if applicable.]
+            *   `[ ] 4. Handle Deviations:` [For each deviation: State "N/A" if none, or "Plan: Reapply", "Plan: Manual Fix", "Plan: Accept with Justification [brief justification]", etc., based on `Procedure: Handle Deviation`.]
+            *   `[ ] 5. Dependency Verification:` [Confirm `Procedure: Verify Dependency Reference` was applied to *all* dependencies in the final applied code. State outcome.]
+            *   `[ ] 6. Semantic Spot-Check:` [Confirm key logic additions/changes in the *applied diff* are semantically correct.]
+            *   `[ ] 7. Context Line Check:` [Confirm `// ... existing code ...` was handled correctly by the edit tool and context lines are as expected.]
+            *   `[ ] 8. Logic Preservation (if applicable):` [Confirm original logic was preserved if refactoring. Refer to Step 2.7.e documentation.]
+            *   `Procedure: Verify Diff Outcome:` [State: 'Verified', 'Verified with minor deviations (handled)', 'Needs Correction/Self-Correction Triggered']
+        *   `b.` **Ensure no unintended redundancy introduced:** [Yes/No. If No, explain and note if self-correction is needed.]
+        *   `c.` **Ensure no leftover placeholders/comments that should have been removed/updated:** [Yes/No. If No, explain (e.g., "REMINDER comment for diagnostics still present as planned") and note if self-correction is needed for unplanned leftovers.]
+        *   `d.` **Overall Post-Apply Verification Outcome:** [State: 'Pass' or 'Fail'. 'Fail' triggers immediate self-correction.]
+
+    *   **(Original sub-bullets moved into the checklist or covered by its items, e.g., specific procedure calls are now part of checklist item 'a')**
+    *   **(Original) Check for leftover code/dependencies:** (This is now covered by checklist items `a.5` and `c`)
+        *   `a.` Confirm no old code commented out, temporary comments removed. (Covered by `c`)
+        *   `b.` Re-verify downstream consumers (re-run searches from planning). Verify deletion by searching for dangling refs. Trigger self-correction (3.4.3) if issues. (Partially covered by `a.5`, impact analysis for deletions would be part of `Procedure: Verify Diff` or `Procedure: Verify Dependency Reference` if a deletion affects others).
+
     *   **3.4.3. Self-Correct if Necessary:**
-        *   Triggered by: Violations, incorrect application, redundancy, leftovers, new errors/regressions from edit, missed mandatory steps, or tool reporting "no changes made" when changes were intended and absent.
-        *   Action: STOP. State flaw.
-            *   If "no changes made" inappropriately: Re-read file, compare to intent. If change IS present, tool was accurate, proceed. If change IS NOT present: Hypothesize cause. Attempt granular edit strategy (break into smaller pieces, re-attempt 3.1-3.5 for first piece). If the 3rd attempt for the original modification (or any piece thereof) still results in "no changes made" when changes are expected, state failure and trigger `Procedure: Request Manual Edit`.
-            *   For other flaws: Revise plan for correction/cleanup.
-            *   If a tool failure persists (e.g., if the 3rd attempt for the same planned change fails), or if cleanup is complex (e.g., a single edit causes gross unintended modifications not cleanly fixable): Current edit is **blocked**. Trigger `Procedure: Request Manual Edit`.
+        *   Triggered by: 'Fail' outcome in "Overall Post-Apply Verification Outcome", OR violations, incorrect application, redundancy, leftovers, new errors/regressions from edit (identified during checklist), missed mandatory steps, or tool reporting "no changes made" when changes were intended and verifiably absent after a full file read.
 
 *   **3.5. Generate Post-Action Verification Summary:** After successful 3.4.
     ```markdown
