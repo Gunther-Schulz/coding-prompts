@@ -13,7 +13,7 @@
     *   **Consistent Formatting:** The markdown formatting for reporting steps (e.g., always using bold for "**Step X.Y:**" or "**Procedure: ABC - Step Z:**") MUST be consistently applied throughout the AI's responses.
     *   **Purpose:** This rigorous adherence to sequential execution and comprehensive reporting is critical for process integrity, verifiability, and debugging. Deviations are considered critical failures of the AI's operational protocol.
     *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 3 through 5.a) for one sub-task before initiating Step 3 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work. **Blocked Task Exception:** If a sub-task is `BLOCKER:`ed, the user MAY direct a switch to a new sub-task. The AI MUST then: 1. Acknowledge deferring the blocked task. 2. Confirm the new task. 3. Proceed with the new task (via Step 0). The deferred task remains blocked until revisited and resolved.
-    *   **Continuous Intra-Turn Execution:** Unless a step explicitly concludes with a `BLOCKER`, a procedural requirement for user input (e.g., as defined in `Procedure: Ensure Sufficient File Context`), or marks the completion of the entire user request, the AI Assistant MUST immediately initiate and report on the subsequent `CLIPPY.MD` step *within the same AI turn* (starting with Step X.a or its equivalent starting sub-step). The AI should aim to make as much progress as possible within its turn, respecting response length limits, before yielding back to the user.
+    *   **Continuous Intra-Turn Execution & Self-Correction:** Unless a step explicitly concludes with a `BLOCKER:`, a procedural requirement for user input (e.g., as defined in `Procedure: Ensure Sufficient File Context`), or marks the completion of the entire user request (as verified by Step 5.c), the AI Assistant MUST immediately initiate and report on the subsequent `CLIPPY.MD` step *within the same AI turn* (starting with Step X.a or its equivalent starting sub-step). The AI should aim to make as much progress as possible within its turn, respecting response length limits, before yielding back to the user. If the AI detects it is about to yield without meeting these conditions, it must self-correct and continue.
 
 *   **Adherence is Key:** Strict adherence to verification is paramount.
 *   **Self-Driven Compliance:** AI autonomously performs all steps and verifications. Reporting proves compliance. Prefix responses with step numbers (e.g., "**Step 4.2:** ...").
@@ -118,13 +118,19 @@
 *   **3.5. Align with Standards & Core Documentation:**
     *   a. Identify relevant principles/patterns from `PROJECT_STANDARDS.md` & `PROJECT_ARCHITECTURE.md`. Confirm plan prioritizes simplest, compliant solution and structures new code for simplicity (SRP, reasonable length/nesting).
     *   b. If standards docs are unavailable/incomplete for a framework, base alignment on general principles, observed patterns, user requirements, and canonical framework best practices (state and verify hypotheses).
-    *   c. **Core Document Discrepancy Handling:** If, during information gathering or planning, a discrepancy is identified between the verified current state of the codebase and a statement or definition within `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` (or other documents designated as 'core' by the user):
-        1.  Report the specific discrepancy, citing the location in the document and the conflicting evidence from the codebase.
-        2.  State the AI's assessment that the codebase likely represents the current factual state (if this is the case after verification).
-        3.  Propose the specific change to the core document to align it with the codebase.
-        4.  **BLOCKER:** State: "Identified a discrepancy between `[document_name]` and the current codebase regarding `[specific item]`. Proposing an update to `[document_name]` to align with verified code facts. Please confirm if this change should be applied. Alternatively, if `[document_name]` is correct and the *code* needs to be changed, please advise. If the code requires architectural changes to align with the document, that process may be subsequently guided by Step 3.9 (`Procedure: Handle Architectural Decisions`)." Await user confirmation before proceeding with an edit to the core document or re-planning code changes.
-        5.  This procedure does *not* apply to correcting simple typographical errors that don't alter the meaning or intent of the document; such minor corrections can be made as part of a regular edit proposal process if directly related to the task at hand,
-but should still be highlighted in the edit summary.
+    *   c. **Handling Document Discrepancies:**
+        *   **c.1. Core Document Discrepancy (`PROJECT_STANDARDS.MD`, `PROJECT_ARCHITECTURE.MD`, or user-designated 'core'):** If a discrepancy is identified between the verified current state of the codebase and a statement or definition within a *core document*:
+            1.  Report the specific discrepancy, citing the document location and conflicting codebase evidence.
+            2.  State the AI's assessment (e.g., codebase is factual, or document is correct).
+            3.  If the *core document* needs an update: Propose the specific change to align it.
+            4.  **BLOCKER:** State: "Identified a discrepancy between core document `[document_name]` and the current codebase regarding `[specific item]`. Proposing an update to `[document_name]` / Recommending code changes to align with `[document_name]`. Please advise. Architectural changes will be guided by Step 3.9." Await user confirmation.
+            5.  Simple typos in core documents that don't alter meaning can be corrected as part of a related edit, highlighted in the summary.
+        *   **c.2. Task-List/Review Document Discrepancy:** If a discrepancy is identified where a task item from a *non-core review or task-list document* appears outdated, already resolved, or not applicable based on verified codebase state:
+            1.  Report the specific discrepancy (e.g., "Review item X in `[document_name]` states Y, but current code shows Z, indicating the item is resolved/N/A.").
+            2.  State that no code changes are planned for the current sub-task regarding this specific review item.
+            3.  **No `BLOCKER` for this specific type of discrepancy.** Proceed with the current sub-task's workflow (which might lead to a "No Code Change" path as per Step 3.15).
+            4.  The potential need to update the task-list/review document itself may be noted as a deferred observation in Step 6.
+            5.  However, if the discrepancy in the task-list/review document *reveals a potential misunderstanding or violation of a `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` principle*, then that specific standards/architecture issue MUST be addressed, potentially triggering Step 3.5.c.1 or other relevant planning steps.
 *   **3.6. Work with Facts:** Confirm plan uses only facts/verified info. Ensure file context is sufficient. Reconcile plan with current code state if a plan document exists.
 *   **3.7. Ensure Robust Solutions:** Confirm plan avoids workarounds, addresses root cause. Assess interacting existing patterns. Prioritize data integrity (treat unexpected missing/invalid data as critical error unless workaround is approved via `Procedure: Handle Necessary Workaround`).
     *   **Mandatory Sub-Procedures (Execute & Report):**
@@ -155,7 +161,16 @@ but should still be highlighted in the edit summary.
     ```
 *   **3.13. Planning Self-Assessment:** Execute `Procedure: Perform Self-Assessment` (Scope: "Planning Phase").
 *   **3.14. Verify Action Preconditions:** Before generating edit for a file, re-verify preconditions (e.g., item to delete exists, item to add doesn't). If not met, STOP, report, revise.
-*   **NEXT ACTION (Unless Blocked):** Proceed to Step 4.1.
+*   **3.15. Determine if Code Change is Required & Subsequent Path:**
+    *   a. Based on all preceding Step 3 analysis (especially findings from 3.5.c.2, 3.7.b, and 3.14), explicitly conclude if any code modification is required for the *current sub-task*.
+    *   b. **If NO Code Change is Required:**
+        1.  State: "**Step 3.15.b: Conclusion - No code changes are required for sub-task `[sub-task description]` because `[brief reason, e.g., 'issue already resolved', 'analysis confirms N/A']`.**"
+        2.  Report: "Skipping Step 4 (Implementation) and proceeding to a streamlined Step 5."
+        3.  **IMMEDIATE ACTION:** In the same AI turn, proceed directly to **Step 5.a (Final Self-Assessment)** for this sub-task, then **Step 5.b (Determine Next Action & Initiate)** to initiate Step 3 for the *next* sub-task. Steps 4.1 through 4.6 will be considered N/A and reported as such in a summary note if needed, but individual reporting for each N/A step in Step 4 is not required.
+    *   c. **If Code Change IS Required:**
+        1.  State: "**Step 3.15.c: Conclusion - Code changes are required for sub-task `[sub-task description]`.**"
+        2.  Report: "Proceeding to Step 4.1 (Generate Proposed `code_edit`)."
+        3.  **IMMEDIATE ACTION:** In the same AI turn, proceed to **Step 4.1**.
 
 ### 4. Edit Generation & Verification Cycle (Per File)
 Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Autonomous unless `BLOCKER`. Complete cycle for one file before next.
@@ -231,7 +246,26 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 *   **Trigger:** Before concluding, after all files processed through Step 4.
 *   **Action:**
     *   `a.` **Final Self-Assessment:** `Procedure: Perform Self-Assessment` (Scope: "Overall Task Cycle").
-    *   `b.` **Determine Next Action:** If main request/plan has pending actions: State next action. **Immediately and autonomously initiate Step 3 (Planning) for it in the same AI turn.** Do not pause unless entire request/plan is complete or user input is explicitly needed. A 'pending action' that requires re-initiation of Step 3 typically corresponds to a distinct functional unit, a separate class implementation, a new API endpoint, or a self-contained component identified in the overall user request or project review document (e.g., implementing `MergeOperation` is a distinct action from implementing `DissolveOperation`). Avoid grouping multiple such distinct functional units under a single pass of Step 3 unless they are trivial and highly cohesive changes within the *same file and immediate logical block*. When in doubt, favor a more granular re-entry into Step 3 for each distinct functional unit.
+    *   `b.` **Determine Next Action & Initiate:**
+        1. If the overall user request or guiding plan (e.g., `DXFPLANNER_REVIEW.MD`) has further pending, distinct sub-tasks:
+            *   State the next sub-task to be addressed.
+            *   **IMMEDIATE ACTION (within the same AI turn):** Autonomously initiate **Step 3: Planning & Pre-computation Checks** for this *new* sub-task. Do not pause or await user confirmation unless the entire request/plan is complete or a `BLOCKER:` condition (as per Step 0.a for the new sub-task) is identified.
+            *   (Guidance on sub-task granularity remains as originally stated: "A 'pending action'... favor a more granular re-entry into Step 3 for each distinct functional unit.")
+        2. If all sub-tasks for the overall user request are complete:
+            *   State this clearly (e.g., "All identified sub-tasks for the request `[original user request summary]` are now complete.").
+            *   Consider if Step 6 (Summarize Deferred Observations) is applicable.
+            *   Conclude the turn, indicating readiness for a new major request.
+    *   `c.` **Pre-Yield Adherence Check (Internal Final Check):** Before concluding the AI turn, perform this internal check:
+        1.  **Sub-task Status:** Is the most recently processed sub-task fully concluded (either through all steps, including Step 5.b leading to next task initiation, or via an approved "No Code Change" path (Step 3.15.b) that also led to Step 5.b)?
+        2.  **Overall Request Status:** If the sub-task is concluded, and if all sub-tasks for the overarching user request are complete, has this been stated (as per Step 5.b.2)?
+        3.  **Blocker Status:** Is there an active `BLOCKER:` that genuinely prevents further autonomous action *on the current or next immediately planned sub-task*?
+        4.  **Action Continuity:**
+            *   If sub-task is complete AND more sub-tasks remain AND no blocker for the next: Has Step 3 for the *next* sub-task already been initiated in this turn? (As per Step 5.b.1)
+            *   If current sub-task is *not* yet complete (e.g., mid-way through Step 4) AND no blocker: Is the AI about to correctly report the next step in sequence?
+        5.  **Decision:**
+            *   If all relevant conditions above indicate that the AI should continue processing (e.g., next sub-task not initiated, current sub-task not finished, no valid blocker), then **DO NOT YIELD**. State: "**Step 5.c: Pre-Yield Adherence Check: Self-correcting to continue process.**" Then, immediately proceed with the required next step in the same turn.
+            *   If all conditions for yielding are met (e.g., entire request complete, or next task initiated and awaiting tool output, or a valid `BLOCKER:` is active and reported): State: "**Step 5.c: Pre-Yield Adherence Check: Conditions for yielding turn are met.**" Then the AI may conclude its turn.
+        *   **Purpose:** This check reinforces the "Continuous Intra-Turn Execution" principle and acts as a final explicit safeguard against premature or unnecessary pauses.
 
 ### 6. Summarize Deferred Observations (Optional)
 *   **Trigger:** After Step 5, before concluding.
