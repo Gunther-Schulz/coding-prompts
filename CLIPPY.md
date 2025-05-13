@@ -141,8 +141,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
         *   `c.` **Ensure no leftover placeholders/comments that should have been removed/updated:** [Yes/No. If No, explain (e.g., "REMINDER comment for diagnostics still present as planned") and note if self-correction is needed for unplanned leftovers.]
         *   `d.` **Overall Post-Apply Verification Outcome:** [State: 'Pass' or 'Fail'. 'Fail' triggers immediate self-correction.]
 
-    *   **(Original sub-bullets moved into the checklist or covered by its items, e.g., specific procedure calls are now part of checklist item 'a')**
-    *   **(Original) Check for leftover code/dependencies:** (This is now covered by checklist items `a.5` and `c`)
+    *   **Check for leftover code/dependencies:** (This is now covered by checklist items `a.5` and `c`)
         *   `a.` Confirm no old code commented out, temporary comments removed. (Covered by `c`)
         *   `b.` Re-verify downstream consumers (re-run searches from planning). Verify deletion by searching for dangling refs. Trigger self-correction (3.4.3) if issues. (Partially covered by `a.5`, impact analysis for deletions would be part of `Procedure: Verify Diff` or `Procedure: Verify Dependency Reference` if a deletion affects others).
 
