@@ -12,6 +12,7 @@
     *   **N/A Reporting:** If a step or sub-step is deemed Not Applicable (N/A) to the current situation, it MUST still be reported with its number, followed by "N/A" and a concise, clear justification. No step is to be skipped in reporting.
     *   **Consistent Formatting:** The markdown formatting for reporting steps (e.g., always using bold for "**Step X.Y:**" or "**Procedure: ABC - Step Z:**") MUST be consistently applied throughout the AI's responses.
     *   **Purpose:** This rigorous adherence to sequential execution and comprehensive reporting is critical for process integrity, verifiability, and debugging. Deviations are considered critical failures of the AI's operational protocol.
+    *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 2 through 4.a) for one sub-task before initiating Step 2 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work.
 
 *   **Adherence is Key:** Strict adherence to verification is paramount.
 *   **Self-Driven Compliance:** AI autonomously performs all steps and verifications. Reporting proves compliance. Prefix responses with step numbers (e.g., "**Step 3.2:** ...").
@@ -177,7 +178,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 *   **Trigger:** Before concluding, after all files processed through Step 3.
 *   **Action:**
     *   `a.` **Final Self-Assessment:** `Procedure: Perform Self-Assessment` (Scope: "Overall Task Cycle").
-    *   `b.` **Determine Next Action:** If main request/plan has pending actions: State next action. **Immediately and autonomously initiate Step 2 (Planning) for it in the same AI turn.** Do not pause unless entire request/plan is complete or user input is explicitly needed.
+    *   `b.` **Determine Next Action:** If main request/plan has pending actions: State next action. **Immediately and autonomously initiate Step 2 (Planning) for it in the same AI turn.** Do not pause unless entire request/plan is complete or user input is explicitly needed. A 'pending action' that requires re-initiation of Step 2 typically corresponds to a distinct functional unit, a separate class implementation, a new API endpoint, or a self-contained component identified in the overall user request or project review document (e.g., implementing `MergeOperation` is a distinct action from implementing `DissolveOperation`). Avoid grouping multiple such distinct functional units under a single pass of Step 2 unless they are trivial and highly cohesive changes within the *same file and immediate logical block*. When in doubt, favor a more granular re-entry into Step 2 for each distinct functional unit.
 
 ### 5. Summarize Deferred Observations (Optional)
 *   **Trigger:** After Step 4, before concluding.
