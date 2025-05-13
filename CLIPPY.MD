@@ -7,19 +7,13 @@
 ## Core Principles & Critical Checks
 
 *   **Fundamental Operational Mandate: Sequential Execution and Comprehensive Reporting:**
-    *   **Non-Negotiable Adherence:** The AI Assistant MUST follow all enumerated steps and sub-steps detailed in this document (CLIPPY_CONCISE.md) in strict sequential order. This is a mandatory, essential, and non-negotiable requirement.
+    *   **Non-Negotiable Adherence:** The AI Assistant MUST follow all enumerated steps and sub-steps detailed in this document (`CLIPPY.MD`) in strict sequential order. This is a mandatory, essential, and non-negotiable requirement.
     *   **Explicit Step Reporting is an Integral Part of Execution:** The act of thinking through, planning, or verifying a `CLIPPY.MD` step is not complete until it has been *reported* as per these guidelines. Internal consideration of a step and the external reporting of that step should be tightly coupled and occur almost simultaneously. Do not batch internal considerations before reporting. Each step number (e.g., **Step 1.b**, **Step 3.2.a**, **Procedure: XYZ Step 1**) MUST be explicitly mentioned in the AI's output at the time of its execution. The report for each step must detail the actions taken and their outcomes.
     *   **N/A Reporting:** If a step or sub-step is deemed Not Applicable (N/A) to the current situation, it MUST still be reported with its number, followed by "N/A" and a concise, clear justification. No step is to be skipped in reporting.
     *   **Consistent Formatting:** The markdown formatting for reporting steps (e.g., always using bold for "**Step X.Y:**" or "**Procedure: ABC - Step Z:**") MUST be consistently applied throughout the AI's responses.
     *   **Purpose:** This rigorous adherence to sequential execution and comprehensive reporting is critical for process integrity, verifiability, and debugging. Deviations are considered critical failures of the AI's operational protocol.
-    *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 3 through 5.a) for one sub-task before initiating Step 3 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work.
+    *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 3 through 5.a) for one sub-task before initiating Step 3 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work. **Blocked Task Exception:** If a sub-task is `BLOCKER:`ed, the user MAY direct a switch to a new sub-task. The AI MUST then: 1. Acknowledge deferring the blocked task. 2. Confirm the new task. 3. Proceed with the new task (via Step 0). The deferred task remains blocked until revisited and resolved.
     *   **Continuous Intra-Turn Execution:** Unless a step explicitly concludes with a `BLOCKER`, a procedural requirement for user input (e.g., as defined in `Procedure: Ensure Sufficient File Context`), or marks the completion of the entire user request, the AI Assistant MUST immediately initiate and report on the subsequent `CLIPPY.MD` step *within the same AI turn* (starting with Step X.a or its equivalent starting sub-step). The AI should aim to make as much progress as possible within its turn, respecting response length limits, before yielding back to the user.
-
-*   **Impact of `BLOCKER` on Current Turn Execution:**
-    *   When a `CLIPPY.MD` step results in a `BLOCKER:` condition being identified and reported to the user:
-        *   The AI Assistant MUST ensure that no further subsequent `CLIPPY.MD` steps (for the currently active sub-task or any other pending sub-task) are initiated or reported *within that same AI turn*.
-        *   The AI's turn should conclude after fully reporting the `BLOCKER:` condition and the specific input required from the user.
-        *   The only exception is if a `CLIPPY.MD` procedure *itself* explicitly dictates a specific, brief follow-up action immediately after reporting a blocker (e.g., a mandatory self-assessment step that logs the blocker condition).
 
 *   **Adherence is Key:** Strict adherence to verification is paramount.
 *   **Self-Driven Compliance:** AI autonomously performs all steps and verifications. Reporting proves compliance. Prefix responses with step numbers (e.g., "**Step 4.2:** ...").
@@ -74,18 +68,14 @@
 
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
-**0. Pre-Step Blocker Check (Per Sub-Task Re-engagement)**
-*   **Trigger:** At the very beginning of processing or re-engaging with any defined sub-task, *before* initiating Step 1.
-*   **Action:**
-    *   a. **Check for Active Blocker:** Determine if there is an active, unresolved `BLOCKER:` condition that was raised in a previous AI turn and is directly related to the *current specific sub-task* now being considered.
-    *   b. **If Active Blocker Exists:**
-        1.  State: "**Step 0.b: Active Blocker Detected for current sub-task `[Sub-task Description]`**."
-        2.  Reiterate the exact nature of the previously stated `BLOCKER:` and the specific guidance requested from the user.
-        3.  State: "Awaiting user guidance to resolve this blocker before proceeding with Step 1 for this sub-task."
-        4.  **HALT** further processing of *this sub-task's workflow* (i.e., do not proceed to Step 1). Await user response.
-    *   c. **If No Active Blocker for Current Sub-Task:**
-        1.  State: "**Step 0.c: No active blockers identified for sub-task `[Sub-task Description]`**. Proceeding to Step 1."
-        2.  Continue to Step 1.a.
+**0. Pre-Turn Blocker & Goal Check**
+*   **Trigger:** Start of AI turn, before any major protocol/workflow.
+*   **Actions:**
+    *   a. **Assess Active Blockers:** Check for any unresolved `BLOCKER:` (session or task-specific) from previous turns.
+        *   **If Blocker(s) Exist:** Report "**Step 0.a: Active Blocker(s) Detected.**" Reiterate each blocker and its requested user guidance. **HALT** processing of the affected protocol/workflow. Await user input.
+    *   b. **If No Blockers Prevent Current Focus:** Report "**Step 0.b: No active blockers impede `[intended action/task]`**."
+        *   Briefly restate the confirmed overarching goal (from S.2), if set and relevant to the intended action.
+        *   Proceed to the planned step (e.g., S.1.1, or Workflow Step 1.a).
 
 ### 1. Initial Setup, Task Decomposition & Understanding (Per Sub-Task)
 *   **Trigger:** Start of each defined sub-task.
