@@ -8,16 +8,16 @@
 
 *   **Fundamental Operational Mandate: Sequential Execution and Comprehensive Reporting:**
     *   **Non-Negotiable Adherence:** The AI Assistant MUST follow all enumerated steps and sub-steps detailed in this document (CLIPPY_CONCISE.md) in strict sequential order. This is a mandatory, essential, and non-negotiable requirement.
-    *   **Explicit Step Reporting is an Integral Part of Execution:** The act of thinking through, planning, or verifying a `CLIPPY.MD` step is not complete until it has been *reported* as per these guidelines. Internal consideration of a step and the external reporting of that step should be tightly coupled and occur almost simultaneously. Do not batch internal considerations before reporting. Each step number (e.g., **Step 0.1**, **Step 2.2.a**, **Procedure: XYZ Step 1**) MUST be explicitly mentioned in the AI's output at the time of its execution. The report for each step must detail the actions taken and their outcomes.
+    *   **Explicit Step Reporting is an Integral Part of Execution:** The act of thinking through, planning, or verifying a `CLIPPY.MD` step is not complete until it has been *reported* as per these guidelines. Internal consideration of a step and the external reporting of that step should be tightly coupled and occur almost simultaneously. Do not batch internal considerations before reporting. Each step number (e.g., **Step 1.b**, **Step 3.2.a**, **Procedure: XYZ Step 1**) MUST be explicitly mentioned in the AI's output at the time of its execution. The report for each step must detail the actions taken and their outcomes.
     *   **N/A Reporting:** If a step or sub-step is deemed Not Applicable (N/A) to the current situation, it MUST still be reported with its number, followed by "N/A" and a concise, clear justification. No step is to be skipped in reporting.
     *   **Consistent Formatting:** The markdown formatting for reporting steps (e.g., always using bold for "**Step X.Y:**" or "**Procedure: ABC - Step Z:**") MUST be consistently applied throughout the AI's responses.
     *   **Purpose:** This rigorous adherence to sequential execution and comprehensive reporting is critical for process integrity, verifiability, and debugging. Deviations are considered critical failures of the AI's operational protocol.
-    *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 2 through 4.a) for one sub-task before initiating Step 2 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work.
+    *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 3 through 5.a) for one sub-task before initiating Step 3 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work.
 
 *   **Adherence is Key:** Strict adherence to verification is paramount.
-*   **Self-Driven Compliance:** AI autonomously performs all steps and verifications. Reporting proves compliance. Prefix responses with step numbers (e.g., "**Step 3.2:** ...").
+*   **Self-Driven Compliance:** AI autonomously performs all steps and verifications. Reporting proves compliance. Prefix responses with step numbers (e.g., "**Step 4.2:** ...").
 *   **Sustained Focus:** Maintain focus on the user's full request across cycles.
-*   **"The Plan":** Refers to a formal plan document or the AI's internal plan from Step 2.
+*   **"The Plan":** Refers to a formal plan document or the AI's internal plan from Step 3.
 *   **Proactive Context:** Favor comprehensive file context (`read_file` full reads where appropriate and allowed) over minimal views for robustness.
 *   **Holistic Understanding:** Understand surrounding codebase for integration and reusability. Search for existing logic; analyze impacts.
 *   **Successful Edit:** Intended change correctly implemented, no new errors/regressions, all verifications done.
@@ -53,61 +53,61 @@
 
 ## General Coding Workflow (for each Defined Sub-Task)
 
-**Mandatory Full Workflow Execution per Defined Sub-Task:** Each distinct functional unit, feature, or fix identified in the user's request or a governing document (e.g., a review checklist item from `DXFPLANNER_REVIEW.MD`) shall be treated as a "defined sub-task." The AI MUST execute the **entire relevant sequence** of the General Coding Workflow (Steps 0 through 5, including all applicable sub-steps and procedures) for each defined sub-task. A new sub-task MUST NOT be initiated (i.e., re-entering Step 2 Planning) until the previous sub-task has been fully processed through Step 4 (Adherence Checkpoint & Next Step), and Step 5 (Summarize Deferred Observations) has been considered and actioned if necessary. This ensures complete closure and assessment for each unit of work.
+**Mandatory Full Workflow Execution per Defined Sub-Task:** Each distinct functional unit, feature, or fix identified in the user's request or a governing document (e.g., a review checklist item from `DXFPLANNER_REVIEW.MD`) shall be treated as a "defined sub-task." The AI MUST execute the **entire relevant sequence** of the General Coding Workflow (Steps 1 through 6, including all applicable sub-steps and procedures) for each defined sub-task. A new sub-task MUST NOT be initiated (i.e., re-entering Step 3 Planning) until the previous sub-task has been fully processed through Step 5 (Adherence Checkpoint & Next Step), and Step 6 (Summarize Deferred Observations) has been considered and actioned if necessary. This ensures complete closure and assessment for each unit of work.
 
 **Core Workflow Steps (to be applied for each sub-task):**
-*   **Step 0: Initial Setup, Task Decomposition & Understanding:** Establish full context, decompose complex requests, clarify ambiguities, and define the immediate sub-task.
-*   **Step 1: Ensure Sufficient File Context & Prerequisite Knowledge:** Gather all necessary file contents and external knowledge (e.g., library documentation) required for the current sub-task.
-*   **Step 2: Planning, Design, and User Confirmation (for complex changes):** Outline the proposed changes, detail the implementation strategy, and seek user confirmation if the change is significant or ambiguous.
-*   **Step 3: Implementation (Code Generation/Modification):** Generate or modify code using appropriate tools, adhering to planned changes and coding standards.
-*   **Step 4: Post-Implementation Review & Verification:** Thoroughly review applied changes, verify correctness, check for unintended consequences, and ensure alignment with requirements.
-*   **Step 5: Finalization, Cleanup & Next Steps:** Conclude the current sub-task, perform any necessary cleanup, summarize achievements, and outline next steps or readiness for a new task.
+*   **Step 1: Initial Setup, Task Decomposition & Understanding:** Establish full context, decompose complex requests, clarify ambiguities, and define the immediate sub-task.
+*   **Step 2: Ensure Sufficient File Context & Prerequisite Knowledge:** Gather all necessary file contents and external knowledge (e.g., library documentation) required for the current sub-task.
+*   **Step 3: Planning, Design, and User Confirmation (for complex changes):** Outline the proposed changes, detail the implementation strategy, and seek user confirmation if the change is significant or ambiguous.
+*   **Step 4: Implementation (Code Generation/Modification):** Generate or modify code using appropriate tools, adhering to planned changes and coding standards.
+*   **Step 5: Post-Implementation Review & Verification:** Thoroughly review applied changes, verify correctness, check for unintended consequences, and ensure alignment with requirements.
+*   **Step 6: Finalization, Cleanup & Next Steps:** Conclude the current sub-task, perform any necessary cleanup, summarize achievements, and outline next steps or readiness for a new task.
 
-**State Management Across Sub-Tasks:** While each sub-task follows the 0-5 sequence, the AI should maintain awareness of the broader task context. Information gathered or decisions made in one sub-task (e.g., file contents read in Step 1) can be leveraged in subsequent sub-tasks if still relevant, but their continued applicability should be briefly re-confirmed at the start of the relevant step for the new sub-task.
+**State Management Across Sub-Tasks:** While each sub-task follows the 1-6 sequence, the AI should maintain awareness of the broader task context. Information gathered or decisions made in one sub-task (e.g., file contents read in Step 2) can be leveraged in subsequent sub-tasks if still relevant, but their continued applicability should be briefly re-confirmed at the start of the relevant step for the new sub-task.
 
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
-### 0. Initial Setup, Task Decomposition & Understanding (Per Sub-Task)
+### 1. Initial Setup, Task Decomposition & Understanding (Per Sub-Task)
 *   **Trigger:** Start of each defined sub-task.
 *   **Actions:**
-    *   **0.a. Adherence Reaffirmation:** State: "Reaffirming commitment to `CLIPPY.MD` procedures for this sub-task."
+    *   **1.a. Adherence Reaffirmation:** State: "Reaffirming commitment to `CLIPPY.MD` procedures for this sub-task."
     *   b. Re-evaluate/confirm overall understanding of the parent task goal and how the current sub-task contributes to it, especially referencing the outcome of any immediately preceding sub-task.
     *   c. Clearly define and report the specific, actionable goal and scope of the *current* sub-task.
     *   d. If the current sub-task is complex, decompose it into smaller logical steps for planning purposes.
     *   e. Identify and report any immediate ambiguities or missing information critical for *this sub-task* and plan to address them (e.g., by asking the user or using verification procedures).
     *   f. Briefly state the primary files or areas of the codebase anticipated to be involved in this sub-task.
 
-### 1. Ensure Sufficient File Context & Prerequisite Knowledge (Per Sub-Task)
-*   **Trigger:** After defining the sub-task in Step 0.
+### 2. Ensure Sufficient File Context & Prerequisite Knowledge (Per Sub-Task)
+*   **Trigger:** After defining the sub-task in Step 1.
 *   **Actions:**
     *   a. Based on the sub-task definition, identify all specific files/modules likely to be read or modified.
     *   b. For each identified file, use `Procedure: Ensure Sufficient File Context`, prioritizing full reads if modifications are planned or deep understanding is necessary.
     *   c. If the sub-task involves external libraries, APIs, or complex algorithms not recently used, confirm necessary documentation or knowledge is accessible/recalled. Perform `web_search` if critical knowledge is missing.
-    *   d. Report on the context obtained and its sufficiency for proceeding to Step 2 (Planning).
+    *   d. Report on the context obtained and its sufficiency for proceeding to Step 3 (Planning).
 
-### 2. Planning & Pre-computation Checks (Per Sub-Task)
-*   **2.0. Planning Kick-off: Internal State Check & Forward Look:**
+### 3. Planning & Pre-computation Checks (Per Sub-Task)
+*   **3.0. Planning Kick-off: Internal State Check & Forward Look:**
     *   a. **Internal State Check:** Briefly verbalize the *current primary technical goal* (e.g., "Implement Feature X") AND the *current CLIPPY.MD phase/step* the AI believes it is in or about to enter.
     *   b. **Mental Walkthrough:** Mentally (or briefly state if helpful) list the next 2-3 `CLIPPY.MD` steps or procedures anticipated for the current technical goal.
     *   c. **Example Output:**
         ```
-        **Step 2.0. Planning Kick-off: Internal State Check & Forward Look:**
+        **Step 3.0. Planning Kick-off: Internal State Check & Forward Look:**
             a. Internal State: Primary goal is '[Goal Description]'. I am currently in '[CLIPPY.MD Phase/Step]', about to begin '[Next Specific CLIPPY.MD Step/Procedure]' for `[relevant file/task]`.
             b. Anticipated Next Steps: After '[Current/Next Step]', I will proceed with '[Step X]', then '[Step Y]'.
         ```
-*   **2.0.1. Procedural Anchor Point (Before Complex Analysis):**
-    *   **Trigger:** Before undertaking a prolonged or detailed internal analysis for a specific sub-task within Step 2 (e.g., designing a complex algorithm, data structure, or interaction).
-    *   **Action:** State: "**Step 2.0.1. Procedural Anchor Point:** Before detailed analysis for `[specific sub-task description]`, I confirm I am within 'Step 2. Planning'. My immediate next actions, upon concluding this analysis, will be to report on `[next 1-2 specific CLIPPY.MD sub-procedures, e.g., 'Step 2.7.b Verify ALL Assumptions' and 'Step 2.7.c Address Edge Cases']`."
-*   **2.1. Handle Prior Blocked Edits:** If current planning follows a blocked Step 3 edit:
+*   **3.0.1. Procedural Anchor Point (Before Complex Analysis):**
+    *   **Trigger:** Before undertaking a prolonged or detailed internal analysis for a specific sub-task within Step 3 (e.g., designing a complex algorithm, data structure, or interaction).
+    *   **Action:** State: "**Step 3.0.1. Procedural Anchor Point:** Before detailed analysis for `[specific sub-task description]`, I confirm I am within 'Step 3. Planning'. My immediate next actions, upon concluding this analysis, will be to report on `[next 1-2 specific CLIPPY.MD sub-procedures, e.g., 'Step 3.7.b Verify ALL Assumptions' and 'Step 3.7.c Address Edge Cases']`."
+*   **3.1. Handle Prior Blocked Edits:** If current planning follows a blocked Step 4 edit:
     *   Analyze blockage cause.
     *   If viable corrective strategy (e.g., refactoring): Propose plan. **BLOCKER:** Await user approval. If approved, corrective plan becomes objective; upon completion, re-plan original item. If declined/fails, trigger `Procedure: Request Manual Edit` for original item.
     *   If no viable corrective strategy: Trigger `Procedure: Request Manual Edit` for original item.
-*   **2.2. Ensure Sufficient Context:** Use `Procedure: Ensure Sufficient File Context`.
-*   **2.3. Verify Tool Output:** After each info-gathering tool call, use `Procedure: Verify Tool Output`.
-*   **2.4. Search Existing Logic:** Search codebase for existing implementations. Report findings. Investigate specified refactoring sources if plan requires.
-*   **2.5. Align with Standards:** Identify relevant principles/patterns from `PROJECT_STANDARDS.md` & `PROJECT_ARCHITECTURE.md`. Confirm plan prioritizes simplest, compliant solution and structures new code for simplicity (SRP, reasonable length/nesting). If standards docs are unavailable/incomplete for a framework, base alignment on general principles, observed patterns, user requirements, and canonical framework best practices (state and verify hypotheses).
-*   **2.6. Work with Facts:** Confirm plan uses only facts/verified info. Ensure file context is sufficient. Reconcile plan with current code state if a plan document exists.
-*   **2.7. Ensure Robust Solutions:** Confirm plan avoids workarounds, addresses root cause. Assess interacting existing patterns. Prioritize data integrity (treat unexpected missing/invalid data as critical error unless workaround is approved via `Procedure: Handle Necessary Workaround`).
+*   **3.2. Ensure Sufficient Context:** Use `Procedure: Ensure Sufficient File Context`. (Note: This refers to the procedure, main context gathering is Step 2)
+*   **3.3. Verify Tool Output:** After each info-gathering tool call, use `Procedure: Verify Tool Output`.
+*   **3.4. Search Existing Logic:** Search codebase for existing implementations. Report findings. Investigate specified refactoring sources if plan requires.
+*   **3.5. Align with Standards:** Identify relevant principles/patterns from `PROJECT_STANDARDS.md` & `PROJECT_ARCHITECTURE.md`. Confirm plan prioritizes simplest, compliant solution and structures new code for simplicity (SRP, reasonable length/nesting). If standards docs are unavailable/incomplete for a framework, base alignment on general principles, observed patterns, user requirements, and canonical framework best practices (state and verify hypotheses).
+*   **3.6. Work with Facts:** Confirm plan uses only facts/verified info. Ensure file context is sufficient. Reconcile plan with current code state if a plan document exists.
+*   **3.7. Ensure Robust Solutions:** Confirm plan avoids workarounds, addresses root cause. Assess interacting existing patterns. Prioritize data integrity (treat unexpected missing/invalid data as critical error unless workaround is approved via `Procedure: Handle Necessary Workaround`).
     *   **Mandatory Sub-Procedures (Execute & Report):**
         *   `a.` **Analyze Impact:** Use `Procedure: Analyze Impact`.
         *   `b.` **Verify ALL Assumptions:** For every assumption (APIs, interfaces, data, library use), immediately use `Procedure: Verify Hypothesis`. Handle failures: if existing dependency, use `Procedure: Handle Failed Verification for Existing Dependency`; otherwise, STOP, report, revise plan.
@@ -119,71 +119,71 @@
         *   `h.` **Observability:** Assess logging/metrics needs.
         *   `i.` **Configurability:** Assess if new parameters should be configurable, avoid hardcoding.
         *   `j.` **Resource Management:** Plan proper acquisition/release of resources.
-*   **2.8. Handle Blockers (Unclear Root/Missing Info/Standard Conflicts):** If issues arise, STOP. Use `Procedure: Handle Unclear Root Cause / Missing Info`.
-*   **2.9. Handle Architectural Decisions:** If architectural conflicts/trade-offs, STOP. Use `Procedure: Handle Architectural Decisions`. **BLOCKER:** Requires user guidance.
-*   **2.10. Improve Edit Tool Input:** Before `edit_file`, use `Procedure: Prepare Robust Edit Tool Input`.
-*   **2.11. Diagnostics Exception:** For temporary changes (e.g., print statements): State "TEMPORARY change for diagnostics," justify, mark "REMINDER: Temporary code MUST be reverted/fixed," plan removal & verification.
-*   **2.12. Pre-computation Verification Summary:** Before Step 3, provide summary:
+*   **3.8. Handle Blockers (Unclear Root/Missing Info/Standard Conflicts):** If issues arise, STOP. Use `Procedure: Handle Unclear Root Cause / Missing Info`.
+*   **3.9. Handle Architectural Decisions:** If architectural conflicts/trade-offs, STOP. Use `Procedure: Handle Architectural Decisions`. **BLOCKER:** Requires user guidance.
+*   **3.10. Improve Edit Tool Input:** Before `edit_file`, use `Procedure: Prepare Robust Edit Tool Input`.
+*   **3.11. Diagnostics Exception:** For temporary changes (e.g., print statements): State "TEMPORARY change for diagnostics," justify, mark "REMINDER: Temporary code MUST be reverted/fixed," plan removal & verification.
+*   **3.12. Pre-computation Verification Summary:** Before Step 4, provide summary:
         ```markdown
         **Pre-computation Verification Summary:**
-    - `[x/-] 1. Standards Alignment:` [Brief confirm 2.5]
-    - `[x/-] 2. Impact Analysis:` [Brief confirm 2.7.a]
-    - `[x/-] 3. Hypothesis Verification:` [Brief confirm 2.7.b]
-    - `[x/-] 4. Logic Preservation Plan:` [Brief confirm 2.7.e]
-    - `[x/-] 5. Tool Output Verification:` [Brief confirm 2.3]
-    - `[x/-] 6. Full File Read Verification:` [Brief confirm `Procedure: Ensure Sufficient File Context` Step 3, if full reads attempted]
+    - `[x/-] 1. Standards Alignment:` [Brief confirm 3.5]
+    - `[x/-] 2. Impact Analysis:` [Brief confirm 3.7.a]
+    - `[x/-] 3. Hypothesis Verification:` [Brief confirm 3.7.b]
+    - `[x/-] 4. Logic Preservation Plan:` [Brief confirm 3.7.e]
+    - `[x/-] 5. Tool Output Verification:` [Brief confirm 3.3]
+    - `[x/-] 6. Full File Read Verification:` [Brief confirm `Procedure: Ensure Sufficient File Context` Step 3, if full reads attempted] (Note: Main context gathering is Step 2)
     - `[x] 7. Confirmation:` Summary complete.
     ```
-*   **2.13. Planning Self-Assessment:** Execute `Procedure: Perform Self-Assessment` (Scope: "Planning Phase").
-*   **2.14. Verify Action Preconditions:** Before generating edit for a file, re-verify preconditions (e.g., item to delete exists, item to add doesn't). If not met, STOP, report, revise.
-*   **NEXT ACTION (Unless Blocked):** Proceed to Step 3.1.
+*   **3.13. Planning Self-Assessment:** Execute `Procedure: Perform Self-Assessment` (Scope: "Planning Phase").
+*   **3.14. Verify Action Preconditions:** Before generating edit for a file, re-verify preconditions (e.g., item to delete exists, item to add doesn't). If not met, STOP, report, revise.
+*   **NEXT ACTION (Unless Blocked):** Proceed to Step 4.1.
 
-### 3. Edit Generation & Verification Cycle (Per File)
+### 4. Edit Generation & Verification Cycle (Per File)
 Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Autonomous unless `BLOCKER`. Complete cycle for one file before next.
 **CRITICAL WARNING: VERIFY ALL DIFF LINES.** Scrutinize tool output (`edit_file`, `reapply`).
 
-*   **3.1. Generate Proposed `code_edit` Diff Text:**
+*   **4.1. Generate Proposed `code_edit` Diff Text:**
     *   Formulate `code_edit` content and `instructions` per `Procedure: Prepare Robust Edit Tool Input`.
-    *   Output literal `code_edit` and `instructions`. Conclude with: "Step 3.1: The following `code_edit` is proposed for `[filename]`. **This is a proposal only.** No `edit_file` tool call is permitted at this stage. I will now proceed to Step 3.2 (Pre-Apply Verification) to internally validate this proposal before any attempt to apply it."
+    *   Output literal `code_edit` and `instructions`. Conclude with: "Step 4.1: The following `code_edit` is proposed for `[filename]`. **This is a proposal only.** No `edit_file` tool call is permitted at this stage. I will now proceed to Step 4.2 (Pre-Apply Verification) to internally validate this proposal before any attempt to apply it."
     *   **AI State:** This is a proposal for AI verification; file content understanding remains based on last actual read/confirmed edit.
 
-*   **3.2. Pre-Apply Verification (Mandatory before 3.3):**
-    *   Continue in same AI turn after 3.1. No file-modifying tools here.
-    *   Internally verify the staged `code_edit` from 3.1:
+*   **4.2. Pre-Apply Verification (Mandatory before 4.3):**
+    *   Continue in same AI turn after 4.1. No file-modifying tools here.
+    *   Internally verify the staged `code_edit` from 4.1:
         *   `a.` Summarize pre-edit context (from recent `read_file`).
-        *   `b.` Use `Procedure: Verify Diff` on the staged `code_edit` (intent is plan from Step 2).
-        *   `c.` Verify generated code conciseness (per `PROJECT_STANDARDS.MD`). If violation: STOP, state violation, revise plan (Step 2) for decomposition, re-do 3.1. Report.
-    *   **Crucially, after performing the internal checks, explicitly output the following Pre-Edit Confirmation Statement:** "Step 3.2: Pre-Apply Verification of the proposal for `[filename]` is now complete.
+        *   `b.` Use `Procedure: Verify Diff` on the staged `code_edit` (intent is plan from Step 3).
+        *   `c.` Verify generated code conciseness (per `PROJECT_STANDARDS.MD`). If violation: STOP, state violation, revise plan (Step 3) for decomposition, re-do 4.1. Report.
+    *   **Crucially, after performing the internal checks, explicitly output the following Pre-Edit Confirmation Statement:** "Step 4.2: Pre-Apply Verification of the proposal for `[filename]` is now complete.
     *   Pre-edit context: [Brief summary of context, e.g., relevant lines or existing structure].
     *   `Procedure: Verify Diff` on staged proposal: [Outcome, e.g., 'Verified', 'Verified with deviations: ...'].
     *   Conciseness check: [Outcome, e.g., 'Verified'].
     *   Key assumption/logic check: [Outcome, e.g., 'All assumptions hold'].
     (If any check failed and led to a revision of the proposal, this step should be re-run for the new proposal. If checks pass:)
-    All pre-apply verifications passed. Proceeding to Step 3.3 (Apply Edit)."
+    All pre-apply verifications passed. Proceeding to Step 4.3 (Apply Edit)."
 
-*   **3.3. Apply Edit (After Successful 3.2):**
-    *   **Only after successfully completing and explicitly reporting the outcome of Step 3.2,** if all checks passed, continue in the same AI turn and report: "Step 3.3: Applying the verified edit to `[filename]`."
-    *   Immediately call `edit_file` or `reapply` with the verified staged `code_edit` and `instructions` from Step 3.1 (or its revision).
+*   **4.3. Apply Edit (After Successful 4.2):**
+    *   **Only after successfully completing and explicitly reporting the outcome of Step 4.2,** if all checks passed, continue in the same AI turn and report: "Step 4.3: Applying the verified edit to `[filename]`."
+    *   Immediately call `edit_file` or `reapply` with the verified staged `code_edit` and `instructions` from Step 4.1 (or its revision).
 
-*   **3.4. Post-Apply Verification (Mandatory After 3.3 Tool Call Result):**
-    *   **IMMEDIATE ACTION:** After the `edit_file` or `reapply` tool call in Step 3.3, and BEFORE any other action, the AI MUST explicitly output and meticulously complete the following **Mandatory Explicit Post-Edit Verification Checklist**.
-    *   **Basis of Analysis:** This checklist MUST be completed based *primarily* on the actual diff output from the Step 3.3 tool call. However, if the tool's output is ambiguous (e.g., summarized, reports "no changes" when changes were expected and are not visible in the diff), or if any checklist item indicates a potential issue, the AI MUST first perform a **Compulsory Full File Read**.
+*   **4.4. Post-Apply Verification (Mandatory After 4.3 Tool Call Result):**
+    *   **IMMEDIATE ACTION:** After the `edit_file` or `reapply` tool call in Step 4.3, and BEFORE any other action, the AI MUST explicitly output and meticulously complete the following **Mandatory Explicit Post-Edit Verification Checklist**.
+    *   **Basis of Analysis:** This checklist MUST be completed based *primarily* on the actual diff output from the Step 4.3 tool call. However, if the tool's output is ambiguous (e.g., summarized, reports "no changes" when changes were expected and are not visible in the diff), or if any checklist item indicates a potential issue, the AI MUST first perform a **Compulsory Full File Read**.
         *   **Compulsory Full File Read Procedure:**
-            1.  State: "Step 3.4: Edit tool output is ambiguous/indicates potential issues. Performing Compulsory Full File Read for `[filename]`."
+            1.  State: "Step 4.4: Edit tool output is ambiguous/indicates potential issues. Performing Compulsory Full File Read for `[filename]`."
             2.  Use `read_file` on the `target_file`. Request `should_read_entire_file=true` if the file was edited by the AI in the current turn, is critical for verification, and not excessively large. For very large files, request a significant contextual block surrounding all edited sections.
-            3.  State: "Step 3.4: Full file read for `[filename]` complete. Proceeding with checklist based on fresh content."
+            3.  State: "Step 4.4: Full file read for `[filename]` complete. Proceeding with checklist based on fresh content."
             4.  The subsequent checklist completion will then be based on this fresh file content.
     *   **Mandatory Explicit Post-Edit Verification Checklist (Output this verbatim and fill it out):**
         *   `a.` **Verify `edit_file` / `reapply` Diff:**
             *   `Procedure Used:` (State `Procedure: Verify Edit File Diff` or `Procedure: Verify Reapply Diff`)
-            *   `[ ] 1. Diff vs. Intent Match:` [Detailed assessment of whether every line change in the *actual applied diff* aligns with the final approved plan/intent from Step 3.2.]
+            *   `[ ] 1. Diff vs. Intent Match:` [Detailed assessment of whether every line change in the *actual applied diff* aligns with the final approved plan/intent from Step 4.2.]
             *   `[ ] 2. No Major Unintended Structural Changes:` [Confirm no gross structural damage beyond planned changes.]
             *   `[ ] 3. Identify Deviations:` [List any specific deviations between actual applied diff and final intent. State "None" if applicable.]
             *   `[ ] 4. Handle Deviations:` [For each deviation: State "N/A" if none, or "Plan: Reapply", "Plan: Manual Fix", "Plan: Accept with Justification [brief justification]", etc., based on `Procedure: Handle Deviation`.]
             *   `[ ] 5. Dependency Verification:` [Confirm `Procedure: Verify Dependency Reference` was applied to *all* dependencies in the final applied code. State outcome.]
             *   `[ ] 6. Semantic Spot-Check:` [Confirm key logic additions/changes in the *applied diff* are semantically correct.]
             *   `[ ] 7. Context Line Check:` [Confirm `// ... existing code ...` was handled correctly by the edit tool and context lines are as expected.]
-            *   `[ ] 8. Logic Preservation (if applicable):` [Confirm original logic was preserved if refactoring. Refer to Step 2.7.e documentation.]
+            *   `[ ] 8. Logic Preservation (if applicable):` [Confirm original logic was preserved if refactoring. Refer to Step 3.7.e documentation.]
             *   `Procedure: Verify Diff Outcome:` [State: 'Verified', 'Verified with minor deviations (handled)', 'Needs Correction/Self-Correction Triggered']
         *   `b.` **Ensure no unintended redundancy introduced:** [Yes/No. If No, explain and note if self-correction is needed.]
         *   `c.` **Ensure no leftover placeholders/comments that should have been removed/updated:** [Yes/No. If No, explain (e.g., "REMINDER comment for diagnostics still present as planned") and note if self-correction is needed for unplanned leftovers.]
@@ -191,35 +191,35 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
     *   **Check for leftover code/dependencies:** (This is now covered by checklist items `a.5` and `c`)
         *   `a.` Confirm no old code commented out, temporary comments removed. (Covered by `c`)
-        *   `b.` Re-verify downstream consumers (re-run searches from planning). Verify deletion by searching for dangling refs. Trigger self-correction (3.4.3) if issues. (Partially covered by `a.5`, impact analysis for deletions would be part of `Procedure: Verify Diff` or `Procedure: Verify Dependency Reference` if a deletion affects others).
+        *   `b.` Re-verify downstream consumers (re-run searches from planning). Verify deletion by searching for dangling refs. Trigger self-correction (4.4.3) if issues. (Partially covered by `a.5`, impact analysis for deletions would be part of `Procedure: Verify Diff` or `Procedure: Verify Dependency Reference` if a deletion affects others).
 
-    *   **3.4.3. Self-Correct if Necessary:**
+    *   **4.4.3. Self-Correct if Necessary:**
         *   Triggered by: 'Fail' outcome in "Overall Post-Apply Verification Outcome", OR violations, incorrect application, redundancy, leftovers, new errors/regressions from edit (identified during checklist), missed mandatory steps, or tool reporting "no changes made" when changes were intended and verifiably absent after a full file read.
 
-*   **3.5. Generate Post-Action Verification Summary:** After successful 3.4.
+*   **4.5. Generate Post-Action Verification Summary:** After successful 4.4.
         ```markdown
         **Post-Action Verification Summary:**
-    - `[x/-] 1. Edit Application Analysis:` [Confirm 3.4.a/b/c. State: 'Applied diff matches final intent.' or 'Discrepancies: [List/Justification]'.]
-    - `[x/-] 2. Leftover Code & Dependency Analysis:` [Confirm 3.4.2.a/b performed.]
-    - `[x/-] 3. Correction Assessment:` [Confirm 3.4.3 performed. State if corrections made.]
-    - `[x/-] 4. Full File Read Verification:` [Brief confirm `Procedure: Ensure Sufficient File Context` Step 3 if full reads in this phase.]
+    - `[x/-] 1. Edit Application Analysis:` [Confirm 4.4.a/b/c. State: 'Applied diff matches final intent.' or 'Discrepancies: [List/Justification]'.]
+    - `[x/-] 2. Leftover Code & Dependency Analysis:` [Confirm relevant checklist items from Step 4.4.a (e.g., item 5) and 4.4.c were performed.]
+    - `[x/-] 3. Correction Assessment:` [Confirm 4.4.3 performed. State if corrections made.]
+    - `[x/-] 4. Full File Read Verification:` [Brief confirm `Procedure: Ensure Sufficient File Context` Step 3 if full reads in this phase.] (Note: Main context gathering is Step 2)
     - `[x] 5. Confirmation:` Summary complete for `[filename(s)/task]`.
-    ```
+        ```
 
-*   **3.6. Mid-Cycle Self-Assessment:** After 3.5 for each file, `Procedure: Perform Self-Assessment` (Scope: "Edit Cycle for [filename]").
+*   **4.6. Mid-Cycle Self-Assessment:** After 4.5 for each file, `Procedure: Perform Self-Assessment` (Scope: "Edit Cycle for [filename]").
 
-### 4. Adherence Checkpoint & Next Step
-*   **Trigger:** Before concluding, after all files processed through Step 3.
+### 5. Adherence Checkpoint & Next Step
+*   **Trigger:** Before concluding, after all files processed through Step 4.
 *   **Action:**
     *   `a.` **Final Self-Assessment:** `Procedure: Perform Self-Assessment` (Scope: "Overall Task Cycle").
-    *   `b.` **Determine Next Action:** If main request/plan has pending actions: State next action. **Immediately and autonomously initiate Step 2 (Planning) for it in the same AI turn.** Do not pause unless entire request/plan is complete or user input is explicitly needed. A 'pending action' that requires re-initiation of Step 2 typically corresponds to a distinct functional unit, a separate class implementation, a new API endpoint, or a self-contained component identified in the overall user request or project review document (e.g., implementing `MergeOperation` is a distinct action from implementing `DissolveOperation`). Avoid grouping multiple such distinct functional units under a single pass of Step 2 unless they are trivial and highly cohesive changes within the *same file and immediate logical block*. When in doubt, favor a more granular re-entry into Step 2 for each distinct functional unit.
+    *   `b.` **Determine Next Action:** If main request/plan has pending actions: State next action. **Immediately and autonomously initiate Step 3 (Planning) for it in the same AI turn.** Do not pause unless entire request/plan is complete or user input is explicitly needed. A 'pending action' that requires re-initiation of Step 3 typically corresponds to a distinct functional unit, a separate class implementation, a new API endpoint, or a self-contained component identified in the overall user request or project review document (e.g., implementing `MergeOperation` is a distinct action from implementing `DissolveOperation`). Avoid grouping multiple such distinct functional units under a single pass of Step 3 unless they are trivial and highly cohesive changes within the *same file and immediate logical block*. When in doubt, favor a more granular re-entry into Step 3 for each distinct functional unit.
 
-### 5. Summarize Deferred Observations (Optional)
-*   **Trigger:** After Step 4, before concluding.
+### 6. Summarize Deferred Observations (Optional)
+*   **Trigger:** After Step 5, before concluding.
 *   **Action:**
     *   **MAY** generate "Deferred Observations Summary" (minor bugs, smells).
-    *   **MANDATORY "Deferred Edit Issues Summary"** if unintended modifications from Step 3 edits were accepted: List affected files/functions, describe unintended changes, analyze behavioral differences, ask user: "Prioritize fixing these now, or defer?"
-    *   If no general observations, state: "**Step 5: Deferred Observations Summary:** No specific deferred observations."
+    *   **MANDATORY "Deferred Edit Issues Summary"** if unintended modifications from Step 4 edits were accepted: List affected files/functions, describe unintended changes, analyze behavioral differences, ask user: "Prioritize fixing these now, or defer?"
+    *   If no general observations, state: "**Step 6: Deferred Observations Summary:** No specific deferred observations."
     *   Goal: Capture insights and ensure unintended side effects are documented and presented for decision.
 
 ---
@@ -227,7 +227,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 ## Core Reusable Procedures (Concise)
 
 **`Procedure: Ensure Sufficient File Context`**
-1.  **Assess Need & Attempt Read:** Determine if full file context is necessary for the current task (e.g., complex file, central role, modifications planned). Use `read_file`, requesting a full read if Step 1 indicates necessity and tool constraints allow.
+1.  **Assess Need & Attempt Read:** Determine if full file context is necessary for the current task (e.g., complex file, central role, modifications planned). Use `read_file`, requesting a full read if Step 2 indicates necessity and tool constraints allow.
 2.  **Verify Sufficiency & Handle Incompleteness:**
     a.  Is the returned content sufficient for the *current task's safety and accuracy*?
     b.  **If Insufficient (especially if a necessary full read was not achieved/possible):**
@@ -289,12 +289,12 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
 **`Procedure: Verify Reapply Diff`** (After `reapply` tool call)
 1.  Treat diff as new.
-2.  Execute `Procedure: Verify Diff` on `reapply` tool's diff (intent = the final proposal from Step 3.2 that was being attempted by the original `edit_file` call).
+2.  Execute `Procedure: Verify Diff` on `reapply` tool's diff (intent = the final proposal from Step 4.2 that was being attempted by the original `edit_file` call).
 3.  Log confirmation and outcome.
 
 **`Procedure: Verify Edit File Diff`** (After `edit_file` tool call)
-1.  Execute `Procedure: Verify Diff` on `edit_file` tool's diff (intent = final proposal from Step 3.2).
-2.  If not 'Verified', trigger self-correction (Step 3.4.3).
+1.  Execute `Procedure: Verify Diff` on `edit_file` tool's diff (intent = final proposal from Step 4.2).
+2.  If not 'Verified', trigger self-correction (Step 4.4.3).
 
 **`Procedure: Verify Tool Output`** (After info-gathering tools)
 1.  **Congruence:** Confirm output matches request (e.g., line range, no unexpected truncation).
@@ -306,7 +306,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 **`Procedure: Perform Self-Assessment`** (Scope: "Planning", "Edit Cycle for [filename]", "Overall Task")
 1.  State scope.
 2.  Verify all mandatory steps/checks/reporting for scope were completed.
-2.a. **Context Sufficiency Review (if scope includes Planning):** Re-evaluate context from `Procedure: Ensure Sufficient File Context`. Confirm adequacy or suggest re-entering Step 2 for more context.
+2.a. **Context Sufficiency Review (if scope includes Planning):** Re-evaluate context from `Procedure: Ensure Sufficient File Context`. Confirm adequacy or suggest re-entering Step 3 for more context.
 3.  **Critical Blocker Adherence:** Verify `BLOCKER:` conditions strictly adhered to. If deviation: Report "CRITICAL DEVIATION: Blocker [X] bypassed." **BLOCKER:** Halt for guidance. Else, report "Critical Blocker Adherence Review: Confirmed."
 4.  **Handle Missed Steps:** If non-blocker steps missed: Report, trigger self-correction. STOP until addressed.
 5.  State: "**`Procedure: Perform Self-Assessment ([scope])`:** Complete."
@@ -322,13 +322,13 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
 ## Core Exception Handling Procedures (Concise)
 
-**`Procedure: Handle Unclear Root Cause / Missing Info`** (Triggered by Step 2.8)
+**`Procedure: Handle Unclear Root Cause / Missing Info`** (Triggered by Step 3.8)
 1.  STOP proposing direct fix. State blocker.
 2.  Formulate investigation plan. Seek confirmation if broad/assumption-based (**BLOCKER:** if so).
 3.  If investigation blocked/impractical AND workaround is only path: Use `Procedure: Handle Necessary Workaround`.
 4.  If missing dependency needs new structure from ambiguous refs: Use `Procedure: Consult on Ambiguous Missing Dependency`.
 
-**`Procedure: Handle Architectural Decisions`** (Triggered by Step 2.9 or if plan involves major architectural change)
+**`Procedure: Handle Architectural Decisions`** (Triggered by Step 3.9 or if plan involves major architectural change)
 1.  Flag: "Request/plan involves architectural decision regarding [area]."
 2.  AI Analysis: Briefly describe current arch, outline options (pros/cons), risks.
 3.  Halt & Present: Report analysis. **BLOCKER:** "Please advise on architectural approach." Await guidance.
@@ -347,7 +347,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 4.  **BLOCKER:** "Resolving missing `[DependencyName]` requires guidance. Review options." Await direction.
 5.  Incorporate Decision: Plan accordingly.
 
-**`Procedure: Handle Failed Verification for Existing Dependency`** (If Step 2.7.b fails for existing code's dependency)
+**`Procedure: Handle Failed Verification for Existing Dependency`** (If Step 3.7.b fails for existing code's dependency)
 1.  Do NOT immediately plan creation. State discrepancy.
 2.  Usage Check: Is missing symbol used in referencing file? (`grep_search`). Report.
 3.  Broader Context Search: History? Moved/renamed/deprecated? (`grep_search`, `codebase_search`). Report.
@@ -362,7 +362,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 3.  Analyze Cause & Impact: Beneficial, benign, harmful? Standards alignment?
 4.  Decision (For EACH Deviation):
     *   **A: Accept (Strong Justification):** If beneficial, correct, aligns, no side effects. Justify. Update plan & `code_edit` to include it. Report.
-    *   **B: Reject (Default):** If not beneficial, errors, violates standards. State reason. If proposed `code_edit`, revise it. If applied `diff`, trigger self-correction (Step 3.4.3). Report.
+    *   **B: Reject (Default):** If not beneficial, errors, violates standards. State reason. If proposed `code_edit`, revise it. If applied `diff`, trigger self-correction (Step 4.4.3). Report.
 5.  Loop for other deviations.
 
 **`Procedure: Request Manual Edit`** (If automated edits repeatedly fail, cause gross errors, or corrective plan fails)
@@ -379,9 +379,9 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
 ## Runtime Error Diagnosis & Resolution Protocol
 1.  Acknowledge error (cite traceback/logs). Goal is now diagnosis/resolution.
-2.  Follow standard workflow (Steps 0-5), adapting Step 2 (Planning) for diagnostics:
-    *   **Step 2.2 (Context):** Gather all facts (tracebacks, logs, inputs). `Procedure: Ensure Sufficient File Context` for implicated files.
-    *   **Step 2.7.b (Hypothesis):** Core diagnostic loop. Formulate testable hypothesis for root cause. Verify (`Procedure: Verify Hypothesis`). Repeat if refuted.
+2.  Follow standard workflow (Steps 1-6), adapting Step 3 (Planning) for diagnostics:
+    *   **Step 3.2 (Context):** Gather all facts (tracebacks, logs, inputs). `Procedure: Ensure Sufficient File Context` for implicated files.
+    *   **Step 3.7.b (Hypothesis):** Core diagnostic loop. Formulate testable hypothesis for root cause. Verify (`Procedure: Verify Hypothesis`). Repeat if refuted.
     *   Plan fix addressing root cause. Analyze fix impact.
 3.  Once error fixed & verified, resume original task (re-evaluate plan if needed).
 
