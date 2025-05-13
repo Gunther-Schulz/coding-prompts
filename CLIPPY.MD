@@ -106,7 +106,16 @@
 *   **3.2. Ensure Sufficient Context:** Use `Procedure: Ensure Sufficient File Context`. (Note: This refers to the procedure, main context gathering is Step 2)
 *   **3.3. Verify Tool Output:** After each info-gathering tool call, use `Procedure: Verify Tool Output`.
 *   **3.4. Search Existing Logic:** Search codebase for existing implementations. Report findings. Investigate specified refactoring sources if plan requires.
-*   **3.5. Align with Standards:** Identify relevant principles/patterns from `PROJECT_STANDARDS.md` & `PROJECT_ARCHITECTURE.md`. Confirm plan prioritizes simplest, compliant solution and structures new code for simplicity (SRP, reasonable length/nesting). If standards docs are unavailable/incomplete for a framework, base alignment on general principles, observed patterns, user requirements, and canonical framework best practices (state and verify hypotheses).
+*   **3.5. Align with Standards & Core Documentation:**
+    *   a. Identify relevant principles/patterns from `PROJECT_STANDARDS.md` & `PROJECT_ARCHITECTURE.md`. Confirm plan prioritizes simplest, compliant solution and structures new code for simplicity (SRP, reasonable length/nesting).
+    *   b. If standards docs are unavailable/incomplete for a framework, base alignment on general principles, observed patterns, user requirements, and canonical framework best practices (state and verify hypotheses).
+    *   c. **Core Document Discrepancy Handling:** If, during information gathering or planning, a discrepancy is identified between the verified current state of the codebase and a statement or definition within `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` (or other documents designated as 'core' by the user):
+        1.  Report the specific discrepancy, citing the location in the document and the conflicting evidence from the codebase.
+        2.  State the AI's assessment that the codebase likely represents the current factual state (if this is the case after verification).
+        3.  Propose the specific change to the core document to align it with the codebase.
+        4.  **BLOCKER:** State: "Identified a discrepancy between `[document_name]` and the current codebase regarding `[specific item]`. Proposing an update to `[document_name]` to align with verified code facts. Please confirm if this change should be applied. Alternatively, if `[document_name]` is correct and the *code* needs to be changed, please advise. If the code requires architectural changes to align with the document, that process may be subsequently guided by Step 3.9 (`Procedure: Handle Architectural Decisions`)." Await user confirmation before proceeding with an edit to the core document or re-planning code changes.
+        5.  This procedure does *not* apply to correcting simple typographical errors that don't alter the meaning or intent of the document; such minor corrections can be made as part of a regular edit proposal process if directly related to the task at hand,
+but should still be highlighted in the edit summary.
 *   **3.6. Work with Facts:** Confirm plan uses only facts/verified info. Ensure file context is sufficient. Reconcile plan with current code state if a plan document exists.
 *   **3.7. Ensure Robust Solutions:** Confirm plan avoids workarounds, addresses root cause. Assess interacting existing patterns. Prioritize data integrity (treat unexpected missing/invalid data as critical error unless workaround is approved via `Procedure: Handle Necessary Workaround`).
     *   **Mandatory Sub-Procedures (Execute & Report):**
