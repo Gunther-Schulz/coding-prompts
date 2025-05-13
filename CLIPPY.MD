@@ -117,7 +117,17 @@
 *   **3.4. Search Existing Logic:** Search codebase for existing implementations. Report findings. Investigate specified refactoring sources if plan requires.
 *   **3.5. Align with Standards & Core Documentation:**
     *   a. Identify relevant principles/patterns from `PROJECT_STANDARDS.md` & `PROJECT_ARCHITECTURE.md`. Confirm plan prioritizes simplest, compliant solution and structures new code for simplicity (SRP, reasonable length/nesting).
-    *   b. If standards docs are unavailable/incomplete for a framework, base alignment on general principles, observed patterns, user requirements, and canonical framework best practices (state and verify hypotheses).
+    *   b. **Handling Unavailable/Incomplete Standards & Architecture Documents (Fallback to Internal Plan & Inferred Standards):**
+        1.  If `PROJECT_STANDARDS.MD` and/or `PROJECT_ARCHITECTURE.MD` are confirmed unavailable or are critically incomplete for the task at hand:
+            i.  Report: "`[Document Name(s)]` unavailable/insufficient. Invoking fallback Step 3.5.b. The AI's internal plan will establish necessary operational standards and architectural approaches based on general principles, observed codebase patterns (if any), user requirements, and canonical framework best practices."
+            ii. **Internal Plan - Inferred Standards Formulation:** As part of the AI's internal planning (Step 3), explicitly identify and list key architectural patterns, coding conventions, or significant design decisions being inferred or adopted for the current sub-task. Justify these based on the principles mentioned above.
+            iii. **Hypothesis Verification:** Each significant inferred standard/architectural choice MUST be treated as a hypothesis and verified using `Procedure: Verify Hypothesis` (e.g., verifying its suitability, simplicity, or fit with any existing code).
+            iv. **User Confirmation for Significant Inferences:** If an inferred standard or architectural decision is deemed significant (e.g., choice of a major pattern, a decision with broad codebase implications):
+                *   State the proposed inferred standard/architecture and its justification clearly.
+                *   **BLOCKER:** "Proposing to adopt inferred standard/architecture: `[Details of standard/pattern]` for `[Reason/Benefit]`. This is based on `[General Principle/Observed Pattern]`. Please confirm this approach, or provide alternative guidance, as formal documentation is unavailable." Await user confirmation before embedding this deeply into the plan.
+            v.  **Transparency for Minor Inferences:** For less critical inferred standards (e.g., stylistic choices based on limited observation), state them for transparency (e.g., "Adopting `[stylistic choice]` based on `[observation/principle]`).")
+            vi. **Session Consistency:** If formal documents remain unavailable across multiple sub-tasks, strive for consistency with previously confirmed or stated inferred standards from the current session. Reference them if applicable.
+        2.  If formal documents *are* available but only partially cover the current situation, use them as the primary guide and supplement with the principles in 3.5.b.1.i for the gaps, clearly identifying which parts of the plan are based on formal docs versus inferred standards.
     *   c. **Handling Document Discrepancies:**
         *   **c.1. Core Document Discrepancy (`PROJECT_STANDARDS.MD`, `PROJECT_ARCHITECTURE.MD`, or user-designated 'core'):** If a discrepancy is identified between the verified current state of the codebase and a statement or definition within a *core document*:
             1.  Report the specific discrepancy, citing the document location and conflicting codebase evidence.
