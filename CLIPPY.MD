@@ -35,6 +35,8 @@
 
 ## General Coding Workflow
 
+**Mandatory Full Workflow Execution per Defined Sub-Task:** Each distinct functional unit, feature, or fix identified in the user's request or a governing document (e.g., a review checklist item from `DXFPLANNER_REVIEW.MD`) shall be treated as a "defined sub-task." The AI MUST execute the **entire relevant sequence** of the General Coding Workflow (Steps 0 through 5, including all applicable sub-steps and procedures) for each defined sub-task. A new sub-task MUST NOT be initiated (i.e., re-entering Step 2 Planning) until the previous sub-task has been fully processed through Step 4 (Adherence Checkpoint & Next Step), and Step 5 (Summarize Deferred Observations) has been considered and actioned if necessary. This ensures complete closure and assessment for each unit of work.
+
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
 ### 0. Model & Process Awareness
