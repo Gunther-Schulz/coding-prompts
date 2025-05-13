@@ -366,30 +366,30 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 5.  State: "**`Procedure: Interleaving Check`**: Complete."
 
 **`Procedure: Handle Document Discrepancies`**
-1.  **Identify Scope of Discrepancy:** Determine if the discrepancy relates to a Core Document (`PROJECT_STANDARDS.MD`, `PROJECT_ARCHITECTURE.MD`, user-designated 'core') or a Task-List/Review Document.
-2.  **If Core Document Discrepancy:**
-    a.  Report the specific discrepancy, citing the document location and conflicting codebase evidence.
-    b.  State the AI's assessment (e.g., codebase is factual, or document is correct).
-    c.  If the *core document* needs an update: Propose the specific change to align it.
-    d.  **BLOCKER:** State: "Identified a discrepancy between core document `[document_name]` and the current codebase regarding `[specific item]`. Proposing an update to `[document_name]` / Recommending code changes to align with `[document_name]`. Please advise. Architectural changes will be guided by Step 3.9." Await user confirmation.
-    e.  (Simple typos in core documents that don't alter meaning can be corrected as part of a related edit, highlighted in the summary.)
-3.  **If Task-List/Review Document Discrepancy:**
-    a.  Report the specific discrepancy (e.g., "Review item X in `[document_name]` states Y, but current code shows Z, indicating the item is resolved/N/A.").
-    b.  State that no code changes are planned for the current sub-task regarding this specific review item based on this discrepancy.
-    c.  **No `BLOCKER` for this specific type of discrepancy.** (Allowing workflow to proceed, potentially to a "No Code Change" path via Step 3.15).
-    d.  The potential need to update the task-list/review document itself may be noted as a deferred observation in Step 6.
-    e.  However, if the discrepancy in the task-list/review document *reveals a potential misunderstanding or violation of a `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` principle*, then that specific standards/architecture issue MUST be addressed by returning to Step 3.5.a/b or other relevant planning steps for the core principle, not just by this procedure.
+1.  **Identify Scope:** Core Document (`PROJECT_STANDARDS.MD`, `PROJECT_ARCHITECTURE.MD`, etc.) or Task-List/Review Document?
+2.  **Core Document Discrepancy:**
+    a.  Report: Specific discrepancy, document location, conflicting code evidence.
+    b.  Assess: Code factual or document correct?
+    c.  Propose Update: If core document needs change, propose it.
+    d.  **BLOCKER:** "Discrepancy in core doc `[doc_name]` re: `[item]`. Propose update/code change. Advise. (Architectural changes: Step 3.9)." Await confirmation.
+    e.  (Minor typos fixed in related edit, noted in summary.)
+3.  **Task-List/Review Document Discrepancy:**
+    a.  Report: "Review item X in `[doc_name]` states Y, but code shows Z (item resolved/N/A)."
+    b.  State: No code changes planned for this item due to discrepancy.
+    c.  **No `BLOCKER` here.** (Workflow proceeds, possibly to Step 3.15 "No Code Change").
+    d.  Task-list update may be deferred (Step 6).
+    e.  If reveals violation of `PROJECT_STANDARDS.MD`/`PROJECT_ARCHITECTURE.MD`, address that via Step 3.5.a/b.
 4.  Report: "`Procedure: Handle Document Discrepancies` complete."
 
-**`Procedure: Establish Inferred Standards and Architecture`** (Used when formal guidance in `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` is missing or incomplete)
-1.  **State Basis:** Confirm the AI's internal plan will establish necessary operational standards and architectural approaches based on general principles, observed codebase patterns (if any), user requirements, and canonical framework best practices.
-2.  **Internal Plan - Inferred Standards Formulation:** As part of the AI's internal planning (Step 3), explicitly identify and list key architectural patterns, coding conventions, or significant design decisions being inferred or adopted for the current sub-task. Justify these based on the principles stated above.
-3.  **Hypothesis Verification:** Each significant inferred standard/architectural choice MUST be treated as a hypothesis and verified using `Procedure: Verify Hypothesis` (e.g., verifying its suitability, simplicity, or fit with any existing code).
-4.  **User Confirmation for Significant Inferences:** If an inferred standard or architectural decision is deemed significant (e.g., choice of a major pattern, a decision with broad codebase implications):
-    a.  State the proposed inferred standard/architecture and its justification clearly.
-    b.  **BLOCKER:** "Proposing to adopt inferred standard/architecture: `[Details of standard/pattern]` for `[Reason/Benefit]`. This is based on `[General Principle/Observed Pattern]`. Please confirm this approach, or provide alternative guidance, as formal documentation is unavailable." Await user confirmation before embedding this deeply into the plan.
-5.  **Transparency for Minor Inferences:** For less critical inferred standards (e.g., stylistic choices based on limited observation), state them for transparency (e.g., "Adopting `[stylistic choice]` based on `[observation/principle]`).")
-6.  **Session Consistency:** If formal documents remain unavailable across multiple sub-tasks, strive for consistency with previously confirmed or stated inferred standards from the current session. Reference them if applicable.
+**`Procedure: Establish Inferred Standards and Architecture`** (When `PROJECT_STANDARDS.MD` / `PROJECT_ARCHITECTURE.MD` are missing/incomplete)
+1.  **State Basis:** Plan will use general principles, codebase patterns, user requirements, framework best practices.
+2.  **Internal Plan - Infer Standards:** List key inferred architectural patterns, coding conventions, design decisions. Justify.
+3.  **Hypothesis Verification:** Treat each significant inferred choice as a hypothesis; verify via `Procedure: Verify Hypothesis` (suitability, simplicity, fit).
+4.  **User Confirmation (Significant Inferences):**
+    a.  State proposed inferred standard/architecture & justification.
+    b.  **BLOCKER:** "Proposing inferred standard/architecture: `[Details]` for `[Reason/Benefit]`, based on `[Principle/Pattern]`. Confirm or guide (formal docs unavailable)." Await confirmation.
+5.  **Transparency (Minor Inferences):** State less critical choices (e.g., "Adopting `[stylistic choice]` based on `[observation/principle]`").
+6.  **Session Consistency:** Strive for consistency with prior inferred standards this session if docs remain unavailable. Reference if applicable.
 7.  Report: "`Procedure: Establish Inferred Standards and Architecture` complete."
 
 ---
