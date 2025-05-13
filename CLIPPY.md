@@ -360,128 +360,128 @@ When responding to user requests involving code analysis, planning, or modificat
 *   *If you aimed to insert a simple log statement, but the diff also introduces new helper functions or complex conditional blocks, this is a critical tool failure.*
 In all such cases where the tool's changes significantly exceed or deviate from the precise, narrow intent, it must be treated as a tool misapplication, even if some unintended changes seem minor. **This includes being skeptical of what the diff *doesn't* show. If an intended change, such as a deletion, is not explicitly confirmed by the diff, assume it may not have happened and verify directly (see `Procedure: Verify Diff`, Step 7).**
 
-    #### 4.1 Generate Proposed `code_edit` Diff Text
-    *   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the AI's planned transformation instructions) and associated `instructions`.
-        *   Apply `Procedure: Prepare Robust Edit Tool Input` (Section 4) for guidelines on constructing the `code_edit` string and `instructions` field.
-        *   **Output of this Step (Literal Text Presentation):** The AI **MUST** output the *literal text content* of the formulated `code_edit` string and the `instructions` string directly in its response.
-        *   The AI **MUST** conclude its textual output for Step 4.1 with the statement: "Step 4.1: The above `code_edit` proposal for `[filename]` (and its `instructions`) has been formulated. This represents my planned transformation and is now internally staged. The file's actual content currently remains unchanged. **No tool call (`edit_file` or `reapply`) has been made or will be made as part of this Step 4.1 output.** I will now immediately prepare the textual output for Step 4.2 (Pre-Apply Verification), which will directly follow this message in the same continuous AI response turn. Only after Step 4.2 is fully reported will Step 4.3 (Apply Edit) be considered."
-        *   This step, Step 4.1, **ABSOLUTELY AND NON-NEGOTIABLY ONLY** involves formulating and presenting the `code_edit` text content and `instructions` text for subsequent verification. Under **NO CIRCUMSTANCES** will the AI call `edit_file` or `reapply` during Step 4.1. The physical act of modifying the file via a tool call occurs **exclusively** in Step 4.3, and only after the successful completion and full textual reporting of Step 4.2.
-        *   **CRITICAL AI STATE MANAGEMENT:** The generation and presentation of the `code_edit` text in this step is a *proposal for the AI's own verification process*. The AI **MUST NOT** internally register this action or its content as an actual modification to the file state. The AI's internal understanding of the file's content **MUST** remain based on the last actual read or confirmed edit application. This staged proposal is NOT the file's current state.
+#### 4.1 Generate Proposed `code_edit` Diff Text
+*   **Action:** Based on the verified plan from Step 3, formulate the `code_edit` content (the AI's planned transformation instructions) and associated `instructions`.
+    *   Apply `Procedure: Prepare Robust Edit Tool Input` (Section 4) for guidelines on constructing the `code_edit` string and `instructions` field.
+    *   **Output of this Step (Literal Text Presentation):** The AI **MUST** output the *literal text content* of the formulated `code_edit` string and the `instructions` string directly in its response.
+    *   The AI **MUST** conclude its textual output for Step 4.1 with the statement: "Step 4.1: The above `code_edit` proposal for `[filename]` (and its `instructions`) has been formulated. This represents my planned transformation and is now internally staged. The file's actual content currently remains unchanged. **No tool call (`edit_file` or `reapply`) has been made or will be made as part of this Step 4.1 output.** I will now immediately prepare the textual output for Step 4.2 (Pre-Apply Verification), which will directly follow this message in the same continuous AI response turn. Only after Step 4.2 is fully reported will Step 4.3 (Apply Edit) be considered."
+    *   This step, Step 4.1, **ABSOLUTELY AND NON-NEGOTIABLY ONLY** involves formulating and presenting the `code_edit` text content and `instructions` text for subsequent verification. Under **NO CIRCUMSTANCES** will the AI call `edit_file` or `reapply` during Step 4.1. The physical act of modifying the file via a tool call occurs **exclusively** in Step 4.3, and only after the successful completion and full textual reporting of Step 4.2.
+    *   **CRITICAL AI STATE MANAGEMENT:** The generation and presentation of the `code_edit` text in this step is a *proposal for the AI's own verification process*. The AI **MUST NOT** internally register this action or its content as an actual modification to the file state. The AI's internal understanding of the file's content **MUST** remain based on the last actual read or confirmed edit application. This staged proposal is NOT the file's current state.
 
-    #### 4.2 Pre-Apply Verification (Mandatory Before 4.3)
-    *   **Initiation and Output:** **Continuing this single AI response turn, immediately after providing the complete textual output for Step 4.1,** the AI **MUST** autonomously execute this Step 4.2 (Pre-Apply Verification), unless a `BLOCKER` from Step 3 has halted the process. All actions and reporting required by Step 4.2 (including the execution of `Procedure: Verify Diff` and the Pre-Edit Confirmation Statement) **MUST** be fully completed and presented as text in this same continuous AI response turn *before* any part of Step 4.3 (including the `edit_file` or `reapply` tool call) is initiated or even formulated. **Step 4.2 is strictly a verification and reporting step; NO TOOL CALLS that modify files (`edit_file`, `reapply`) are permitted within Step 4.2.** **There MUST NOT be a pause or user turn break between completing the textual output for Step 4.1 and beginning the textual output for Step 4.2.**
-    *   **Note on Diff Verification in Step 4.2:** The `Procedure: Verify Diff` executed in Step 4.2.1.b is performed on the *AI's internally formulated `code_edit` string (from Step 4.1)*, which represents the *intended* changes (and may be visually presented by the AI as a diff). This is a pre-application review of the *AI's plan for the edit* against the overall plan from Step 3. The `edit_file` tool does not provide a separate diff preview before execution. The verification of the *actually applied diff* (returned by the `edit_file` tool) occurs in Step 4.4.
-    *   The following verification steps **MUST** be successfully completed and reported *before* proceeding to Step 4.3 (Apply Edit).
-    *   **Purpose:** To meticulously scrutinize the *internally staged `code_edit` (formulated in Step 4.1 and potentially visualized as a diff by the AI)* against the verified plan *before* calling the `edit_file` tool.
-    *   **Mandate:** **DO NOT SKIP OR RUSH.** Treat proposed diffs skeptically.
-    *   **Action:** Perform the following checks on the `code_edit` content that was formulated and presented in Step 4.1:
+#### 4.2 Pre-Apply Verification (Mandatory Before 4.3)
+*   **Initiation and Output:** **Continuing this single AI response turn, immediately after providing the complete textual output for Step 4.1,** the AI **MUST** autonomously execute this Step 4.2 (Pre-Apply Verification), unless a `BLOCKER` from Step 3 has halted the process. All actions and reporting required by Step 4.2 (including the execution of `Procedure: Verify Diff` and the Pre-Edit Confirmation Statement) **MUST** be fully completed and presented as text in this same continuous AI response turn *before* any part of Step 4.3 (including the `edit_file` or `reapply` tool call) is initiated or even formulated. **Step 4.2 is strictly a verification and reporting step; NO TOOL CALLS that modify files (`edit_file`, `reapply`) are permitted within Step 4.2.** **There MUST NOT be a pause or user turn break between completing the textual output for Step 4.1 and beginning the textual output for Step 4.2.**
+*   **Note on Diff Verification in Step 4.2:** The `Procedure: Verify Diff` executed in Step 4.2.1.b is performed on the *AI's internally formulated `code_edit` string (from Step 4.1)*, which represents the *intended* changes (and may be visually presented by the AI as a diff). This is a pre-application review of the *AI's plan for the edit* against the overall plan from Step 3. The `edit_file` tool does not provide a separate diff preview before execution. The verification of the *actually applied diff* (returned by the `edit_file` tool) occurs in Step 4.4.
+*   The following verification steps **MUST** be successfully completed and reported *before* proceeding to Step 4.3 (Apply Edit).
+*   **Purpose:** To meticulously scrutinize the *internally staged `code_edit` (formulated in Step 4.1 and potentially visualized as a diff by the AI)* against the verified plan *before* calling the `edit_file` tool.
+*   **Mandate:** **DO NOT SKIP OR RUSH.** Treat proposed diffs skeptically.
+*   **Action:** Perform the following checks on the `code_edit` content that was formulated and presented in Step 4.1:
 
-        `4.2.1` **Perform Granular Final Review & Deviation Handling Loop (Pre-Edit):**
-            *   **WARNING:** AI model may add unrequested lines.
-            *   `a.` **Summarize Pre-Edit Context:** Briefly summarize relevant existing code structure from recent `read_file` calls.
-            *   `b.` **Perform Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *staged `code_edit` (formulated in Step 4.1 and representing the AI's planned transformation, potentially visually presented as a diff by the AI)*. The 'intent' for this verification is the plan established in Step 3. **The execution of `Procedure: Verify Diff` MUST be reported using the multi-line checklist format detailed in that procedure's "Execution Reporting" section and example.**
-            *   `d.` **Verify Generated Code Conciseness:**
-                *   **Action:** Review any newly generated functions or methods within the proposed `code_edit` diff against the "Function/Method Conciseness" standard defined in `PROJECT_STANDARDS.MD`.
-                *   **Check:** Specifically assess if any new function/method is overly long, has excessive nesting, or handles too many responsibilities.
-                *   **Handle Violation:** If a violation is found:
-                    i.  **MUST NOT** proceed with the current `code_edit`.
-                    ii. **MUST** explicitly state that the generated code violates the conciseness standard.
-                    iii.**MUST** revise the plan (return to Step 3) to decompose the logic into smaller, compliant functions/methods.
-                    iv. **MUST** then re-execute Step 4.1 to generate a new, compliant `code_edit` diff.
-                *   **Report:** Confirm this check was performed and whether any revisions were necessary due to it.
+    `4.2.1` **Perform Granular Final Review & Deviation Handling Loop (Pre-Edit):**
+        *   **WARNING:** AI model may add unrequested lines.
+        *   `a.` **Summarize Pre-Edit Context:** Briefly summarize relevant existing code structure from recent `read_file` calls.
+        *   `b.` **Perform Diff Verification:** **MUST** execute `Procedure: Verify Diff` (Section 4) on the *staged `code_edit` (formulated in Step 4.1 and representing the AI's planned transformation, potentially visually presented as a diff by the AI)*. The 'intent' for this verification is the plan established in Step 3. **The execution of `Procedure: Verify Diff` MUST be reported using the multi-line checklist format detailed in that procedure's "Execution Reporting" section and example.**
+        *   `d.` **Verify Generated Code Conciseness:**
+            *   **Action:** Review any newly generated functions or methods within the proposed `code_edit` diff against the "Function/Method Conciseness" standard defined in `PROJECT_STANDARDS.MD`.
+            *   **Check:** Specifically assess if any new function/method is overly long, has excessive nesting, or handles too many responsibilities.
+            *   **Handle Violation:** If a violation is found:
+                i.  **MUST NOT** proceed with the current `code_edit`.
+                ii. **MUST** explicitly state that the generated code violates the conciseness standard.
+                iii.**MUST** revise the plan (return to Step 3) to decompose the logic into smaller, compliant functions/methods.
+                iv. **MUST** then re-execute Step 4.1 to generate a new, compliant `code_edit` diff.
+            *   **Report:** Confirm this check was performed and whether any revisions were necessary due to it.
 
-        `4.2.2` **Generate Pre-Edit Confirmation Statement:** Before proceeding to 4.3, **MUST** provide brief statement confirming 4.2.1 checks (Context Summary and Diff Verification of the staged proposal), **mentioning explicit verification of key assumptions/dependencies** and logic preservation if applicable.
-            *   *Example (Refactoring): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on the staged proposal (from Step 4.1) against plan (Outcome: Verified, no deviations). Key assumption 'API X' verified (Outcome: Confirmed). Logic Preservation: Confirmed plan preserves behavior. Proceeding to Apply Edit (4.3)."*
-            *   *Example (Deviation Handling): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on the staged proposal (from Step 4.1) against plan (Outcome: Verified, deviations handled - reported in `Procedure: Handle Deviation`). Key assumption 'Model Y' verified (Outcome: Confirmed). Logic Preservation: N/A. Proceeding to Apply Edit (4.3)."*
+    `4.2.2` **Generate Pre-Edit Confirmation Statement:** Before proceeding to 4.3, **MUST** provide brief statement confirming 4.2.1 checks (Context Summary and Diff Verification of the staged proposal), **mentioning explicit verification of key assumptions/dependencies** and logic preservation if applicable.
+        *   *Example (Refactoring): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on the staged proposal (from Step 4.1) against plan (Outcome: Verified, no deviations). Key assumption 'API X' verified (Outcome: Confirmed). Logic Preservation: Confirmed plan preserves behavior. Proceeding to Apply Edit (4.3)."*
+        *   *Example (Deviation Handling): "**Step 4.2: Pre-Apply Verification:** Complete. Context summarized. `Procedure: Verify Diff` executed on the staged proposal (from Step 4.1) against plan (Outcome: Verified, deviations handled - reported in `Procedure: Handle Deviation`). Key assumption 'Model Y' verified (Outcome: Confirmed). Logic Preservation: N/A. Proceeding to Apply Edit (4.3)."*
 
-    #### 4.3 Apply Edit (After Successful 4.2)
-    *   **Initiation and Output:** After the successful completion and full textual reporting of Step 4.2 (Pre-Apply Verification) *within the current AI response turn*, the AI **MUST** then, as the next part of the same continuous AI response, initiate Step 4.3. The AI **MUST** first report: "Step 4.3: Applying the verified staged edit to `[filename]`." followed immediately by the tool call for `edit_file` or `reapply` using the verified staged `code_edit` and `instructions` from Step 4.1.
+#### 4.3 Apply Edit (After Successful 4.2)
+*   **Initiation and Output:** After the successful completion and full textual reporting of Step 4.2 (Pre-Apply Verification) *within the current AI response turn*, the AI **MUST** then, as the next part of the same continuous AI response, initiate Step 4.3. The AI **MUST** first report: "Step 4.3: Applying the verified staged edit to `[filename]`." followed immediately by the tool call for `edit_file` or `reapply` using the verified staged `code_edit` and `instructions` from Step 4.1.
 
-    #### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
-    *   **CRITICAL INSTRUCTION FOR AI:** Upon receiving the result from the tool call in Step 4.3, you **MUST** conceptually discard your memory of the *proposed `code_edit` text* from Step 4.1. Your entire analysis in Step 4.4 **MUST** be based *exclusively* on the **actual diff content provided in the output of the `edit_file` or `reapply` tool call from Step 4.3.** Do not refer back to the proposal from Step 4.1 except where `Procedure: Verify Edit File Diff` explicitly requires comparing the applied diff *to* that verified proposal (from Step 4.2). The primary object of scrutiny now is the *tool's reported action*.
-    *   **Purpose:** To meticulously verify the **actual diff resulting from the tool's execution in Step 4.3**, as reported in the tool's output. This diff reflects what was *actually applied* to the file, which may differ from the original proposal.
-    *   **Action:** After a successful `edit_file` or `reapply` call result, **using ONLY the diff provided in the tool's output from Step 4.3**, explicitly check and report the outcome of each of the following:
+#### 4.4 Post-Apply Verification (Mandatory After 4.3 Tool Call Result)
+*   **CRITICAL INSTRUCTION FOR AI:** Upon receiving the result from the tool call in Step 4.3, you **MUST** conceptually discard your memory of the *proposed `code_edit` text* from Step 4.1. Your entire analysis in Step 4.4 **MUST** be based *exclusively* on the **actual diff content provided in the output of the `edit_file` or `reapply` tool call from Step 4.3.** Do not refer back to the proposal from Step 4.1 except where `Procedure: Verify Edit File Diff` explicitly requires comparing the applied diff *to* that verified proposal (from Step 4.2). The primary object of scrutiny now is the *tool's reported action*.
+*   **Purpose:** To meticulously verify the **actual diff resulting from the tool's execution in Step 4.3**, as reported in the tool's output. This diff reflects what was *actually applied* to the file, which may differ from the original proposal.
+*   **Action:** After a successful `edit_file` or `reapply` call result, **using ONLY the diff provided in the tool's output from Step 4.3**, explicitly check and report the outcome of each of the following:
 
-        `4.4.1` **Verify Edit Application:**
-            *   `a.` Post-Reapply Verification:** ** **CRITICAL:** If modification resulted from `reapply`:
-                *   **Perform `Procedure: Verify Reapply Diff` (Section 4)**. This involves treating the **diff from the `reapply` tool's output** as new, re-performing full pre-edit verification (equivalent to Step 4.2.1 checks, using the `Procedure: Verify Diff` on the reapply tool's diff) on the applied diff, explicitly handling deviations, and logging confirmation.
-            *   `b.` Post-edit_file Verification:** ** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
-                *   **WARNING:** Treat **Diff Output from the `edit_file` tool** with Extreme Skepticism.
-                *   **Perform `Procedure: Verify Edit File Diff` (Section 4)**. This includes: comparing the **diff from the `edit_file` tool's output** against the final proposal from Step 4.2 (the AI's `code_edit` plan after its internal verification), semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
-            *   `c.` No Introduced Redundancy:** ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
+    `4.4.1` **Verify Edit Application:**
+        *   `a.` Post-Reapply Verification:** ** **CRITICAL:** If modification resulted from `reapply`:
+            *   **Perform `Procedure: Verify Reapply Diff` (Section 4)**. This involves treating the **diff from the `reapply` tool's output** as new, re-performing full pre-edit verification (equivalent to Step 4.2.1 checks, using the `Procedure: Verify Diff` on the reapply tool's diff) on the applied diff, explicitly handling deviations, and logging confirmation.
+        *   `b.` Post-edit_file Verification:** ** **CRITICAL:** For diffs from standard `edit_file` (not `reapply`):
+            *   **WARNING:** Treat **Diff Output from the `edit_file` tool** with Extreme Skepticism.
+            *   **Perform `Procedure: Verify Edit File Diff` (Section 4)**. This includes: comparing the **diff from the `edit_file` tool's output** against the final proposal from Step 4.2 (the AI's `code_edit` plan after its internal verification), semantic spot-check, **mandatory** dependency re-verification (`Procedure: Verify Dependency Reference`, Section 4), context line check, final logic preservation validation, and discrepancy handling.
+        *   `c.` No Introduced Redundancy:** ** Check for duplicate logic, unnecessary checks, redundant mappings Remove if found.
 
-        `4.4.2` **Check for Leftover Code & Dependencies:**
-            *   `a.`  Confirm Absence of Leftover Code/Comments: ** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
-            *   `b.`  Verify Downstream Consumers & Cleanup: **
-                i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, **trigger self-correction (4.4.3)**.
-                ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST trigger self-correction (4.4.3)**.
-                iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
+    `4.4.2` **Check for Leftover Code & Dependencies:**
+        *   `a.`  Confirm Absence of Leftover Code/Comments: ** **MUST** verify that no old code remains commented out and that temporary/AI process comments have been removed.
+        *   `b.`  Verify Downstream Consumers & Cleanup: **
+            i.  **Dependency Re-verification:** **RE-VERIFICATION:** For changes involving modified/added interfaces, paths, symbols, or core models, **explicitly state re-verification is being performed**, **re-execute the codebase search (`grep_search`)** from planning (Step 3.4.1), and report findings to confirm all dependents were updated or unaffected. **Do not rely solely on initial planning search.** If missed updates found, **trigger self-correction (4.4.3)**.
+            ii. **Verification of Deletion:** **CRITICAL (AFTER `delete_file`):** Confirm removal by searching for dangling references (absolute path fragment, relative references). **Report search strategies and outcome.** If lingering references found, **MUST trigger self-correction (4.4.3)**.
+            iii.**Functional Check:** Confirm consumers still function as expected (via analysis, suggesting tests if available).
 
-        `4.4.3` **Self-Correct if Necessary:**
-            *   `a.` Trigger:** If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues, **or the introduction of new errors/regressions in any part of the edited file, even if unrelated to the primary planned change.** Also triggered by specific missed mandatory steps (see below).
-            *   `b.` Action:**
-                a.  **STOP** proceeding with flawed logic/state. State the issue discovered.
-                b. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch.").
-                c.**Triggers for Self-Correction (STOP and Address):**
-                    a.  **Missed mandatory immediate verification for a stated hypothesis (Step 3.4.1.b / `Procedure: Verify Hypothesis`) during the preceding planning phase.**
-                    b.  Missed mandatory Pre-Edit Verification (4.2.1), Post-Reapply Verification (4.4.1.a), Post-Edit File Verification (4.4.1.b), or Dependency Re-verification (4.4.2.b.i).
-                    c.  Missed mandatory Post-Action Verification Summary (4.4.3) for the preceding edit.
-                    d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.9 / `Procedure: Handle Architectural Decisions`).
-                    e.  Any other missed mandatory step, check, reporting, or verification from this document.
-                    f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
-                    g.  **Trigger: Tool Reports "No Changes Made" Inappropriately.**
-                        *   **Condition:** `edit_file` or `reapply` tool reports "no changes were made," but the AI's active plan intended a modification (e.g., deleting specific lines, adding specific lines) to `[filename]`.
-                        *   **Action Sequence:**
-                            1.  **State Issue:** Announce: "Tool (`edit_file`/`reapply`) reported 'no changes were made' to `[filename]`, contrary to the plan which intended a modification."
-                            2.  **Verify File State:**
-                                *   **MUST** re-read the relevant section(s) of `[filename]` (using `read_file`, full read if appropriate and allowed per `Procedure: Ensure Sufficient File Context` Step 2 constraints).
-                                *   **MUST** compare the current file content with the *specific intended modification*.
-                            3.  **Analyze Verification Result:**
-                                *   **Path 1: Change IS Present:**
-                                    *   Report: "Verification of `[filename]` shows the intended change is already present. The tool's 'no changes made' report was accurate in this instance as the file was already in the desired state regarding this specific planned modification."
-                                    *   Action: Consider this specific part of the edit plan successfully completed. Proceed with the workflow (e.g., to Step 4.5 for this item, or to the next planned edit if part of a sequence).
-                                *   **Path 2: Change IS NOT Present:**
-                                    *   Report: "Verification of `[filename]` confirms the intended change is still absent."
-                                    *   Action: Proceed to "Attempt Corrective Edit Strategy" (Step 4.4.3.c.g.4 below).
-                            4.  **Attempt Corrective Edit Strategy (Only if change is confirmed absent per 4.4.3.c.g.3 Path 2):**
-                                *   **Hypothesize Cause:** Briefly state a hypothesis for the tool's failure (e.g., "Hypothesis: `code_edit` for `[filename]` had insufficient context/anchoring, or there's an internal diffing logic issue by the tool.").
-                                *   **Corrective Action: Granular Edit Attempt:**
-                                    i.  **Plan Revision:** Revise the plan to break down the original intended (and now confirmed absent) change for `[filename]` into *smaller, more granular `code_edit` operations*. Each granular piece should be as small as logically possible.
-                                    ii. **Execute First Granular Piece:** Re-attempt the edit cycle (Steps 4.1 through 4.5) for the *first* of these smaller granular pieces for `[filename]`.
-                                    iii.**Iterate or Escalate for Subsequent Granular Pieces:**
-                                        *   If a granular piece is applied successfully (verified through a full 4.1-4.5 cycle for that piece), proceed to attempt the next granular piece for `[filename]`.
-                                        *   If any granular edit attempt for `[filename]` also results in "no changes made" (after re-verification per 4.4.3.c.g.2-3 for that granular piece), OR if the overall set of granular changes for the original intended modification cannot be completed successfully after a maximum of two (2) "no changes made" failures for *any specific granular piece*, or a total of three (3) such failures across *all* granular pieces for the original intended modification for `[filename]`:
-                                            *   State: "Granular edit strategy also failed to apply the intended changes to `[filename]` after [number] attempts."
-                                            *   **MUST** proceed to `Procedure: Request Manual Edit` (Section 5), explaining the original goal, the history of "no changes made" errors (including for granular attempts), and the strategies attempted.
+    `4.4.3` **Self-Correct if Necessary:**
+        *   `a.` Trigger:** If reviews (4.2.1, 4.4.1, 4.4.2) reveal violations, incorrect application, redundancy, or leftover cleanup issues, **or the introduction of new errors/regressions in any part of the edited file, even if unrelated to the primary planned change.** Also triggered by specific missed mandatory steps (see below).
+        *   `b.` Action:**
+            a.  **STOP** proceeding with flawed logic/state. State the issue discovered.
+            b. **MUST** explicitly state flaw** based on standard/process (e.g., "Workaround violated standards." or "Applied diff mismatch.").
+            c.**Triggers for Self-Correction (STOP and Address):**
+                a.  **Missed mandatory immediate verification for a stated hypothesis (Step 3.4.1.b / `Procedure: Verify Hypothesis`) during the preceding planning phase.**
+                b.  Missed mandatory Pre-Edit Verification (4.2.1), Post-Reapply Verification (4.4.1.a), Post-Edit File Verification (4.4.1.b), or Dependency Re-verification (4.4.2.b.i).
+                c.  Missed mandatory Post-Action Verification Summary (4.4.3) for the preceding edit.
+                d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.9 / `Procedure: Handle Architectural Decisions`).
+                e.  Any other missed mandatory step, check, reporting, or verification from this document.
+                f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
+                g.  **Trigger: Tool Reports "No Changes Made" Inappropriately.**
+                    *   **Condition:** `edit_file` or `reapply` tool reports "no changes were made," but the AI's active plan intended a modification (e.g., deleting specific lines, adding specific lines) to `[filename]`.
+                    *   **Action Sequence:**
+                        1.  **State Issue:** Announce: "Tool (`edit_file`/`reapply`) reported 'no changes were made' to `[filename]`, contrary to the plan which intended a modification."
+                        2.  **Verify File State:**
+                            *   **MUST** re-read the relevant section(s) of `[filename]` (using `read_file`, full read if appropriate and allowed per `Procedure: Ensure Sufficient File Context` Step 2 constraints).
+                            *   **MUST** compare the current file content with the *specific intended modification*.
+                        3.  **Analyze Verification Result:**
+                            *   **Path 1: Change IS Present:**
+                                *   Report: "Verification of `[filename]` shows the intended change is already present. The tool's 'no changes made' report was accurate in this instance as the file was already in the desired state regarding this specific planned modification."
+                                *   Action: Consider this specific part of the edit plan successfully completed. Proceed with the workflow (e.g., to Step 4.5 for this item, or to the next planned edit if part of a sequence).
+                            *   **Path 2: Change IS NOT Present:**
+                                *   Report: "Verification of `[filename]` confirms the intended change is still absent."
+                                *   Action: Proceed to "Attempt Corrective Edit Strategy" (Step 4.4.3.c.g.4 below).
+                        4.  **Attempt Corrective Edit Strategy (Only if change is confirmed absent per 4.4.3.c.g.3 Path 2):**
+                            *   **Hypothesize Cause:** Briefly state a hypothesis for the tool's failure (e.g., "Hypothesis: `code_edit` for `[filename]` had insufficient context/anchoring, or there's an internal diffing logic issue by the tool.").
+                            *   **Corrective Action: Granular Edit Attempt:**
+                                i.  **Plan Revision:** Revise the plan to break down the original intended (and now confirmed absent) change for `[filename]` into *smaller, more granular `code_edit` operations*. Each granular piece should be as small as logically possible.
+                                ii. **Execute First Granular Piece:** Re-attempt the edit cycle (Steps 4.1 through 4.5) for the *first* of these smaller granular pieces for `[filename]`.
+                                iii.**Iterate or Escalate for Subsequent Granular Pieces:**
+                                    *   If a granular piece is applied successfully (verified through a full 4.1-4.5 cycle for that piece), proceed to attempt the next granular piece for `[filename]`.
+                                    *   If any granular edit attempt for `[filename]` also results in "no changes made" (after re-verification per 4.4.3.c.g.2-3 for that granular piece), OR if the overall set of granular changes for the original intended modification cannot be completed successfully after a maximum of two (2) "no changes made" failures for *any specific granular piece*, or a total of three (3) such failures across *all* granular pieces for the original intended modification for `[filename]`:
+                                        *   State: "Granular edit strategy also failed to apply the intended changes to `[filename]` after [number] attempts."
+                                        *   **MUST** proceed to `Procedure: Request Manual Edit` (Section 5), explaining the original goal, the history of "no changes made" errors (including for granular attempts), and the strategies attempted.
 
-                d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action. **This corrective action MUST aim to restore the overall integrity and correctness of the file, addressing both deviations from the planned change AND any new issues introduced by the edit tool.** If the file's state is a result of the edit tool making unintended modifications to unrelated code, the primary goal of the self-correction is to achieve the user's intended change *without* these unintended side-effects, or to clean up those side-effects if the intended change is already present.
-                e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
-                    Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
-                    i.  **Persistent Correction Failure:** Repeated attempts (e.g., >3 attempts for the same planned logical change to a specific file section, or if **multiple `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome without significant unintended side-effects, AND the AI assesses that further autonomous attempts with its current understanding or available strategies are unlikely to succeed.**
-                    ) to apply a *necessary and planned correction* fail **(SUGGESTION 4 STARTS HERE)** (especially if the failed edits involve large structural block movements or changes in files known to be particularly complex or sensitive, and the `edit_file` tool consistently fails to place these accurately). **(SUGGESTION 4 ENDS HERE)** If this occurs, the current planned edit is considered **blocked**. The AI **MUST** clearly state this blockage, detailing the failed attempts and strategies (e.g., granular edits). The AI will then complete Step 4.4.3 (Self-Correct) for this blocked attempt, generate the Post-Action Verification Summary (Step 4.5) noting the blocked status, and then proceed to Step 5. The expectation is that Step 5.b will determine the overarching task is incomplete and lead to re-planning in Step 3. (Instruction for Step 3: If re-planning, potentially including a refactoring phase, also leads to subsequent persistent correction failures for the same underlying logical goal, *then* Step 3 will be responsible for escalating to `Procedure: Request Manual Edit`.)
-                    ii. **Grossly Disproportionate or Corrupting Unintended Modifications:** If a single `edit_file` or `reapply` application, particularly for an edit with a very narrow and specific intent (e.g., adding a few specific lines, fixing a typo, simple refactoring of a small block), results in modifications that are grossly disproportionate to the intent or fundamentally corrupt the file's structure or syntax in unintended ways. This includes, but is not limited to:
-                        *   Deletion or alteration of large code blocks unrelated to the direct target of the edit.
-                        *   Widespread reordering of code.
-                        *   Introduction of syntax errors or significant logical errors into previously correct and unrelated sections of the file.
-                        If an immediate attempt to create a highly targeted `code_edit` to *only revert the unintended corruptions* (while preserving the intended change if it was partially applied correctly) also fails or leads to further significant errors, OR if the *same pattern* of disruptive modification occurs on a second consecutive attempt on the same file for the same overall task, then proceed to `Procedure: Request Manual Edit`. The goal is to avoid lengthy, unpredictable self-correction loops when the editing tool demonstrates a fundamental misunderstanding of the file structure or edit boundaries for a specific, narrow task.
-                    This involves a **BLOCKER:** step.
+            d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action. **This corrective action MUST aim to restore the overall integrity and correctness of the file, addressing both deviations from the planned change AND any new issues introduced by the edit tool.** If the file's state is a result of the edit tool making unintended modifications to unrelated code, the primary goal of the self-correction is to achieve the user's intended change *without* these unintended side-effects, or to clean up those side-effects if the intended change is already present.
+            e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
+                Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
+                i.  **Persistent Correction Failure:** Repeated attempts (e.g., >3 attempts for the same planned logical change to a specific file section, or if **multiple `edit_file`/`reapply` attempts for a single planned change fail to produce the desired, verified outcome without significant unintended side-effects, AND the AI assesses that further autonomous attempts with its current understanding or available strategies are unlikely to succeed.**
+                ) to apply a *necessary and planned correction* fail **(SUGGESTION 4 STARTS HERE)** (especially if the failed edits involve large structural block movements or changes in files known to be particularly complex or sensitive, and the `edit_file` tool consistently fails to place these accurately). **(SUGGESTION 4 ENDS HERE)** If this occurs, the current planned edit is considered **blocked**. The AI **MUST** clearly state this blockage, detailing the failed attempts and strategies (e.g., granular edits). The AI will then complete Step 4.4.3 (Self-Correct) for this blocked attempt, generate the Post-Action Verification Summary (Step 4.5) noting the blocked status, and then proceed to Step 5. The expectation is that Step 5.b will determine the overarching task is incomplete and lead to re-planning in Step 3. (Instruction for Step 3: If re-planning, potentially including a refactoring phase, also leads to subsequent persistent correction failures for the same underlying logical goal, *then* Step 3 will be responsible for escalating to `Procedure: Request Manual Edit`.)
+                ii. **Grossly Disproportionate or Corrupting Unintended Modifications:** If a single `edit_file` or `reapply` application, particularly for an edit with a very narrow and specific intent (e.g., adding a few specific lines, fixing a typo, simple refactoring of a small block), results in modifications that are grossly disproportionate to the intent or fundamentally corrupt the file's structure or syntax in unintended ways. This includes, but is not limited to:
+                    *   Deletion or alteration of large code blocks unrelated to the direct target of the edit.
+                    *   Widespread reordering of code.
+                    *   Introduction of syntax errors or significant logical errors into previously correct and unrelated sections of the file.
+                    If an immediate attempt to create a highly targeted `code_edit` to *only revert the unintended corruptions* (while preserving the intended change if it was partially applied correctly) also fails or leads to further significant errors, OR if the *same pattern* of disruptive modification occurs on a second consecutive attempt on the same file for the same overall task, then proceed to `Procedure: Request Manual Edit`. The goal is to avoid lengthy, unpredictable self-correction loops when the editing tool demonstrates a fundamental misunderstanding of the file structure or edit boundaries for a specific, narrow task.
+                This involves a **BLOCKER:** step.
 
-    #### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
-    *   `a.` Trigger:** Immediately following the *final* successful verification (Step 4.4) for the task's edits.
-    *   `b.` Action:** **MUST** generate a **Post-Action Verification Summary**. Confirms post-apply checks were **performed and documented**. Structure using the following format. Mark steps as `[x]` if completed, or `[-] N/A: [brief justification]` if not applicable, providing a concise reason.
-        ```markdown
-        **Post-Action Verification Summary:**
-        - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.4.1.a (if `reapply`), **4.4.1.b (via `Procedure: Verify Edit File Diff`, Section 4)**, 4.4.1.c (redundancy) done. State: 'Applied diff matches final intent.' OR 'Applied diff discrepancies: [List/Justification].'.]*
-        - `[x/-] 2. Leftover Code & Dependency Analysis:` *[Brief confirm check **4.4.2.a (artifacts)** and **4.4.2.b (explicit dependency re-verification/deletion checks)** done. Outcome: e.g., "Cleanup OK", "Re-verification confirmed no missed updates".]*
-        - `[x/-] 3. Correction Assessment:` *[Brief confirm check 4.4.3 performed. State if corrections were needed/made. Mark `[x]` if checked & OK, `[-]` if N/A.]*
-        - `[x] 4. Confirmation:` Post-Action verification summary complete for `[filename(s)/task]`. *(Always `[x]`)*
-        - `[x/-] 5. Full File Read Verification:` *[Brief confirm checks per Proc: Ensure Sufficient File Context Step 3 performed for any `should_read_entire_file=true` calls in this action phase (e.g., post-manual edit). Outcome: e.g., 'All verified complete'. Mark `[-]` if N/A.]*
-        ```
-        *(Note: This summary serves as mandatory proof that post-action verifications were completed autonomously. Explicit justification is required for any step marked N/A.)*
+#### 4.5 Generate Post-Action Verification Summary (After Successful 4.4)
+*   `a.` Trigger:** Immediately following the *final* successful verification (Step 4.4) for the task's edits.
+*   `b.` Action:** **MUST** generate a **Post-Action Verification Summary**. Confirms post-apply checks were **performed and documented**. Structure using the following format. Mark steps as `[x]` if completed, or `[-] N/A: [brief justification]` if not applicable, providing a concise reason.
+    ```markdown
+    **Post-Action Verification Summary:**
+    - `[x/-] 1. Edit Application Analysis:` *[Brief confirm checks 4.4.1.a (if `reapply`), **4.4.1.b (via `Procedure: Verify Edit File Diff`, Section 4)**, 4.4.1.c (redundancy) done. State: 'Applied diff matches final intent.' OR 'Applied diff discrepancies: [List/Justification].'.]*
+    - `[x/-] 2. Leftover Code & Dependency Analysis:` *[Brief confirm check **4.4.2.a (artifacts)** and **4.4.2.b (explicit dependency re-verification/deletion checks)** done. Outcome: e.g., "Cleanup OK", "Re-verification confirmed no missed updates".]*
+    - `[x/-] 3. Correction Assessment:` *[Brief confirm check 4.4.3 performed. State if corrections were needed/made. Mark `[x]` if checked & OK, `[-]` if N/A.]*
+    - `[x] 4. Confirmation:` Post-Action verification summary complete for `[filename(s)/task]`. *(Always `[x]`)*
+    - `[x/-] 5. Full File Read Verification:` *[Brief confirm checks per Proc: Ensure Sufficient File Context Step 3 performed for any `should_read_entire_file=true` calls in this action phase (e.g., post-manual edit). Outcome: e.g., 'All verified complete'. Mark `[-]` if N/A.]*
+    ```
+    *(Note: This summary serves as mandatory proof that post-action verifications were completed autonomously. Explicit justification is required for any step marked N/A.)*
 
-    #### 4.6 Perform Mid-Cycle Self-Assessment (After Each File Edit)
-    *   **Trigger:** After Step 4.5 (Post-Action Verification Summary) is completed for *each individual file* modified within the task.
-    *   **Action:** Execute `Procedure: Perform Self-Assessment` (Section 4), specifying the scope as `Edit Cycle for [filename]`. This ensures adherence is checked immediately after each file modification cycle.
+#### 4.6 Perform Mid-Cycle Self-Assessment (After Each File Edit)
+*   **Trigger:** After Step 4.5 (Post-Action Verification Summary) is completed for *each individual file* modified within the task.
+*   **Action:** Execute `Procedure: Perform Self-Assessment` (Section 4), specifying the scope as `Edit Cycle for [filename]`. This ensures adherence is checked immediately after each file modification cycle.
 
 ### 5. Adherence Checkpoint & Next Step Determination (Final Step in Cycle): **CRITICAL:**
 
