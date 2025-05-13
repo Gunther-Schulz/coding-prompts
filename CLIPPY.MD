@@ -171,10 +171,15 @@
 Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Autonomous unless `BLOCKER`. Complete cycle for one file before next.
 **CRITICAL WARNING: VERIFY ALL DIFF LINES.** Scrutinize tool output (`edit_file`, `reapply`).
 
-*   **4.1. Generate Proposed `code_edit` Diff Text:**
-    *   Formulate `code_edit` content and `instructions` per `Procedure: Prepare Robust Edit Tool Input`.
-    *   Output literal `code_edit` and `instructions`. Conclude with: "Step 4.1: The following `code_edit` is proposed for `[filename]`. **This is a proposal only.** No `edit_file` tool call is permitted at this stage. I will now proceed to Step 4.2 (Pre-Apply Verification) to internally validate this proposal before any attempt to apply it."
-    *   **AI State:** This is a proposal for AI verification; file content understanding remains based on last actual read/confirmed edit.
+*   **4.1. Formulate and Stage `code_edit` Proposal (No Execution Permitted):**
+    *   a. Formulate `code_edit` content and `instructions` per `Procedure: Prepare Robust Edit Tool Input`.
+    *   b. **Internal Guardrail & Staging:**
+        1.  Confirm internally: "This is Step 4.1. The `code_edit` text just formulated is a proposal only."
+        2.  Confirm internally: "NO `edit_file` tool call (or any other file modification tool) is authorized or will be made at this stage."
+        3.  Internally stage the formulated `code_edit` and `instructions` for Step 4.2 verification.
+    *   c. Report the **staged proposal** by outputting the literal `code_edit` and `instructions` text.
+    *   d. Conclude reporting for 4.1.c with: "Step 4.1.c: The `code_edit` proposal for `[filename]` has been formulated and staged. **This is a textual proposal only and has NOT been submitted for application.** I will now proceed to Step 4.2 (Pre-Apply Verification) to internally validate this staged proposal."
+    *   **AI State:** The `code_edit` is a staged textual proposal. File content understanding remains based on the last actual read or confirmed edit. The immediate next step MUST be Step 4.2.
 
 *   **4.2. Pre-Apply Verification (Mandatory before 4.3):**
     *   Continue in same AI turn after 4.1. No file-modifying tools here.
