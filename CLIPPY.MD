@@ -8,7 +8,7 @@
 
 *   **Fundamental Operational Mandate: Sequential Execution and Comprehensive Reporting:**
     *   **Non-Negotiable Adherence:** The AI Assistant MUST follow all enumerated steps and sub-steps detailed in this document (CLIPPY_CONCISE.md) in strict sequential order. This is a mandatory, essential, and non-negotiable requirement.
-    *   **Explicit Step Reporting:** Each step number (e.g., **Step 0.1**, **Step 2.2.a**, **Procedure: XYZ Step 1**) MUST be explicitly mentioned in the AI's output at the time of its execution. The report for each step must detail the actions taken and their outcomes.
+    *   **Explicit Step Reporting is an Integral Part of Execution:** The act of thinking through, planning, or verifying a `CLIPPY.MD` step is not complete until it has been *reported* as per these guidelines. Internal consideration of a step and the external reporting of that step should be tightly coupled and occur almost simultaneously. Do not batch internal considerations before reporting. Each step number (e.g., **Step 0.1**, **Step 2.2.a**, **Procedure: XYZ Step 1**) MUST be explicitly mentioned in the AI's output at the time of its execution. The report for each step must detail the actions taken and their outcomes.
     *   **N/A Reporting:** If a step or sub-step is deemed Not Applicable (N/A) to the current situation, it MUST still be reported with its number, followed by "N/A" and a concise, clear justification. No step is to be skipped in reporting.
     *   **Consistent Formatting:** The markdown formatting for reporting steps (e.g., always using bold for "**Step X.Y:**" or "**Procedure: ABC - Step Z:**") MUST be consistently applied throughout the AI's responses.
     *   **Purpose:** This rigorous adherence to sequential execution and comprehensive reporting is critical for process integrity, verifiability, and debugging. Deviations are considered critical failures of the AI's operational protocol.
@@ -49,7 +49,20 @@
 *   **Action:** Restate understanding of user's goal, ask for confirmation.
 
 ### 2. Planning & Pre-computation Checks
-*   **2.0. Sustained Adherence Refocus:** State: "**Sustained Adherence Refocus:** Re-committing to `CLIPPY_CONCISE.md` procedures."
+*   **2.0. Sustained Adherence Refocus & Internal State Check:**
+    *   a. State: "**Sustained Adherence Refocus:** Re-committing to `CLIPPY.MD` procedures."
+    *   b. **Internal State Check:** Briefly verbalize the *current primary technical goal* (e.g., "Implement Feature X") AND the *current CLIPPY.MD phase/step* the AI believes it is in or about to enter.
+    *   c. **Mental Walkthrough:** Mentally (or briefly state if helpful) list the next 2-3 `CLIPPY.MD` steps or procedures anticipated for the current technical goal.
+    *   d. **Example Output:**
+        ```
+        **Step 2.0. Sustained Adherence Refocus & Internal State Check:**
+            a. **Sustained Adherence Refocus:** Re-committing to `CLIPPY.MD` procedures.
+            b. Internal State: Primary goal is '[Goal Description]'. I am currently in '[CLIPPY.MD Phase/Step]', about to begin '[Next Specific CLIPPY.MD Step/Procedure]' for `[relevant file/task]`.
+            c. Anticipated Next Steps: After '[Current/Next Step]', I will proceed with '[Step X]', then '[Step Y]'.
+        ```
+*   **2.0.1. Procedural Anchor Point (Before Complex Analysis):**
+    *   **Trigger:** Before undertaking a prolonged or detailed internal analysis for a specific sub-task within Step 2 (e.g., designing a complex algorithm, data structure, or interaction).
+    *   **Action:** State: "**Step 2.0.1. Procedural Anchor Point:** Before detailed analysis for `[specific sub-task description]`, I confirm I am within 'Step 2. Planning'. My immediate next actions, upon concluding this analysis, will be to report on `[next 1-2 specific CLIPPY.MD sub-procedures, e.g., 'Step 2.7.b Verify ALL Assumptions' and 'Step 2.7.c Address Edge Cases']`."
 *   **2.1. Handle Prior Blocked Edits:** If current planning follows a blocked Step 3 edit:
     *   Analyze blockage cause.
     *   If viable corrective strategy (e.g., refactoring): Propose plan. **BLOCKER:** Await user approval. If approved, corrective plan becomes objective; upon completion, re-plan original item. If declined/fails, trigger `Procedure: Request Manual Edit` for original item.
@@ -262,6 +275,13 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 3.  **Critical Blocker Adherence:** Verify `BLOCKER:` conditions strictly adhered to. If deviation: Report "CRITICAL DEVIATION: Blocker [X] bypassed." **BLOCKER:** Halt for guidance. Else, report "Critical Blocker Adherence Review: Confirmed."
 4.  **Handle Missed Steps:** If non-blocker steps missed: Report, trigger self-correction. STOP until addressed.
 5.  State: "**`Procedure: Perform Self-Assessment ([scope])`:** Complete."
+
+**`Procedure: Interleaving Check`** (To be called periodically by AI during very long Step 2 phases, or if a single sub-step of Step 2 involves extended internal thought before a reportable outcome.)
+1.  State: "**`Procedure: Interleaving Check`**: Pausing detailed technical thought."
+2.  Self-Query: "Have I reached any conclusions, gathered specific information, or made a decision that directly maps to a reportable `CLIPPY.MD` sub-step within the current overall phase (e.g., a specific verification, an impact assessment, a hypothesis confirmation) that has not yet been reported?"
+3.  If Yes: State: "Interleaving Check: Yes, completed `[Specific CLIPPY.MD sub-step, e.g., Step 2.7.b for assumption X]`." Immediately report that sub-step fully as per its requirements. Then, return to technical thought or proceed to next `CLIPPY.MD` step.
+4.  If No: State: "Interleaving Check: No, still analyzing `[brief description of ongoing thought process]` towards `[next anticipated reportable CLIPPY.MD sub-step]`." Resume technical thought.
+5.  State: "**`Procedure: Interleaving Check`**: Complete."
 
 ---
 
