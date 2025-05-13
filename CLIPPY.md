@@ -139,23 +139,48 @@ When responding to user requests involving code analysis, planning, or modificat
 *   **Action:** The AI **MUST** explicitly state: "**Sustained Adherence Refocus:** Actively re-evaluating and committing to the full set of principles and procedures within `AI_CODING_PROCESS.md` (this document) to ensure continued meticulous adherence for the upcoming planning and implementation."
 *   **Rationale:** This serves as a deliberate internal prompt for the AI to refresh its attention to the comprehensive guidelines in this document, counteracting potential focus drift during extended interactions and reinforcing the commitment to rigorous process execution before detailed planning begins.
 
-`3.1. Handle Blocked Edit Attempts from Prior Cycle (If Applicable)`
-*   **Trigger:** Executed at the very beginning of every Step 3 Planning Phase.
-*   **Action:**
-    1.  **Check for Blocked Context:** Determine if this Step 3 planning cycle was initiated because a previous Step 4 edit attempt for the same planned item from the user\'s request/active plan was declared "blocked" (as per Step 4.4.3.b.e.i). The AI should have access to the reasons and history of the prior blocked attempt.
-    2.  **If Prior Edit Attempt Was Blocked:**
-        a.  **Diagnose Blockage Cause:** Analyze the details of the persistent failure from the previous Step 4 cycle. Consider if factors like code complexity, insufficient granularity of the failed edit, or other subtle issues in the target code were the likely cause.
-        b.  **Consider Corrective Strategy (e.g., Refactoring):**
-            i.  If the diagnosis (from 3.1.2.a) suggests that a specific corrective strategy, such as refactoring the problematic code block, is a viable path to unblock the original planned item/objective, then the AI **SHOULD** formulate a new, preliminary plan for this corrective action (e.g., a refactoring plan).
-            ii. **Explain Rationale & Propose Corrective Plan:**
-                *   Briefly explain why it believes complexity (or other identified factor) was the issue for the previously blocked edit.
-                *   Propose the corrective plan (e.g., "To address the persistent edit failures in function `xyz` due to its complexity, I propose to first refactor `xyz` into `helper_A` and `helper_B`, and then update `xyz` to call these helpers. This refactoring will be performed first. After it is successfully completed and verified, I will then re-attempt the original planned edit on the simplified code.").
-                *   This corrective plan might be multi-step.
-            iii. **BLOCKER (User Approval for Corrective Plan):** State that this proposed corrective plan requires user confirmation before proceeding. **Do NOT proceed with executing this corrective plan NOR re-attempting the original blocked edit until the user explicitly approves the corrective plan OR instructs to proceed directly to `Procedure: Request Manual Edit` for the original blocked planned item/objective (or suggests another course of action).**
-            iv. **If Corrective Plan Approved:** If the user approves the corrective plan, this corrective plan now becomes the AI\'s current multi-part objective. The AI will proceed through Step 3 (planning details for the *first part* of this corrective plan), then Step 4 and 5 for each part of the corrective plan. Upon successful completion of the *entire* corrective plan, the AI **MUST** then automatically re-enter Step 3 to formulate a new plan for the *original planned item/objective* that was previously blocked, now targeting the corrected/refactored code.
-            v.  **If Corrective Plan Declined or Fails:** If the user declines the corrective plan, OR if the AI\'s attempt to execute the approved corrective plan *itself* results in a "blocked" status (i.e., it also hits persistent correction failures), then the AI **MUST** immediately trigger `Procedure: Request Manual Edit` (Section 5) for the *original planned item/objective*, explaining the full history (original block, proposed correction, and why it\'s now escalating to manual edit).
-        c.  **If No Corrective Strategy Deemed Viable or Prior Correction Already Failed:** If the diagnosis in 3.1.2.a does not suggest a clear corrective strategy like refactoring, OR if a corrective strategy (like refactoring for this same original planned item/objective) was already attempted in a previous iteration and also led to a block, then the AI **MUST** immediately trigger `Procedure: Request Manual Edit` (Section 5) for the original planned item/objective, explaining the history of failures.
-    3.  **If Not Initiated by a Blocked Edit:** If this Step 3 cycle was not triggered by a previously blocked edit attempt, proceed directly to Step 3.2.
+`3.1. Handle Prior Blocked Edit Attempts (If Applicable)`
+*   **Trigger:** Beginning of Step 3 Planning Phase.
+*   **Objective:** To determine if the current planning cycle is a direct result of a previously "blocked" Step 4 edit attempt for the same user task, and to define the strategy for proceeding.
+
+    **A. Check for Blocked Context:**
+        1.  **Action:** Determine if this Step 3 cycle was initiated due to a "blocked" status from a prior Step 4 edit attempt (as per Step 4.4.3.b.e.i) for the current planned item/objective.
+        2.  **Access History:** Recall the reasons and history of the prior blocked attempt.
+
+    **B. If Prior Edit Attempt Was Blocked:**
+        1.  **Diagnose Blockage Cause:**
+            *   **Action:** Analyze the persistent failure details from the previous Step 4 cycle.
+            *   **Consider:** Code complexity, insufficient granularity of the failed edit, or other subtle issues in the target code as likely causes.
+        2.  **Evaluate Corrective Strategies (e.g., Refactoring):**
+            *   **Decision Point:** Based on the diagnosis (B.1), can a specific corrective strategy (e.g., refactoring the problematic code) likely unblock the original planned item/objective?
+            *   **Path 1: Corrective Strategy IS Viable:**
+                a.  **Formulate Corrective Plan:** Create a preliminary plan for this corrective action (e.g., a refactoring plan). This plan may be multi-step.
+                b.  **Explain & Propose:**
+                    i.  Briefly explain the diagnosed cause of the previous blockage.
+                    ii. Propose the corrective plan (e.g., "To address persistent edit failures in function `xyz` due to its complexity, I propose to first refactor `xyz` into `helper_A` and `helper_B`, then update `xyz` to call these helpers. This refactoring will be performed first. After its successful completion and verification, I will re-attempt the original planned edit on the simplified code.").
+                c.  **BLOCKER: User Approval for Corrective Plan:**
+                    i.  State: "This proposed corrective plan for `[target, e.g., function xyz]` requires your confirmation before proceeding."
+                    ii. **MUST NOT** execute the corrective plan OR re-attempt the original blocked edit until the user explicitly:
+                        *   Approves the corrective plan, OR
+                        *   Instructs to proceed directly to `Procedure: Request Manual Edit` for the original blocked item, OR
+                        *   Suggests another course of action.
+                d.  **If Corrective Plan Approved by User:**
+                    i.  **New Objective:** The corrective plan becomes the AI's current multi-part objective.
+                    ii. **Execute Corrective Plan:** Proceed through Step 3 (planning for the *first part* of the corrective plan), then Steps 4 and 5 for each part of the corrective plan.
+                    iii.**Resume Original Task:** Upon successful completion and verification of the *entire* corrective plan, **MUST** automatically re-enter Step 3 to formulate a new plan for the *original planned item/objective* (that was previously blocked), now targeting the corrected/refactored code.
+                e.  **If Corrective Plan Declined by User OR Fails During Execution:**
+                    i.  Condition: User declines, OR the AI's attempt to execute the approved corrective plan *itself* results in a "blocked" status (persistent correction failures).
+                    ii. **Action:** **MUST** immediately trigger `Procedure: Request Manual Edit` (Section 5) for the *original planned item/objective*.
+                    iii.Explain: Detail the full history (original block, proposed correction, and reason for current escalation to manual edit).
+            *   **Path 2: Corrective Strategy IS NOT Viable or Already Failed:**
+                a.  **Condition:**
+                    *   Diagnosis (B.1) does not suggest a clear corrective strategy, OR
+                    *   A corrective strategy for this same original item was already attempted in a previous iteration and also led to a "blocked" status.
+                b.  **Action:** **MUST** immediately trigger `Procedure: Request Manual Edit` (Section 5) for the *original planned item/objective*.
+                c.  **Explain:** Detail the history of failures.
+
+    **C. If Not Initiated by a Blocked Edit:**
+        1.  **Action:** Proceed directly to Step 3.2 (`Ensure Sufficient Context`).
 
 `3.2. Ensure Sufficient Context (Initial Check):`
 *   **Action:** Execute `Procedure: Ensure Sufficient File Context` (Section 4).
@@ -173,53 +198,95 @@ When responding to user requests involving code analysis, planning, or modificat
     `3.4.` **Search for Existing Logic:** Before planning implementation details (especially for utilities, validation, calculations), perform a preliminary search (`grep_search`, `codebase_search`) for existing implementations of the required functionality **within the target codebase** (referencing Audit Sections 1.B, 1.C). Briefly document findings, **explicitly stating the tool(s) used, query term(s), and specific key findings (files/functions) or confirming none found.** (e.g., "`grep_search` for `helper_function`: Found existing utility `utils.helper_function`, will reuse." or "`codebase_search` for `validate_input_data`: No specific existing validator found, planning new implementation."). **Also consider if the plan specifies adapting code from external sources and proceed to Step 3.4.1 if applicable.**
 
     `3.4.1.` **Investigate Specified Refactoring Sources (If Applicable):**
-        *   **Trigger:** If the active plan (e.g., `REFACTORING_PLAN.md`) explicitly mentions refactoring, migrating, or adapting logic/configuration from a specific external source directory or file (e.g., \\\'Adapt logic from `old_module/src/legacy_exporter/`\\\').
+        *   **Trigger:** If the active plan (e.g., `REFACTORING_PLAN.md`) explicitly mentions refactoring, migrating, or adapting logic/configuration from a specific external source directory or file (e.g., 'Adapt logic from `old_module/src/legacy_exporter/`').
         *   **Action:**
             a.  **MUST** treat this as a directive to investigate that source.
             b.  **Before** proceeding with detailed implementation planning for the new component, use necessary tools (`list_dir` recursively, `grep_search`, `read_file` on discovered `.py` files) to sufficiently understand the structure, key logic, and types within that specified source location. Adhere to the principle "Plan Directives Override Ambiguous Tool Output" if initial tool results seem incomplete.
             c.  **Report Findings:** Briefly summarize key findings relevant to the refactoring task (e.g., "Investigated `old_module/src/legacy_exporter/`: Found `exporter_logic.py` containing export logic using LibraryX. Key elements noted: `LegacyExporterClass`, `_write_legacy_item`." or "Investigation of `old_module/src/configs/` revealed existing config structure Z."). If investigation confirms no relevant code exists despite the plan directive, report that clearly.
 
-    `3.5.` **Identify Standards & Verify Alignment:** Explicitly identify the Core Principles or specific sections from `PROJECT_STANDARDS.md` **and relevant technical patterns/structures from the project\\\'s `PROJECT_ARCHITECTURE.md`** that are most pertinent to the request. Briefly state how the proposed plan/edit aligns with these standards, **citing the primary relevant section/pattern name(s)**. **Confirm the plan prioritizes the simplest, clearest solution that fully meets requirements and adheres to all standards. Furthermore, when the plan involves generating new functions, methods, or significant blocks of new logic, the AI MUST ensure this planned new code itself will be structured for simplicity (e.g., appropriate length, limited nesting, clear control flow) and adhere to the Single Responsibility Principle. If a conceptual unit of new code seems inherently complex, the plan SHOULD proactively include its decomposition into smaller, more focused units.**
+    `3.5.` **Identify Standards & Verify Alignment:** Explicitly identify the Core Principles or specific sections from `PROJECT_STANDARDS.md` **and relevant technical patterns/structures from the project's `PROJECT_ARCHITECTURE.md`** that are most pertinent to the request. Briefly state how the proposed plan/edit aligns with these standards, **citing the primary relevant section/pattern name(s)**. **Confirm the plan prioritizes the simplest, clearest solution that fully meets requirements and adheres to all standards. Furthermore, when the plan involves generating new functions, methods, or significant blocks of new logic, the AI MUST ensure this planned new code itself will be structured for simplicity (e.g., appropriate length, limited nesting, clear control flow) and adhere to the Single Responsibility Principle. If a conceptual unit of new code seems inherently complex, the plan SHOULD proactively include its decomposition into smaller, more focused units.**
         *   *Example 1 (DI Focus): "Planning to add component X. This requires adhering to the Dependency Injection principles (`PROJECT_STANDARDS.md`) and specific DI configuration guidelines (`PROJECT_ARCHITECTURE.md`). Plan involves updating the DI config module per standard practice."*
         *   *Example 2 (Error Handling Focus): "Plan includes error handling for Y, following Error Handling guidelines (`PROJECT_STANDARDS.md` - Section 2.A) and hierarchy examples (`PROJECT_ARCHITECTURE.md` - `StandardErrorHandling` pattern), using standard logging."*
-        *   *(Note for AI: If `PROJECT_STANDARDS.md` or `PROJECT_ARCHITECTURE.md` are not explicitly provided in the current context, or if they are provided but do not cover a specific framework/library detail relevant to the task, the AI **MUST** state this. Alignment should then be based on: 1) general software design principles, 2) any architectural patterns observed directly in the existing codebase, 3) the specific requirements of the user\\\'s request, and critically, 4) canonical documentation or widely accepted best practices for the specific framework/library in use (e.g., FrameworkX, ORMLibrary, UILibrary). Hypotheses derived from these framework/library best practices (e.g., \\\'FrameworkX expects event handlers to be registered at initialization\\\') MUST be explicitly stated and verified as per Step 3.7.1.b.)*
+        *   *(Note for AI: If `PROJECT_STANDARDS.md` or `PROJECT_ARCHITECTURE.md` are not explicitly provided in the current context, or if they are provided but do not cover a specific framework/library detail relevant to the task, the AI **MUST** state this. Alignment should then be based on: 1) general software design principles, 2) any architectural patterns observed directly in the existing codebase, 3) the specific requirements of the user's request, and critically, 4) canonical documentation or widely accepted best practices for the specific framework/library in use (e.g., FrameworkX, ORMLibrary, UILibrary). Hypotheses derived from these framework/library best practices (e.g., 'FrameworkX expects event handlers to be registered at initialization') MUST be explicitly stated and verified as per Step 3.7.1.b.)*
 
-    `3.6.` **Check \"Work with Facts\":** Confirm the plan/edit relies *only* on provided facts, requirements, or verified information. **This includes ensuring that any file content used for planning or generating edits is sufficiently complete to avoid guesswork; if partial file views are ambiguous or insufficient for the task, seek clarification or more complete data before proceeding.** If a full file read was attempted (e.g. using `should_read_entire_file=True`) but not fully returned by the tool, this **MUST** be treated as insufficient/incomplete data, triggering clarification or data request as per `Procedure: Ensure Sufficient File Context`. State if clarification is needed. *Example: \"Proceeding based on requirement R. Clarify if other factors apply.\"*
+    `3.6.` **Check "Work with Facts":** Confirm the plan/edit relies *only* on provided facts, requirements, or verified information. **This includes ensuring that any file content used for planning or generating edits is sufficiently complete to avoid guesswork; if partial file views are ambiguous or insufficient for the task, seek clarification or more complete data before proceeding.** If a full file read was attempted (e.g. using `should_read_entire_file=True`) but not fully returned by the tool, this **MUST** be treated as insufficient/incomplete data, triggering clarification or data request as per `Procedure: Ensure Sufficient File Context`. State if clarification is needed. *Example: "Proceeding based on requirement R. Clarify if other factors apply."*
 
     *   **Reconcile Plan with Current Code State:** Before detailed planning for a specific file (or before generating `code_edit` for it), if the AI has access to an implementation plan and the current file content, it **SHOULD** perform a preliminary comparison.
         *   If the current file content indicates that some parts of the implementation plan for that file *already appear to be implemented or partially implemented*, the AI **MUST**:
-            a.  Explicitly state this observation (e.g., \"Observation: `path/to/module.py` appears to have existing code that aligns with Plan Items A and B regarding feature F.\").
+            a.  Explicitly state this observation (e.g., "Observation: `path/to/module.py` appears to have existing code that aligns with Plan Items A and B regarding feature F.").
             b.  Briefly confirm its understanding of the *remaining scope of work* from the plan for that file.
             c.  If the divergence is significant or creates ambiguity for the remaining steps, the AI **MAY** ask the user for clarification or confirmation on how to proceed with the remaining parts of the plan in light of the existing code.
-            d.  This check helps ensure the AI doesn\\\'t attempt to re-implement already existing logic or misinterpret the plan\\\'s applicability to a partially evolved codebase.
+            d.  This check helps ensure the AI doesn't attempt to re-implement already existing logic or misinterpret the plan's applicability to a partially evolved codebase.
 
-    `3.7.` **Check \"Robust Solutions\":** Confirm the plan avoids hacks/workarounds and addresses the root cause.
+    `3.7.` **Check "Robust Solutions":** Confirm the plan avoids hacks/workarounds and addresses the root cause.
         **Note on Framework Warnings:** When a framework issues a `RuntimeWarning` related to core invocation patterns (e.g., async function not awaited, incorrect registration), prioritize understanding and resolving the *source of the warning* itself. Treating only the subsequent errors (e.g., `NoneType` errors due to incomplete setup) without addressing the warning may lead to superficial fixes. The warning often points to the true root cause of instability or incorrect behavior.
 
         *   **Assess Interacting Existing Patterns:** When planned changes significantly interact with or depend upon existing architectural patterns or critical execution paths within the target file(s) (e.g., application startup, core callbacks, central configuration), the AI **MUST** briefly assess these *existing* patterns for obvious robustness concerns that could be exacerbated by the planned changes (e.g., late initializations, potential for shared state issues, overly complex existing logic that the new code will plug into).
             *   **If significant concerns directly relevant to the stability of the planned integration are identified, they should be highlighted.**
             *   This is not a full audit of existing code, but a focused check on immediate interaction points critical for the success of the planned changes.
-            *   *Example: \\\'The plan involves adding new feature hooks. Existing registration logic in `main_app.py` occurs late in a complex setup phase. This existing pattern might pose a risk to the new hooks\\\' correct initialization if setup fails early. Consider refactoring registration logic for robustness.\\\'*
+            *   *Example: 'The plan involves adding new feature hooks. Existing registration logic in `main_app.py` occurs late in a complex setup phase. This existing pattern might pose a risk to the new hooks' correct initialization if setup fails early. Consider refactoring registration logic for robustness.'*
 
         **Data Integrity Priority:** When encountering **unexpectedly missing or invalid data** from external sources or between internal components:
             *   **Default Action:** Treat as a **critical error**. Log clearly and raise an appropriate, specific error (e.g., `ConversionError`, `ValidationError`) to halt processing for the affected item.
             *   **Justification:** Prioritizes surfacing data quality/integration issues over potentially masking them.
             *   **Deviation (Requires Explicit Approval):** Implementing fallbacks/defaults **MUST STOP** standard plan and follow `Procedure: Handle Necessary Workaround` (Section 5), clearly stating the data integrity compromise. **This requires explicit user approval (see procedure).**
 
-        `3.7.1.` **Analyze Impact & Verify Assumptions:**
-            `a.` **Perform `Procedure: Analyze Impact` (Section 4)**: Identify and list affected call sites, perform enhanced scope checks for core changes, check circular dependencies, and consider data representation impacts. State outcome. **When reporting on enhanced scope checks (Procedure Step 2), MUST include specific inheritors/consumers identified.**
-            `b.` **Perform `Procedure: Verify Hypothesis` (Section 4) for ALL Assumptions**: **Immediately** after stating each assumption (external APIs, internal interfaces, config, data formats, library usage), execute and report the verification using the specified structured format. **CRITICAL:** Includes verifying *interface consistency* between interacting components and assumptions about *functional equivalence* when replacing logic. **DO NOT** proceed until verification outcome is \'Confirmed\'. **The structured report generated by `Procedure: Verify Hypothesis` MUST immediately follow the statement of the hypothesis in the response text before proceeding to state or verify any subsequent hypotheses or continue with other planning steps.** **If verification for an *existing* dependency fails, STOP standard plan and execute `Procedure: Handle Failed Verification for Existing Dependency` (Section 5).** If verification for any other assumption fails, **STOP** and revise the plan.** *(Reminder: Address Failure Mode 2 - Verify against actual codebase state, avoid assumptions based solely on general patterns)* **Furthermore, when a formal implementation plan document IS provided, ALL its explicit assumptions, prescribed actions involving specific code interactions (e.g., calling a function with an expected signature, modifying a data structure in an expected way), and referenced existing code structures (e.g., function names, class structures, module interfaces purportedly used or modified by the plan) MUST be treated as hypotheses by the AI. These plan-derived hypotheses MUST be immediately verified against the current codebase using tools (`read_file`, `grep_search`, `codebase_search`) before any code generation based on those specific parts of the plan proceeds. The AI MUST NOT assume the provided plan\'s representation of existing code is perfectly current or correct, and MUST report the outcome of these verifications.** *(Reminder: Address Failure Mode 2 - Verify against actual codebase state, avoid assumptions based solely on general patterns)*
-            *   **If an implementation plan is provided, but its \'Key Assumptions\' section (or equivalent) appears sparse or incomplete for a task involving complex interactions with existing code, the AI **SHOULD proactively identify and state any additional critical assumptions it is making about the current state or structure of the existing codebase that are necessary for the plan\'s successful execution.** These self-identified assumptions **MUST** then also be verified using this procedure.**
-            `c.` **Enumerate Edge Cases/Errors (Mandatory for Logic Changes):** List key potential edge cases/errors for new/modified logic and state **specifically how the plan addresses each enumerated case**. *Example: "Edge Cases: 1. Empty input collection: Handled by initial check `if not input_collection: return`. 2. Zero value denominator: Handled by pre-check `if denominator != 0`.\"*
-            `d.` **Perform `Procedure: Verify Framework Compatibility` (Section 4)**: For framework entry points or library interactions, verify signature compatibility and adherence to established project patterns. State outcome.
-            `e.` **Perform `Procedure: Ensure Logic Preservation` (Section 4) (Mandatory for Logic Replacement):** When replacing/restructuring logic blocks, document original behavior first ( **citing specific conditions or execution paths from the original code.** ), then detail how the new logic preserves it, explicitly justifying intentional changes and presenting trade-offs if necessary.
-            `f.` **Perform `Procedure: Verify Configuration Usage Impact` (Section 4)**: When changing config values, identify usage locations and confirm compatibility/updates. State outcome.
-            `g.` **Consider Testability:** Briefly assess if the proposed code structure facilitates unit/integration testing. Note if dependencies are injectable or if the structure hinders testability.
-            `h.` **Consider Observability:** Briefly assess if the change warrants new or updated structured logging or metrics for monitoring and diagnostics, referencing project standards if available.
-            `i.` **Consider Configuration Needs & Anti-Hardcoding:** Assess if the proposed change requires new configurable parameters. If so, the plan should outline how these will be integrated with existing configuration mechanisms and explicitly affirm the avoidance of hardcoding values that should be configurable.
-            `j.` **Consider Resource Management:** If the planned code interacts with system resources (e.g., files, network connections, database sessions, locks), the plan **MUST** detail how these resources will be properly acquired and, critically, consistently released (e.g., using context managers or `try...finally` blocks), especially ensuring cleanup in error scenarios.
+            `3.7.1.` **Mandatory Impact Analysis & Assumption Verification Sub-Procedures:**
+                *(Execute and report on each applicable sub-procedure below. Ensure all called Procedures from Section 4/5 are fully executed and their outcomes reported as specified therein.)*
 
-        `3.7.2.` **Verification for Moves/Renames:** Use *multiple* search strategies (as detailed in `Procedure: Analyze Impact`, Section 4) to confirm impact. **DO NOT** rely on a single \'no results\' search. *Example: \'Modifying `component_a` impacts `component_b`. Plan includes verifying compatibility.\'*
+                `a.` **Analyze Overall Impact:**
+                    *   **Action:** Perform `Procedure: Analyze Impact` (Section 4).
+                    *   **Report:** State outcome, including specific inheritors/consumers identified if Enhanced Scope (Procedure Step 2) was applicable.
+
+                `b.` **Verify ALL Stated Assumptions:**
+                    *   **Context:** This applies to assumptions about external APIs, internal interfaces, configuration, data formats, library usage, interface consistency, and functional equivalence when replacing logic.
+                    *   **Action:** For **EVERY** assumption made (including those derived from a formal implementation plan document regarding existing code structures or interactions):
+                        i.  **Immediately** after stating the assumption, execute `Procedure: Verify Hypothesis` (Section 4).
+                        ii. The structured report from `Procedure: Verify Hypothesis` **MUST** directly follow the assumption statement.
+                    *   **Handling Failed Verifications:**
+                        i.  If verification for an *existing, established dependency reference* fails: **STOP** standard plan and execute `Procedure: Handle Failed Verification for Existing Dependency` (Section 5).
+                        ii. If verification for *any other assumption* fails: **STOP**, report the failure, and revise the plan.
+                    *   **Proactive Assumption Identification (If Plan Lacks Detail):** If an implementation plan is provided but its 'Key Assumptions' section is sparse for a task involving complex interactions with existing code, proactively identify, state, and verify any additional critical assumptions being made about the current codebase using this procedure.
+                    *   **(Reminder:** Address Failure Mode 2 - Verify against actual codebase state, avoid assumptions based solely on general patterns or potentially outdated plan documents.)*
+
+                `c.` **Enumerate and Address Edge Cases/Errors (Mandatory for Logic Changes):**
+                    *   **Action:** For any new or modified logic, list all key potential edge cases and error conditions.
+                    *   **Report:** For each enumerated case, state **specifically how the plan addresses it**.
+                        *   *Example: "Edge Cases for `calculate_average`: 1. Empty input list: Addressed by initial check `if not numbers: return 0`. 2. Non-numeric input: Addressed by `try-except TypeError` around operations, logging error, and returning `None`."*
+
+                `d.` **Verify Framework & Library Compatibility:**
+                    *   **Action:** For changes involving framework entry points or significant library interactions, perform `Procedure: Verify Framework Compatibility` (Section 4).
+                    *   **Report:** State outcome.
+
+                `e.` **Ensure Logic Preservation (Mandatory for Logic Replacement/Restructuring):**
+                    *   **Action:** When replacing or significantly restructuring existing logic blocks:
+                        i.  Perform `Procedure: Ensure Logic Preservation` (Section 4).
+                        ii. This includes documenting original behavior by **citing specific conditions/paths from the original code** and detailing how the new logic preserves it or justifiably alters it.
+                    *   **Report:** Confirm procedure execution and summarize preservation approach or justified changes.
+
+                `f.` **Verify Configuration Usage Impact:**
+                    *   **Action:** When proposing changes to configuration values or structure, perform `Procedure: Verify Configuration Usage Impact` (Section 4).
+                    *   **Report:** State outcome.
+
+                `g.` **Assess Testability:**
+                    *   **Action:** Briefly assess if the proposed code structure facilitates unit/integration testing.
+                    *   **Report:** Note if dependencies are injectable or if the structure might hinder testability. (e.g., "Testability: Component X is designed with injectable dependencies, facilitating testing.")
+
+                `h.` **Assess Observability Needs:**
+                    *   **Action:** Briefly assess if the change warrants new or updated structured logging or metrics for monitoring and diagnostics.
+                    *   **Report:** Reference project standards if available. Note any planned additions. (e.g., "Observability: Added structured log for event Y in `module_z`.")
+
+                `i.` **Assess Configuration Needs & Anti-Hardcoding:**
+                    *   **Action:** Assess if the proposed change introduces new parameters that should be configurable rather than hardcoded.
+                    *   **Report:** If new configurable parameters are needed, the plan should outline their integration with existing configuration mechanisms. Explicitly affirm avoidance of hardcoding for values that should be configurable. (e.g., "Configuration: New threshold parameter `MAX_RETRIES` will be added to `config.ini`.")
+
+                `j.` **Verify Resource Management:**
+                    *   **Action:** If the planned code interacts with system resources (files, network connections, database sessions, locks, etc.):
+                        i.  The plan **MUST** detail how these resources will be properly acquired and, critically, consistently released (e.g., using context managers like `with`, or `try...finally` blocks).
+                        ii. Ensure cleanup is robust, especially in error scenarios.
+                    *   **Report:** Briefly confirm that resource management has been planned. (e.g., "Resource Management: File handles for `output.txt` are managed using a `with open(...)` statement, ensuring closure.")
+
+        `3.7.2.` **Verification for Moves/Renames:** Use *multiple* search strategies (as detailed in `Procedure: Analyze Impact`, Section 4) to confirm impact. **DO NOT** rely on a single 'no results' search. *Example: 'Modifying `component_a` impacts `component_b`. Plan includes verifying compatibility.'*
 
         `3.7.3.` **Prefer Atomic Edits:** Break down complex changes into smaller, atomic edits where feasible.
 
@@ -273,7 +340,7 @@ When responding to user requests involving code analysis, planning, or modificat
         *   If planning to *delete* specific lines/code blocks, **MUST** briefly re-confirm using `grep_search` or targeted `read_file` that those elements *currently exist*.
         *   If planning to *add* a specific function/class/import, **MUST** briefly re-confirm it does *not already exist* in the intended form/location.
         *   If planning to *modify* a block, **MUST** briefly re-confirm the block exists and appears structurably compatible with the planned change.
-        If a precondition is not met (e.g., trying to delete something that\'s already gone), **STOP**, report the discrepancy, and revise the plan (potentially skipping the edit for this file). This check must be explicitly confirmed in the response before Step 4.1.
+        If a precondition is not met (e.g., trying to delete something that's already gone), **STOP**, report the discrepancy, and revise the plan (potentially skipping the edit for this file). This check must be explicitly confirmed in the response before Step 4.1.
 
         **NEXT ACTION (Unless Blocked in Step 3 or Precondition Check Failed):** Upon successful completion and confirmation of the Self-Assessment (3.14) and Precondition Check (3.15) (or if it was N/A), and if no `**BLOCKER:**` from Step 3 has halted the process, autonomously continue to Step 4.1 for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
 
@@ -362,15 +429,31 @@ In all such cases where the tool's changes significantly exceed or deviate from 
                     d.  Missed mandatory halt for guidance under blocker procedures (e.g., 3.9 / `Procedure: Handle Architectural Decisions`).
                     e.  Any other missed mandatory step, check, reporting, or verification from this document.
                     f.  Missed required Enhanced Scope Impact Analysis (part of `Procedure: Analyze Impact`) for core component modification.
-                    g.  The `edit_file` or `reapply` tool reported that "no changes were made" when the AI's plan explicitly intended to make a modification (e.g., deleting specific lines, adding specific lines).
-                        *   **If `reapply` also returns "no changes" for this trigger (g):**
-                            i.  The AI **MUST** state that both `edit_file` and `reapply` attempts for the intended modification reported "no changes made."
-                            ii. **Mandatory Re-verification of File State:** Before hypothesizing other reasons or attempting further edits, the AI **MUST** immediately re-read the relevant section(s) of the target file (using `read_file`, potentially with `should_read_entire_file=True` if necessary and permitted for full context) and compare its current state against the *specific intended change* of the failed `code_edit`.
-                                *   **If Re-verification Shows Change is Present:** If this check reveals the intended change is already accurately present in the file, the AI **MUST** report this finding (e.g., "Verification of `[filename]` shows the intended change is already present."). It should state that the "no changes made" report from the tool was correct in that the file was already in the desired state regarding this specific planned modification. The AI will then consider this specific part of the edit plan successfully completed and proceed with the workflow (e.g., to Step 4.5 for this part of the task, or to the next planned edit if part of a sequence).
-                                *   **If Re-verification Confirms Change is NOT Present:** If the change is confirmed to be *absent* from the file, the AI **MUST** report this (e.g., "Verification of `[filename]` confirms the intended change is still absent.") and then proceed to the subsequent steps (iii, iv, v) to attempt to apply the change.
-                            iii. The AI **MUST** briefly hypothesize why the tools might have failed to apply the (now confirmed absent) change (e.g., the `code_edit` was subtly flawed, the file is somehow write-protected at the tool level, internal diffing logic issue by the tool).
-                            iv. **Mandatory Autonomous Strategy 1: Granular Edit.** As the next corrective action, the AI **MUST** then autonomously attempt to revise its plan to break down the original intended (and now confirmed absent) change for the problematic file into *smaller, more granular `code_edit` operations*. It **MUST** then re-attempt the edit cycle (Steps 4.1-4.5) for the *first* of these smaller pieces. This action falls under revising the plan as per sub-step 'd' below.
-                            v.  **Escalation if Granular Edit Fails:** If attempts to apply these smaller, granular edits also consistently fail (e.g., 2 consecutive "no changes made" reports for a specific granular piece, or if the overall set of granular changes cannot be completed successfully after a reasonable number of attempts per piece, typically not exceeding 2-3 attempts for the entire set of granular changes for the original intended modification), THEN the AI **MUST** proceed to `Procedure: Request Manual Edit` (Section 5), explaining the situation and the strategies attempted.
+                    g.  **Trigger: Tool Reports "No Changes Made" Inappropriately.**
+                        *   **Condition:** `edit_file` or `reapply` tool reports "no changes were made," but the AI's active plan intended a modification (e.g., deleting specific lines, adding specific lines) to `[filename]`.
+                        *   **Action Sequence:**
+                            1.  **State Issue:** Announce: "Tool (`edit_file`/`reapply`) reported 'no changes were made' to `[filename]`, contrary to the plan which intended a modification."
+                            2.  **Verify File State:**
+                                *   **MUST** re-read the relevant section(s) of `[filename]` (using `read_file`, full read if appropriate and allowed per `Procedure: Ensure Sufficient File Context` Step 2 constraints).
+                                *   **MUST** compare the current file content with the *specific intended modification*.
+                            3.  **Analyze Verification Result:**
+                                *   **Path 1: Change IS Present:**
+                                    *   Report: "Verification of `[filename]` shows the intended change is already present. The tool's 'no changes made' report was accurate in this instance as the file was already in the desired state regarding this specific planned modification."
+                                    *   Action: Consider this specific part of the edit plan successfully completed. Proceed with the workflow (e.g., to Step 4.5 for this item, or to the next planned edit if part of a sequence).
+                                *   **Path 2: Change IS NOT Present:**
+                                    *   Report: "Verification of `[filename]` confirms the intended change is still absent."
+                                    *   Action: Proceed to "Attempt Corrective Edit Strategy" (Step 4.4.3.c.g.4 below).
+                            4.  **Attempt Corrective Edit Strategy (Only if change is confirmed absent per 4.4.3.c.g.3 Path 2):**
+                                *   **Hypothesize Cause:** Briefly state a hypothesis for the tool's failure (e.g., "Hypothesis: `code_edit` for `[filename]` had insufficient context/anchoring, or there's an internal diffing logic issue by the tool.").
+                                *   **Corrective Action: Granular Edit Attempt:**
+                                    i.  **Plan Revision:** Revise the plan to break down the original intended (and now confirmed absent) change for `[filename]` into *smaller, more granular `code_edit` operations*. Each granular piece should be as small as logically possible.
+                                    ii. **Execute First Granular Piece:** Re-attempt the edit cycle (Steps 4.1 through 4.5) for the *first* of these smaller granular pieces for `[filename]`.
+                                    iii.**Iterate or Escalate for Subsequent Granular Pieces:**
+                                        *   If a granular piece is applied successfully (verified through a full 4.1-4.5 cycle for that piece), proceed to attempt the next granular piece for `[filename]`.
+                                        *   If any granular edit attempt for `[filename]` also results in "no changes made" (after re-verification per 4.4.3.c.g.2-3 for that granular piece), OR if the overall set of granular changes for the original intended modification cannot be completed successfully after a maximum of two (2) "no changes made" failures for *any specific granular piece*, or a total of three (3) such failures across *all* granular pieces for the original intended modification for `[filename]`:
+                                            *   State: "Granular edit strategy also failed to apply the intended changes to `[filename]` after [number] attempts."
+                                            *   **MUST** proceed to `Procedure: Request Manual Edit` (Section 5), explaining the original goal, the history of "no changes made" errors (including for granular attempts), and the strategies attempted.
+
                 d. **MUST** revise plan/next step for investigation, correction, or cleanup. State the corrective action. **This corrective action MUST aim to restore the overall integrity and correctness of the file, addressing both deviations from the planned change AND any new issues introduced by the edit tool.** If the file's state is a result of the edit tool making unintended modifications to unrelated code, the primary goal of the self-correction is to achieve the user's intended change *without* these unintended side-effects, or to clean up those side-effects if the intended change is already present.
                 e.  **If Tool Failure Persists OR Edit Application Requires Complex Cleanup:**
                     Execute `Procedure: Request Manual Edit` (Section 5) under the following conditions:
@@ -428,9 +511,9 @@ In all such cases where the tool's changes significantly exceed or deviate from 
         *   Existing TODOs or FIXMEs encountered in directly relevant code sections.
     *   The summary should be concise and provide actionable context (e.g., file, function/area, brief description).
     *   The AI **MUST** explicitly state: "**Step 6: Deferred Observations Summary:** No specific deferred observations were noted for future review during this task cycle." if no *general* summary is generated or if no such items were noted (even if a mandatory "Deferred Edit Issues Summary" was generated).
-    *   *Example 1 (With Deferred Edit Issues):* "**Step 6: Deferred Edit Issues & Observations Summary:**\\n**Deferred Edit Issues:**\\n1. `src/modules/module_a.py` (`process_data`): Unintended changes to final `try-except` block. *Behavioral Impact:* May handle `SpecificErrorType` differently, logs might be altered...\\n2. `src/cli/commands.py` (`build_command`): Unintended changes to logging/error handling. *Behavioral Impact:* Success message no longer prints to console, `GenericIOException` handling less specific...\\n**General Observations:**\\n1. `src/utils/helpers.py`: `parse_data_helper` function could be simplified.\\n**Next Steps:** Would you like me to attempt to correct the unintended modifications in `module_a.py` or `commands.py` now, or should we defer these fixes?"
+    *   *Example 1 (With Deferred Edit Issues):* "**Step 6: Deferred Edit Issues & Observations Summary:**n**Deferred Edit Issues:**n1. `src/modules/module_a.py` (`process_data`): Unintended changes to final `try-except` block. *Behavioral Impact:* May handle `SpecificErrorType` differently, logs might be altered...n2. `src/cli/commands.py` (`build_command`): Unintended changes to logging/error handling. *Behavioral Impact:* Success message no longer prints to console, `GenericIOException` handling less specific...n**General Observations:**n1. `src/utils/helpers.py`: `parse_data_helper` function could be simplified.n**Next Steps:** Would you like me to attempt to correct the unintended modifications in `module_a.py` or `commands.py` now, or should we defer these fixes?"
     *   *Example 2 (No Edit Issues, No General Observations):* "**Step 6: Deferred Observations Summary:** No specific deferred observations were noted for future review during this task cycle."
-    *   *Example 3 (No Edit Issues, With General Observations):* "**Step 6: Deferred Observations Summary:**\\n**General Observations:**\\n1. `src/data/models.py`: Consider adding validation for the `field_name` field format."
+    *   *Example 3 (No Edit Issues, With General Observations):* "**Step 6: Deferred Observations Summary:**n**General Observations:**n1. `src/data/models.py`: Consider adding validation for the `field_name` field format."
 *   **Goal:** To capture potentially valuable insights or identified areas for improvement that were outside the immediate scope of the completed task, facilitating systematic follow-up. This step is for items not critical enough to have triggered a `**BLOCKER:**` or formal deferral discussion during the task itself. **Critically, it ensures unintended side effects from edits are clearly documented, analyzed for impact, and explicitly presented to the user for a decision on immediate action.**
 
 ---
@@ -441,64 +524,179 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 
 **`Procedure: Ensure Sufficient File Context`**
 *   **Purpose:** To ensure the AI has adequate file content for safe and accurate planning and editing, especially for critical or complex files.
-*   **Trigger:** Called by Step 3.0 when assessing target file complexity or if initial partial reads are insufficient.
+*   **Trigger:** Called by Step 3.2 (`Ensure Sufficient Context (Initial Check)`) at the beginning of the planning phase.
+*   **Core Principle:** When in doubt about the sufficiency of a partial view for the task at hand, the AI should default to attempting a full file read if permissible and necessary for robustness.
+
 *   **Steps:**
-    1.  **Prioritize Complete View:** If the user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing), a file previously identified as complex or sensitive to edits, OR if an initial partial file read (e.g., from `read_file` without `should_read_entire_file=True`) proves insufficient to confidently locate all necessary code sections for planning and executing the required change, the AI **MUST** prioritize obtaining a complete and sufficient view of the target file. **When in doubt about the sufficiency of a partial view for the task at hand, the AI should default to attempting a full file read as per Step 2.**
-    2.  **Attempt Full File Read:** As the default approach when a more comprehensive view is indicated by Step 1 (especially when any doubt exists regarding the adequacy of partial views), the AI **SHOULD** first attempt to obtain the full file content using `read_file` with `should_read_entire_file=True` (or by specifying a line range covering the entire file). (Note: Per tool constraints, reading entire files is generally only allowed if it has been edited or manually attached by the user. The AI should be mindful of this constraint when deciding to use this option).
-    3.  **Verify Full Content Receipt & Handle Incompleteness:**
-        a.  **Mandatory Check:** After the `read_file` call in Step 2, if the intent was to read the entire file, the AI **MUST** scrutinize the tool's response to confirm the *entire* file content was returned. This includes:
-            i.  Checking if the tool's textual description explicitly states only partial content (e.g., "Showing the first X lines", "Outline of the rest of the file:", "Contents of ... from line X-Y (total Z lines):" where Y-X+1 is less than Z).
-            ii. Comparing the number of lines reported/returned against the known total lines of the file (if this information is available from prior `list_dir` or other context).
-            iii. **Explicitly check if the tool mentions the file needing to be attached as the reason for partial content.**
-        b.  **Trigger for Incomplete Read:** If *any* indication from sub-step 'a' suggests the full file was not returned, or if the AI still deems the content insufficient for the task, it **MUST** treat the read as incomplete.
-        c.  Action on Incomplete Read:
-            i.   The AI MUST clearly state the situation. **If the reason identified in 3.a.iii was the known tool constraint about attached files, the statement MUST be direct:** *"The tool cannot provide the full content of `[filename]` because it has not been attached for full reads. To proceed reliably with tasks requiring full context for `[filename]` (due to [briefly state reason, e.g., its complexity, central role]), please attach the file or provide its complete content."* **Otherwise (if the reason is different or unclear), state the situation generally:** *"Attempted to read the full content of `[filename]` (X lines), but the tool returned Y lines and an outline for the remainder."*
-            ii.  The AI MUST then state the specific risks of proceeding without the full content if a complete view was deemed necessary in Step 1.
-            iii. **BLOCKER:** The AI MUST NOT proceed with planning or generating edits for this file based on the incomplete information (if a complete view was deemed necessary in Step 1) UNTIL either:
-                (a) The user provides the full file content, OR
-                (b) The user, after being informed of the specific risks (as per sub-step ii), **provides explicit, risk-acknowledged guidance to proceed** as detailed in the new Step 3.d below.
-                A general instruction to "continue" or "proceed" without specific acknowledgement of the stated risks for incomplete data is NOT sufficient to override this blocker. The user's instruction to proceed must be clearly in response to the AI's stated risks of using incomplete data.
-    4.  **User Guidance on Proceeding with Partial Data (Post-Blocker):**  **(NEW STEP)**
-        *   **Trigger:** If the user, after the AI has invoked the `BLOCKER` in Step 3.c.iii, instructs the AI to proceed using the available partial data despite the stated risks.
-        *   **Action:** Before proceeding, the AI **MUST**:
-            a.  Obtain the user's clear, affirmative confirmation that they understand and accept the *specific risks previously outlined* for using partial data for *this specific file and task*. A generic "proceed" is insufficient. The confirmation must directly acknowledge the risks.
-            b.  Upon receiving valid confirmation, log this explicit, risk-acknowledged override (e.g., internal thought process: "User explicitly approved proceeding with partial data for `[filename]` despite stated risks of [risk summary].")
-            c.  Explicitly state in its response that it is proceeding based on this override: "Proceeding with partial data for `[filename]` based on explicit user confirmation acknowledging the risks of [risk summary]."
-        *   Only after completing steps a, b, and c can the AI proceed with planning/editing using the partial data.
-    5.  **Alternative (Use with Extreme Caution and Explicit Justification):** (Was Step 4, renumbered) Only if highly targeted and reliable means (e.g., a `grep_search` for a *unique and unambiguous* anchor string known to be immediately adjacent to *all* areas of interest) can *definitively and completely substitute* for a full file view for the specific task, and this is demonstrably less risky than proceeding with partial information after a failed full read attempt (and subsequent user request as per Step 3.c.ii), may this be considered. This path requires explicit justification by the AI, detailing why this alternative is sufficient and safe for the given task, and should be exceptionally rare for complex changes in critical files.
+    1.  **Assess Need for Comprehensive View:**
+        *   **Consider If:**
+            *   The user's request targets a file known to be a central configuration hub (e.g., main application setup, DI container, core routing).
+            *   The file was previously identified as complex or sensitive to edits.
+            *   An initial partial file read (e.g., from `read_file` without `should_read_entire_file=True` or a limited line range) has proven insufficient to confidently locate all necessary code sections for planning and executing the required change.
+        *   **Decision:** If any of the above are true, or if any doubt exists regarding the adequacy of partial views for the current task, a more comprehensive view is indicated. Proceed to Step 2.
+        *   **Else (Partial View Sufficient):** If a partial view is confidently deemed sufficient, document this assessment and this procedure can be considered complete for this file. *(Report: e.g., "`Procedure: Ensure Sufficient File Context` for `[filename]`: Partial view deemed sufficient for the current task of [task description].")*
+
+    2.  **Attempt to Obtain Comprehensive File View (If Indicated by Step 1):**
+        *   **Default Action:** Attempt to obtain the full file content using `read_file` with `should_read_entire_file=True` OR by specifying a line range covering the entire file.
+        *   **(AI Note:** Be mindful of tool constraints. Reading entire files via `should_read_entire_file=True` is generally only allowed if the file has been edited or manually attached by the user. If this constraint is likely to prevent a full read, and a full read is critical, this should be factored into the risk assessment if proceeding with partial data becomes the only option after user consultation.)*
+
+    3.  **Verify Content Receipt from Tool & Handle Incompleteness:**
+        *   **Trigger:** After the `read_file` call in Step 2.
+        *   **A. Mandatory Check for Completeness (if full read was attempted):**
+            i.  **Scrutinize Tool Response:** Check if the tool's textual description explicitly states only partial content was returned (e.g., "Showing the first X lines," "Outline of the rest of the file:", "Contents of ... from line X-Y (total Z lines):" where Y-X+1 is less than Z).
+            ii. **Compare Line Counts:** If known, compare the number of lines reported/returned by the tool against the file's total lines.
+            iii.**Check for Tool Constraints:** Explicitly check if the tool mentions a constraint (e.g., file not attached) as the reason for partial content.
+        *   **B. Determine if Read is Incomplete or Insufficient:**
+            *   **Condition:** The read is considered incomplete or insufficient if:
+                *   Any indication from Step 3.A suggests the full file was not returned when a full read was attempted, OR
+                *   The AI still deems the returned content (even if a full read was not the primary attempt but a large section was read) insufficient for the task's complexity or safety.
+        *   **C. Action on Incomplete or Insufficient Read (If Condition B is Met):**
+            i.  **State the Situation Clearly:**
+                *   **If Tool Constraint for Full Read Was the Cause (as per 3.A.iii):** State directly: *"The tool cannot provide the full content of `[filename]` because it has not been attached/edited for full reads. To proceed reliably with tasks requiring full context for `[filename]` (due to [briefly state reason, e.g., its complexity, central role]), please attach the file or provide its complete content if possible."*
+                *   **Otherwise (Reason Unclear or General Insufficiency):** State: *"Attempted to read content of `[filename]` (e.g., X lines / full file). The tool returned Y lines [and an outline for the remainder / or describe other insufficiency]. This may not be sufficient for the task of [task description] due to [briefly state reason]."*
+            ii. **State Risks:** Clearly articulate the specific risks of proceeding with planning or editing based on the currently available (incomplete/insufficient) information for `[filename]`.
+            iii.**BLOCKER: Await User Guidance on Proceeding with Incomplete/Insufficient Data:**
+                *   State: "Proceeding with potentially incomplete/insufficient data for `[filename]` requires your explicit, risk-acknowledged guidance. The identified risks are: [Summarize risks from 3.C.ii]."
+                *   **MUST NOT** proceed with planning or generating edits for `[filename]` using this data UNTIL the user provides explicit, risk-acknowledged guidance as per Step 4 below.
+                *   (Note: A generic "continue" or "proceed" without specific acknowledgment of the stated risks is NOT sufficient to override this blocker.)
+        *   **D. Action if Read is Deemed Complete and Sufficient:**
+            *   Report: e.g., "`Procedure: Ensure Sufficient File Context` for `[filename]`: Full file read, content verified as complete and sufficient." or "Sufficient section of `[filename]` read and deemed adequate."
+            *   This procedure is complete for this file.
+
+    4.  **User Guidance on Proceeding with Incomplete/Insufficient Data (Post-Blocker from Step 3.C.iii):**
+        *   **Trigger:** If the user, after the AI has invoked the `BLOCKER` in Step 3.C.iii, instructs the AI to proceed using the available partial/insufficient data despite the stated risks.
+        *   **Action (Before Proceeding):**
+            a.  **Obtain Explicit Confirmation:** The user's confirmation **MUST** be clear, affirmative, and explicitly acknowledge understanding and acceptance of the *specific risks previously outlined by the AI* for using the partial/insufficient data for *this specific file and task*.
+            b.  **Log Override:** Internally log this explicit, risk-acknowledged override (e.g., "User explicitly approved proceeding with partial/insufficient data for `[filename]` for task `[task_id/description]` despite stated risks of [risk summary].")
+            c.  **State Override in Response:** Explicitly state: "Proceeding with planning for `[filename]` using the available partial/insufficient data based on your explicit confirmation acknowledging the risks of [risk summary]."
+        *   Only after completing Steps 4.a, 4.b, and 4.c can the AI proceed with planning/editing using the partial/insufficient data. The procedure is then complete for this file.
+
+    5.  **Alternative (Use with Extreme Caution and Explicit Justification - If Step 2 Full Read Fails & User Guidance (Step 4) Not Yet Obtained/Applicable):**
+        *   **Condition:** Only if highly targeted and reliable means (e.g., a `grep_search` for a *unique and unambiguous* anchor string known to be immediately adjacent to *all* areas of interest) can *definitively and completely substitute* for a more comprehensive file view for the specific task, AND this is demonstrably less risky than proceeding with potentially insufficient partial information after a failed full read attempt (and before escalating to Step 3.C.iii Blocker).
+        *   **Action:** This path requires explicit justification by the AI, detailing why this alternative is sufficient and safe for the given task. It should be exceptionally rare for complex changes in critical files.
+        *   If used, report justification and outcome. The procedure is then complete for this file.
 
 **`Procedure: Prepare Robust Edit Tool Input`**
-*   **Purpose:** To construct the `code_edit` and `instructions` parameters for the `edit_file` tool in a way that maximizes reliability and precision.
-*   **Trigger:** Called by Step 3.8.b and applied by Step 4.1 when preparing to call `edit_file`.
-*   **Steps:**
-    1.  **Explicit Instructions Field:** The `instructions` field given to `edit_file` **MUST** be explicit about the action (add vs. modify/replace).
-    2.  **Sufficient Context in `code_edit` for Anchoring:**
-        *   **General Guideline:** Ensure the `code_edit` string includes enough unchanged lines (aim for 2-3 immediately before and after each modified block) for anchoring, where code structure allows. Adjust for small, isolated single-line changes. The goal is to uniquely identify the edit location.
-        *   **Complex/Sensitive/Corrective Edits:** For files identified as complex/sensitive (per `Procedure: Ensure Sufficient File Context` or an assessment during `Procedure: Analyze Impact`), or when generating corrective edits for previously mis-applied diffs, the AI **MUST** prioritize extreme precision:
-            *   Use highly specific anchor lines in the `code_edit` string.
-            *   Provide broader context than usual in `code_edit` if it clarifies edit boundaries.
-            *   Reiterate in the `instructions` field any critical sections of the file that **MUST** remain unchanged (e.g., "IMPORTANT: Only modify the specified lines for X; the Y and Z sections must remain untouched.").
-    3.  **Handling Substantial Block Movements/Structural Changes in `code_edit`:** When an edit involves moving substantial blocks of code (e.g., entire functions, classes, or large multi-line logical blocks), or when prior edits by the tool for similar structural changes have shown inaccuracies in placement:
-        *   **Prioritize Full Logical Block Context:** Provide the edit tool with the entire surrounding logical block (e.g., the full function body if moving code within it or into it, the full class definition if reordering methods) as context in the `code_edit` string.
-        *   **Clarify Sub-Part Changes in `instructions`:** The `instructions` field **MUST** then clearly state which specific sub-parts of that larger block (provided in `code_edit`) are being modified, added, deleted, or reordered.
-    4.  **Deprecated Code Handling in `code_edit`:** When replacing or removing code, the old/deprecated code **MUST** be completely deleted from the `code_edit` string, not commented out. The `code_edit` should reflect this direct removal.
+*   **Purpose:** To construct `code_edit` and `instructions` for the `edit_file` tool to maximize reliability and precision.
+*   **Trigger:** Called by Step 3.11 (`Improve Edit Tool Reliability`) and its principles are applied by Step 4.1 (`Generate Proposed code_edit Diff Text`) when preparing to call `edit_file`.
+
+*   **Guidelines for `edit_file` Parameters:**
+
+    1.  **`instructions` Field: Be Explicit and Informative.**
+        *   **Primary Action:** The `instructions` field **MUST** clearly state the primary action (e.g., "add function foo", "modify class Bar to implement new_method", "replace content of calculate_xyz", "delete deprecated_variable").
+        *   **Critical Unchanged Sections (for Complex/Sensitive/Corrective Edits):** If the edit falls under Guideline 2.b (Enhanced Precision), reiterate in the `instructions` field any critical sections of the file that **MUST** remain untouched. *Example: "IMPORTANT: Only modify the specified lines for correcting the loop in `process_items`; the `initialize_system` and `generate_report` functions must remain entirely unchanged."*
+
+    2.  **`code_edit` String: Provide Sufficient and Precise Context for Anchoring.**
+        *   **a. General Guideline for Anchoring:**
+            *   Include enough unchanged lines (typically 2-3 immediately before and after each modified block) to uniquely identify the edit location. Adjust for small, isolated single-line changes.
+            *   The goal is to provide unique and unambiguous anchors for the edit tool.
+        *   **b. Enhanced Precision for Complex/Sensitive/Corrective Edits:**
+            *   **Applies to:**
+                i.  Files identified as complex or sensitive (as per `Procedure: Ensure Sufficient File Context`).
+                ii. Edits generated from an assessment during `Procedure: Analyze Impact` that indicates high sensitivity.
+                iii.Corrective edits generated for previously misapplied diffs.
+            *   **Action:**
+                i.  Use highly specific and unique anchor lines in the `code_edit` string.
+                ii. Provide broader context (more unchanged lines) in `code_edit` if it significantly clarifies edit boundaries for the tool, especially in repetitive or structurally similar code sections.
+
+    3.  **`code_edit` for Substantial Block Movements or Structural Changes:**
+        *   **Context:** This guideline applies when an edit involves moving substantial blocks of code (e.g., entire functions, classes, or large multi-line logical blocks from one part of the file to another) OR when prior `edit_file` attempts for similar structural changes in the same file or similar files have demonstrated inaccuracies in placement.
+        *   **Action for `code_edit` String:** To ensure correct placement, provide the entire surrounding logical block (e.g., the full function body if moving code within it or into it; the full class definition if reordering methods) as context in the `code_edit` string, showing the final intended state of that entire block.
+        *   **Action for `instructions` Field:** The `instructions` field **MUST** then clearly describe the structural change, specifying which sub-parts of the larger block (provided in `code_edit`) are being modified, added, deleted, or reordered, and their new intended positions within that block. *Example: "Move method `alpha` to appear before method `beta` within class `Gamma`. The `code_edit` provides the full new structure of class `Gamma`."*
+
+    4.  **`code_edit` for Deprecated/Old Code:**
+        *   When replacing or removing code that is deprecated or no longer needed:
+            i.  The old/deprecated code **MUST** be completely removed (i.e., deleted) from the `code_edit` string.
+            ii. It **MUST NOT** be commented out. The `code_edit` string should reflect the final state with the code entirely absent.
 
 **`Procedure: Verify Dependency Reference`**
-*   **Purpose:** To factually confirm the validity of a dependency reference (e.g., import, require) before relying on it or including it in code. **MUST** be performed for **every** reference during planning (3.4.1.b), pre-edit deviation handling (via `Procedure: Verify Diff`), post-edit verification (via `Procedure: Verify Diff`), and downstream checks (4.4.2.b.i).
-*   **Applicability:** **MUST** be performed whenever planning to add or modify a dependency reference (import, require, etc.) and when verifying diffs containing such references.
+    *   **Purpose:** To factually confirm the validity of any dependency reference (e.g., import statements, `require` calls) before relying on it or including it in generated code.
+    *   **Applicability:** **MUST** be performed for **EVERY** dependency reference that is:
+        *   Planned to be added or modified (during Step 3.7.1.b - Verify ALL Stated Assumptions).
+        *   Present in a `code_edit` diff being verified (during Step 4.2.1.b - Pre-Apply Verification, via `Procedure: Verify Diff`).
+        *   Present in an applied `edit_file` or `reapply` diff (during Step 4.4.1 - Post-Apply Verification, via `Procedure: Verify Edit File Diff` or `Procedure: Verify Reapply Diff`).
+        *   Checked during downstream consumer analysis (Step 4.4.2.b.i - Dependency Re-verification).
+    *   **Reporting:** For each step involving tool usage (Path Validation, Symbol Validation), explicitly report the method/tool used and its direct outcome.
+
 *   **Steps:**
-    1.  **Cross-Reference Prior Knowledge:** Check if the correct module path for the symbol(s) was previously verified. Use verified path if available.
-    2.  **Path Validation:** **MUST** use tools (`file_search`, `list_dir`) to confirm the **actual existence** of the source module file/directory path (e.g., `path/to/module.py`, `path/to/package/__init__.py`). **Report method and outcome.** If path invalid, reference **MUST** be corrected or removed.
-    3.  **Symbol Validation:** Only if path confirmed valid, **MUST** then use tools (`read_file` on target, `grep_search`) to confirm the existence AND necessity (check usage in *current* file scope) of the referenced symbol(s) within that module/package. **Report method and outcome.** Remove unused symbols.
+
+        1.  **Cross-Reference Prior Knowledge (Initial Check):**
+            *   **Action:** Before tool-based validation, check if the correct and verified module path and symbol existence for the specific dependency were already confirmed in a *prior, reliable step within the current execution cycle for the same overall task*. (e.g. A previous `Procedure: Verify Hypothesis` for the exact same import path and symbol).
+            *   **Outcome:**
+                *   If unequivocally verified earlier in the *same task cycle*: Note this (e.g., "Dependency `X` from `module_y` already verified in prior Step Z."). Steps 2 and 3 may be condensed if no new information warrants re-verification.
+                *   Otherwise (no prior verification in this cycle, or any doubt): Proceed fully with Steps 2 and 3.
+
+        2.  **Path Validation (Existence of Source Module/Package):**
+            *   **Objective:** Confirm the actual existence of the source module file or package directory path from which the dependency is being imported.
+            *   **Action:**
+                i.  Identify the full module path (e.g., `path.to.module` translates to a file like `path/to/module.py` or a package directory `path/to/package/__init__.py`).
+                ii. Use tools like `file_search` (for specific filenames) or `list_dir` (to check for directories/`__init__.py` files) to verify this path exists in the codebase.
+            *   **Report & Handling:**
+                *   **Success:** Report: "Path Validation for `[module_path]`: Confirmed existence of `[file/directory_path]` using `[tool_name]`."
+                *   **Failure:** If the path is invalid/not found, the dependency reference **MUST** be considered invalid. Report: "Path Validation for `[module_path]`: FAILED. Path `[file/directory_path]` not found using `[tool_name]`." The planned addition/modification of this dependency **MUST** be corrected or removed from the plan/`code_edit`. **Do not proceed to Step 3 for this dependency.**
+
+        3.  **Symbol Validation (Existence and Necessity of Symbol within Module - Conditional on Successful Path Validation):**
+            *   **Objective:** Only if Path Validation (Step 2) was successful, confirm the existence of the specific symbol(s) (class, function, variable) within the validated module/package, and check if it's actually used in the *current file scope where the import is being added/verified*.
+            *   **Action:**
+                i.  For the specific symbol(s) being imported (e.g., `MyClass` from `module_y`):
+                    *   Use `read_file` on the target module file (identified in Step 2) and `grep_search` within that file's content (or a direct text search of the `read_file` output) to confirm the definition or presence of the symbol(s).
+                ii. **Necessity Check (for new/modified imports):** Briefly check (e.g., using `grep_search` or manual analysis of the current file/scope being edited) if the symbol, once imported, is actually used. This is particularly important when *adding* new imports.
+            *   **Report & Handling:**
+                *   **Symbol Found & Necessary/Used:** Report: "Symbol Validation for `[SymbolName]` in `[module_path]`: Confirmed existence in module and used in current scope."
+                *   **Symbol Found but NOT Necessary/Used (for new/modified imports):** Report: "Symbol Validation for `[SymbolName]` in `[module_path]`: Confirmed existence in module, but NOT found to be used in the current scope. Plan/`code_edit` will be updated to remove this unused import."
+                    *   The import **SHOULD** be removed from the plan/`code_edit` to avoid unused imports.
+                *   **Symbol NOT Found:** Report: "Symbol Validation for `[SymbolName]` in `[module_path]`: FAILED. Symbol `[SymbolName]` not found within the module."
+                    *   The dependency reference **MUST** be considered invalid. The planned addition/modification **MUST** be corrected (e.g., fix typo in symbol name, find correct module) or removed. If part of an existing, unchanged line in a diff, this signals a potential deeper issue that may require broader analysis.
 
 **`Procedure: Analyze Impact`**
-*   **Purpose:** To identify potential effects of proposed changes on existing functionality (called in Step 3.4.1.a).
-*   **Applicability:** **MUST** be performed during Planning (Step 3.4.1.a) before generating edits, especially for changes to interfaces, paths, symbols, core models, or widely used components.
-*   **Steps Checklist:**
-    1.  **Identify Affected Call Sites/References:** For interface/path/symbol changes, **MUST** use tools (`grep_search`) to find *all* potential call sites/imports/references codebase-wide. List findings.
-    2.  **Enhanced Scope for Core Refactoring:** **CRITICAL:** If modifying base classes, core domain interfaces, widely used utilities, DI container, core configs: **MUST** explicitly consider consumers across *all* layers (CLI, helpers, services). Employ broader search strategies (`grep` for attribute access, semantic search). **MUST** search for inheritors/consumers (e.g., `grep_search 'class .*(.*BaseClassName.*):'`, `codebase_search`). List key findings, **including specific inheritors/consumers identified and brief note on potential impact checked.**
-    3.  **Circular Dependency Check:** When adding a new module dependency (B needs A), explicitly state check, examine dependencies in module A, report outcome (e.g., "Circular Check: `module_a` does not import `module_b`. OK.").
-    4.  **Data Representation Impact:** For changes affecting data representation (ID vs Name, format) or core models, explicitly consider impacts across layers (ORM, Mappers, Exporters, Consumers, Tests).
+*   **Purpose:** To identify and document the potential effects of proposed code changes on existing functionality and across the codebase.
+*   **Trigger:** Called by Step 3.7.1.a (`Analyze Overall Impact`) during the Planning Phase, especially critical before generating edits for changes to interfaces, paths, symbols, core models, or widely used components.
+*   **Core Principle:** A thorough impact analysis is crucial for preventing unintended side effects and regressions.
+
+*   **Sub-Procedures for Impact Analysis:**
+
+    1.  **Identify Affected Call Sites & References (For Interface/Path/Symbol Changes):**
+        *   **Action:**
+            i.  When changes involve interfaces (function/method signatures), module/file paths, or symbol names (classes, functions, variables):
+            ii. **MUST** use tools (primarily `grep_search` for exact matches, potentially `codebase_search` for semantic relationships if names are significantly changing) to find *all* potential call sites, imports, or direct references codebase-wide.
+        *   **Report:**
+            i.  List all identified affected files and specific locations (e.g., function/method names) within those files.
+            ii. If no direct references are found after a thorough search, explicitly state this (e.g., "No direct call sites found for the renamed function `old_name` after `grep_search` for `old_name(` and `old_name (`.").
+
+    2.  **Perform Enhanced Scope Analysis (For Core Component Refactoring):**
+        *   **CRITICAL Pre-condition:** This sub-procedure is **MANDATORY** if modifying:
+            *   Base classes or core domain interfaces.
+            *   Widely used utility functions or modules.
+            *   The Dependency Injection (DI) container setup or core configurations.
+            *   Any component identified as architecturally significant or having broad consumption.
+        *   **Action:**
+            i.  Explicitly consider consumers and interactions across *all relevant layers* of the application (e.g., CLI, API, services, data access, helpers, etc.).
+            ii. Employ broad and varied search strategies:
+                *   `grep_search` for attribute access (e.g., `grep_search "\.my_changed_attribute"`).
+                *   `grep_search` for instantiation patterns if class names change.
+                *   `grep_search` for specific import patterns.
+                *   `codebase_search` for conceptual links if refactoring is substantial.
+            iii.**MUST** specifically search for and identify direct inheritors (e.g., `grep_search "class .*(.*BaseClassName.*):"`) or explicit consumers/implementers of interfaces.
+        *   **Report:**
+            i.  List all key findings, **including specific inheritor classes, implementing components, or significant consumer modules identified.**
+            ii. For each key finding, provide a brief note on the potential impact that was checked or considered (e.g., "Class `DerivedClassA` inherits from `BaseChangedClass`; checked for overridden method compatibility.", "Module `feature_x_service` consumes `core_utility_y`; verified new signature usage.").
+
+    3.  **Check for Circular Dependencies (When Adding/Changing Imports):**
+        *   **Action:**
+            i.  When a plan involves adding a new module dependency (e.g., module `B` will now import from module `A`) or significantly altering existing ones:
+            ii. Explicitly state that a circular dependency check is being performed.
+            iii.Examine the import statements in the target module (`A` in the example) to ensure it does not (and will not, as a result of other planned changes) import from the originating module (`B`).
+        *   **Report:**
+            i.  State the outcome of the check. (e.g., "Circular Dependency Check: `module_a` does not import `module_b`. No circular dependency introduced by importing `module_a` into `module_b`.")
+            ii. If a potential circular dependency is identified, this **MUST** be flagged as a critical issue, and the plan **MUST** be revised to avoid it before proceeding.
+
+    4.  **Assess Data Representation & Core Model Impact:**
+        *   **Action:**
+            i.  When changes affect data representation (e.g., changing an ID from an integer to a UUID, altering a date format, modifying units) or impact core data models/entities:
+            ii. Explicitly consider the potential impacts across all layers and components that might produce, consume, or transmit this data. This includes (but is not limited to): ORM layers, database schemas, mappers/serializers, data exporters/importers, API contracts, front-end consumers, and tests.
+        *   **Report:**
+            i.  List the components/layers considered.
+            ii. Summarize potential impacts identified and how the plan addresses them (e.g., "Data Impact: Change to `user_id` format from int to string. Considered ORM, API serialization, and `reporting_module`. Plan includes updating API schema and `reporting_module` data parsing.").
 
 **`Procedure: Verify Hypothesis`**
 *   **Purpose:** To factually verify assumptions made during planning before proceeding (called in Step 3.4.1.b).
@@ -632,7 +830,7 @@ In all such cases where the tool's changes significantly exceed or deviate from 
                 *   Using an alternative tool to gather the necessary information.
                 *   If ambiguity persists, requesting clarification from the user.
             *   If proceeding with potentially incomplete data is unavoidable and deemed acceptable after consideration, this **MUST** be explicitly stated along with potential risks.
-    5.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "`Procedure: Verify Tool Output` (`read_file` for `xyz.py`): Verified, content sufficient.", "`Procedure: Verify Tool Output` (`grep_search` for \'\\\\\'MyClass\\\\\'\'): Verified, sufficient after re-run with `include_pattern=\'*.py\'`.", "`Procedure: Verify Tool Output` (`list_dir` for `src/utils`): Verified, sufficient.").
+    5.  **Report Outcome:** Concisely state the outcome of this verification (e.g., "`Procedure: Verify Tool Output` (`read_file` for `xyz.py`): Verified, content sufficient.", "`Procedure: Verify Tool Output` (`grep_search` for ''MyClass''): Verified, sufficient after re-run with `include_pattern='*.py'`.", "`Procedure: Verify Tool Output` (`list_dir` for `src/utils`): Verified, sufficient.").
 *   **Next Step:** Only after successful verification (or explicit acknowledgment of proceeding with limitations), use the tool's output for subsequent planning sub-steps (e.g., 3.1, 3.2, etc.).
 
 **`Procedure: Perform Self-Assessment`**
@@ -670,90 +868,307 @@ In all such cases where the tool's changes significantly exceed or deviate from 
 6.  **Consult on Ambiguous Missing Dependencies:** Follow `Procedure: Consult on Ambiguous Missing Dependency` ONLY if resolving a dependency error requires creating significant new structures based *only* on potentially old references, with no strong corroborating context.
 
 **`Procedure: Handle Architectural Decisions`**
-*   **Trigger:** Execution is triggered by Step 3.9 when analysis reveals architectural conflicts, significant trade-offs between valid paths, or foundational inconsistencies.
-1.  **IMMEDIATELY STOP** detailed planning for original task. **Treat as mandatory **BLOCKER:**.**
-2.  **State Issue/Choice:** Clearly describe the suboptimal pattern, architectural decision point, or foundational inconsistency (e.g., global state use, SRP violation choice, type mismatch).
+*   **Purpose:** To establish a clear protocol when a proposed change or user request involves or implies a significant architectural decision, modification to core design principles, or a choice with broad, non-obvious implications for the codebase.
+*   **Core Principle:** The AI **MUST NOT** unilaterally make significant architectural decisions. It **MUST** identify such situations, present options/analysis to the user, and await explicit user guidance.
+*   **Trigger:** This procedure **MUST** be invoked if any of the following conditions are met during Step 3 (Planning Phase), especially during `3.7.1.a (Analyze Overall Impact)` or `3.7.1.d (Identify Architectural Implications)`:
+    *   A user request directly asks for a change that would alter fundamental structural aspects of the application (e.g., "Change the application from monolithic to microservices," "Replace the current database system," "Introduce a global state management system where none existed").
+    *   A planned code modification, while seemingly localized, would necessitate changes to core abstractions, widely used interfaces, or foundational modules in a way that deviates from established patterns.
+    *   Implementing a feature requires choosing between multiple design patterns or architectural approaches where the choice has significant trade-offs (e.g., performance vs. maintainability, coupling vs. complexity) and no clear precedent exists in the relevant codebase area.
+    *   The AI identifies that satisfying a request as-is would violate established architectural principles observed in the codebase (e.g., layering violations, breaking encapsulation of core modules).
+    *   The change impacts security, data privacy, or compliance in a non-trivial way that requires a design choice.
+
+*   **Steps:**
+
+    1.  **Identify and Flag:**
+        *   Clearly state: "This request/planned change appears to involve an architectural decision regarding [briefly describe the area, e.g., 'data persistence strategy,' 'component communication model']."
+        *   Reference the specific part of the request or plan that triggers this.
+
+    2.  **Preliminary Analysis (AI Autonomous):**
+        *   **Objective:** To provide the user with sufficient context to make an informed decision.
+        *   **Actions:**
+            *   Briefly describe the current architecture relevant to the decision.
+            *   If multiple implementation options are apparent, outline at least two (if feasible), very briefly listing their potential pros and cons in the context of the current project. (e.g., "Option A: [Description], Pros: [Scalability], Cons: [Initial complexity]. Option B: [Description], Pros: [Simplicity], Cons: [Less flexible for future X].")
+            *   Identify any immediate, obvious risks or significant impacts associated with the potential architectural change(s).
+            *   Reference any existing architectural documentation or established patterns in the codebase that seem relevant (either supporting or conflicting).
+        *   **Constraint:** This analysis should be concise and aimed at framing the decision, not at exhaustive research without user consent.
+
+    3.  **Halt and Present to User:**
+        *   **Action:** **MUST** halt further detailed planning or code generation related to the architecturally significant part of the task.
+        *   **Report:** Present the findings from Step 2 (Preliminary Analysis).
+        *   **Request:** Explicitly ask the user for guidance:
+            *   "Please advise on how to proceed. Which architectural approach should be pursued?"
+            *   "Do you require a more detailed comparison of options?"
+            *   "Are there other architectural considerations I should be aware of for this task?"
+
+    4.  **Await User Guidance:**
+        *   Do not proceed with implementation of the architecturally sensitive parts until the user provides explicit direction.
+        *   The user might:
+            *   Approve an option.
+            *   Ask for more detailed analysis of specific options.
+            *   Provide a different architectural direction.
+            *   Defer the decision or de-scope the feature.
+
+    5.  **Incorporate User Decision:**
+        *   Once guidance is received, explicitly state the chosen architectural direction in the plan. (e.g., "User has directed to proceed with Option A: [Description].")
+        *   Continue with Step 3 (Planning) or Step 4 (Edit Generation) based on the user's decision, ensuring the plan and subsequent edits align with the confirmed architecture.
+        *   If the user's decision significantly alters the plan, reiterate the updated plan for confirmation.
+
+    6.  **Documentation (If Applicable and AI-Modifiable):**
+        *   If the architectural decision warrants it and the AI has the capability/permission to modify project documentation (e.g., READMEs, design docs in markdown), ask the user if a brief note about the decision should be added. If yes, and feasible, include this in the edit plan.
+
+*   **Reporting:** The AI's communication during this procedure (identification, analysis, request for guidance, and incorporation of decision) serves as the primary report.
 
 **`Procedure: Handle Necessary Workaround`**
-*   **Trigger:** Execution is triggered by Step 3.4 (Data Integrity Deviation requiring explicit approval) or as a potential outcome of `Procedure: Handle Unclear Root Cause / Missing Info` (Step 5) if root cause investigation is blocked/impractical.
-*   **Pre-condition:** Root cause investigation confirmed blocked or impractical *now*, and workaround is only viable path *at this moment*.
-1.  **STOP** all implementation planning/fixing. (**BLOCKER:** Step requiring user approval)
+*   **Purpose:** To define a strict protocol for proposing, approving, and implementing a temporary workaround when a direct fix for an issue is not immediately feasible due to blocked root cause investigation, unavoidable external constraints, or critical data integrity deviations where a fallback is the only immediate option.
+*   **Core Principle:** Workarounds are exceptions and **MUST** be treated with extreme caution. They should only be implemented when the benefits clearly outweigh the risks and no standard solution is presently viable. The AI **MUST NOT** unilaterally implement workarounds.
+*   **Trigger:** This procedure **MUST** be invoked if:
+    *   Step 3.7 (Data Integrity Priority) identifies an unexpected data issue, and implementing a fallback/default (which is a workaround) is considered.
+    *   `Procedure: Handle Unclear Root Cause / Missing Info` (Step 5) concludes that root cause investigation is currently blocked or impractical, and a workaround is the only way to proceed with a critical part of the user's task.
+    *   External system limitations (e.g., a known bug in a library for which no immediate fix exists) prevent a standard solution.
+
+*   **Steps:**
+
+    1.  **STOP All Other Implementation Planning/Fixing:** Halt any ongoing attempts to implement a direct fix or proceed with standard planning for the affected component.
+
+    2.  **Identify and State the Need for a Workaround:**
+        *   Clearly state: "A direct fix for [describe the issue, e.g., 'the data validation error for X,' 'the inability to process Y due to Z'] is currently not feasible due to [explain the blocker, e.g., 'blocked root cause investigation,' 'missing data source,' 'external library constraint']."
+        *   Propose: "A temporary workaround is being considered to [state the goal of the workaround, e.g., 'allow processing to continue by using a default value,' 'bypass the problematic component to achieve partial functionality']."
+
+    3.  **Detailed Workaround Proposal & Justification:**
+        *   **Action:** Formulate a specific plan for the workaround.
+        *   **Content (MUST include all points):**
+            *   **Specific Actions:** Detail the exact changes the workaround involves (e.g., "Modify function `abc` to return `DEFAULT_VALUE` if `input_q` is null," "Temporarily disable module `problem_module` and reroute calls to `fallback_module`").
+            *   **Scope:** Define how localized or widespread the workaround will be.
+            *   **Duration:** State if the workaround is intended to be very short-term (e.g., for this session only) or if it might persist longer.
+            *   **Risks & Downsides:** **CRITICALLY**, enumerate all potential negative consequences (e.g., "Risk: This will mask underlying data quality issues for field X," "Downside: Feature Y will be unavailable while this workaround is active," "Risk: Performance may be degraded by Z%").
+            *   **Impact on Standards:** Explain how the workaround deviates from `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD`.
+            *   **Alternative (Why Not Viable):** Briefly explain why a standard solution or more direct fix is not currently an option.
+            *   **Future Removal Plan (If Applicable):** Suggest how or when this workaround might be removed or replaced by a proper fix (e.g., "This should be revisited once the root cause investigation for Z is complete").
+
+    4.  **BLOCKER: Request Explicit User Approval for Workaround:**
+        *   **Report:** Present the full workaround proposal and justification from Step 3.
+        *   **State:** "Implementing this workaround for `[describe issue]` requires your explicit, risk-acknowledged approval. The key risks are: [Summarize key risks from Step 3.Content.Risks]."
+        *   **MUST NOT** proceed with implementing the workaround until the user:
+            a.  Explicitly confirms they understand and accept the stated risks AND approve the workaround.
+            b.  Provides an alternative solution.
+            c.  Instructs to abandon this path.
+        *   (Note: A generic "continue" or "proceed" without specific acknowledgment of the stated risks for the workaround is NOT sufficient to override this blocker.)
+
+    5.  **Implement Workaround (If Approved):**
+        *   **Action:** If the user provides explicit, risk-acknowledged approval:
+            i.  State: "User has approved the workaround for `[describe issue]`, acknowledging risks: [Summarize risks]."
+            ii. Implement the workaround by proceeding through a standard Step 3 (Planning for the workaround edit), Step 4 (Edit Generation & Verification for the workaround), and Step 5 (Adherence Checkpoint for the workaround).
+            iii.The edit **MUST** include comments clearly marking the start and end of the workaround code, explaining its purpose and temporary nature (e.g., `# START WORKAROUND: [Issue XYZ] - See [Ticket/Issue ID if available]`, `# END WORKAROUND: [Issue XYZ]`).
+
+    6.  **Documentation of Workaround:**
+        *   **Within Code:** Ensured by comments in Step 5.b.iii.
+        *   **In Reporting:** The AI's proposal, justification, risk assessment, and the user's explicit approval serve as the primary documentation within the interaction log.
+        *   **External (If Applicable):** If the workaround is significant or expected to persist, ask the user: "Should a brief note about this temporary workaround for `[issue]` and its approval be added to any project documentation (e.g., a known issues list, relevant module README)?" If yes, and feasible, include this in the plan.
+
+*   **Reporting:** The AI's communication during this procedure (identification, proposal, risk assessment, request for approval, and confirmation of approval/implementation) serves as the primary report.
 
 **`Procedure: Consult on Ambiguous Missing Dependency`**
-*   **Trigger:** Execution is triggered as a potential outcome of `Procedure: Handle Unclear Root Cause / Missing Info` (Step 6) when resolving a dependency error requires creating significant new structures based *only* on potentially old references, with no strong corroborating context.
-*   **Pre-condition:** Resolving dependency error requires creating significant new structures based *only* on potentially old references, with no strong corroborating context.
-1.  **STOP** implementation planning. (**BLOCKER:** Step requiring user guidance)
+*   **Purpose:** To establish a clear protocol when a referenced dependency (e.g., a class, module, or significant data structure) is missing, and the only available information about its potential structure comes from potentially outdated or ambiguous references, requiring user consultation before attempting to generate or scaffold it.
+*   **Core Principle:** The AI **MUST NOT** create significant new code structures (e.g., entire classes, complex modules) based solely on ambiguous or potentially outdated references without explicit user guidance and confirmation of the intended structure or approach.
+*   **Trigger:** This procedure **MUST** be invoked if:
+    *   `Procedure: Handle Unclear Root Cause / Missing Info` (Step 6) determines that a missing dependency is the issue.
+    *   The only references to the missing dependency's expected structure are from its usage in other code (which might be old or based on a previous version).
+    *   There is no clear, authoritative source (like current documentation, or a nearby well-defined interface) to define the missing dependency's structure.
+    *   Creating the dependency would involve more than a trivial placeholder (e.g., it implies methods, attributes, or a specific internal logic).
+
+*   **Steps:**
+
+    1.  **STOP All Implementation Planning:** Halt any attempts to directly implement the missing dependency or the code that relies on it.
+
+    2.  **Gather and Present Context:**
+        *   **Action:** Collect all available information about the missing dependency.
+        *   **Report to User (MUST include all points):**
+            *   **Missing Dependency:** Clearly identify the name and type (e.g., class, module, function) of the missing dependency (e.g., "Missing class `OldUtilityHelper` referenced in `main_processor.py`").
+            *   **Referencing Locations:** List the specific file(s) and line(s) where it is referenced.
+            *   **Inferred Structure (from usage):** Based on how it's used (e.g., method calls, attribute access), describe the *inferred* structure. *Example: "From its usage, `OldUtilityHelper` appears to require a method `process_item(data)` and an attribute `config_value`."*
+            *   **Ambiguity/Uncertainty:** Clearly state the uncertainties. *Example: "The exact return type of `process_item(data)` is unclear from context," or "It is unknown if `OldUtilityHelper` has other essential methods or an initialization routine."
+            *   **Potential Age of Reference:** If possible, indicate if the referencing code seems old or part of a legacy system.
+
+    3.  **Outline Potential Approaches & Implications (for User Consideration):**
+        *   **Option 1: Scaffold Based on Inferred Structure:**
+            *   Describe: "One option is to attempt to create a basic scaffold for `[MissingDependencyName]` with the inferred methods/attributes: [list them]."
+            *   Implications: "This would allow `[referencing_code]` to potentially compile/run, but the scaffolded `[MissingDependencyName]` would have placeholder logic and might not be functionally correct or complete. There's a risk of misinterpreting the original design."
+        *   **Option 2: Alternative Solution (If Apparent):**
+            *   If an alternative exists (e.g., using a different, existing library; refactoring the referencing code to not need the dependency), briefly describe it.
+            *   Implications: Describe pros/cons of this alternative.
+        *   **Option 3: Defer/Seek More Information:**
+            *   Describe: "Another option is to defer this part of the task until more information about `[MissingDependencyName]` can be found, or to remove/comment out the code that relies on it if it's deemed non-critical."
+            *   Implications: Impact on current task completion.
+
+    4.  **BLOCKER: Request Explicit User Guidance:**
+        *   **State:** "Resolving the missing dependency `[MissingDependencyName]` requires your guidance due to the ambiguities in its structure. Please review the inferred structure and consider the outlined options."
+        *   **Ask:**
+            *   "Should I attempt to scaffold `[MissingDependencyName]` based on the inferred structure (Option 1)? If so, are there any known details about its methods or attributes I should include?"
+            *   "Is there an alternative solution you prefer (Option 2)?"
+            *   "Should this be deferred, or should the dependent code be modified/removed (Option 3)?"
+        *   **MUST NOT** proceed with any option until the user provides explicit direction.
+
+    5.  **Incorporate User Decision:**
+        *   **Action:** Once the user provides guidance (e.g., approves scaffolding with specific details, chooses an alternative, instructs to defer):
+            i.  State: "User has directed to [summarize user's decision, e.g., 'scaffold `OldUtilityHelper` with method `process_item` returning a boolean', 'defer fixing `main_processor.py`']."
+            ii. If the decision involves code changes (e.g., scaffolding, implementing an alternative): Proceed with a new Step 3 (Planning) for those changes, incorporating the user's specific instructions.
+            iii.If the decision is to defer or remove, update the overall task plan accordingly.
+
+*   **Reporting:** The AI's communication during this procedure (presenting context, outlining options, requesting guidance, and confirming user decision) serves as the primary report.
 
 **`Procedure: Handle Failed Verification for Existing Dependency`**
-*   **Trigger:** Execution is triggered by Step 3.7.1.b if hypothesis verification for a dependency reference in *existing, established code* fails (module/symbol not found).
-*   **Pre-condition:** Hypothesis verification for a dependency reference in *existing, established code* fails (module/symbol not found).
+*   **Purpose:** To define a systematic approach when a verification attempt (via `Procedure: Verify Hypothesis` during Step 3.7.1.b) for a dependency reference found in *existing, established code* fails (e.g., the module path or symbol is not found where expected).
+*   **Core Principle:** A failed verification for an existing dependency signals a potential inconsistency or error in the current codebase that needs careful investigation before proceeding with plans that rely on or interact with that dependency.
+*   **Trigger:** This procedure **MUST** be invoked if Step 3.7.1.b (`Verify ALL Stated Assumptions`) reports a "Failed" verification outcome for a dependency that is part of *existing, unchanged code* (i.e., not a newly planned addition or modification by the AI).
+
 *   **Steps:**
-    1.  **DO NOT** immediately plan creation of the missing dependency.
-    2.  **State the Discrepancy:** Clearly state that established code references a module/symbol that cannot be found, specifying the reference and the file containing it.
-    3.  **Perform Usage Check in Referencing File:** **MUST** use tools (`grep_search`) to search *within the referencing file* for actual usage of the specific symbol(s) (e.g., instantiation, method calls, type annotations). Report findings explicitly (e.g., "Usage Check in `file_x.py`: Searched for `MissingSymbol(...)`. Outcome: No usage found." or "Outcome: Usage found in function `Y`.").
-    4.  **Perform Broader Context Search:** Execute additional searches (`grep_search` for related terms/files, `codebase_search` for conceptual links) to find context about the missing element (e.g., was it moved? refactored? deprecated? any TODOs for removal?). Report findings.
-    5.  **Determine Next Action based on Context and Usage:**
-        *   If context clearly indicates a simple move/rename and the symbol is still needed: Plan the fix (update reference path).
-        *   If the dependency failed **AND** the Usage Check (Step 3) found **NO USAGE** in the referencing file **AND** broader context does not suggest it's critical: The default plan should be to **remove the stale dependency reference statement**. Briefly verify this removal doesn't cause downstream issues.
-        *   If the dependency failed **AND** usage *was* found, OR if context suggests intentional removal but usage remains, OR if context is insufficient/ambiguous: **Execute `Procedure: Handle Unclear Root Cause / Missing Info` (Section 5)**, providing the findings from this procedure as input.
+
+    1.  **DO NOT Immediately Plan Creation of the Missing Element:** The primary assumption is that the existing code was once valid; therefore, the failure likely indicates a change, misconfiguration, or misunderstanding, not necessarily a need to create something new from scratch without investigation.
+
+    2.  **State the Discrepancy Clearly:**
+        *   Report: "`Procedure: Handle Failed Verification for Existing Dependency` triggered. Verification of existing dependency `[DependencyName/Path]` referenced in `[FileContainingReference]` at line `[LineNumber]` failed. Reason: `[Specific failure reason from Verify Hypothesis, e.g., 'Module path not found', 'Symbol X not found in module Y']`."
+
+    3.  **Perform Usage Check in Referencing File:**
+        *   **Objective:** To determine if the specific missing symbol (if applicable) is actually used within the file that contains the problematic dependency reference.
+        *   **Action:**
+            *   If the failure was a missing symbol within an otherwise found module: **MUST** use tools (`grep_search` or direct analysis of `read_file` output) to search *within the referencing file* for actual usage of the specific symbol(s) (e.g., instantiation, method calls, type annotations).
+            *   If the failure was a missing module path, this step might focus on how many distinct symbols are attempted to be imported from that path in the file.
+        *   **Report:** Explicitly state the tool(s) used, search term(s), and findings. *Example: "Usage Check in `file_x.py`: Searched for `MissingSymbol(...)` using `grep_search`. Outcome: No usage found." or "Outcome: Usage found in function `Y` (call to `MissingSymbol.method_a()`)."*
+
+    4.  **Perform Broader Context Search (If Necessary):**
+        *   **Objective:** To find any information about the missing dependency's history or intended state (e.g., was it moved, renamed, refactored, intentionally deprecated, or are there TODOs for its removal?).
+        *   **Action:** Especially if usage *is* found (Step 3) or if the missing element is a module: Execute additional searches (`grep_search` for related terms/files, `codebase_search` for conceptual links, check commit logs if accessible and relevant) across the codebase.
+        *   **Report:** Summarize findings from the broader search. *Example: "Broad Context Search: `grep_search` for `OldModuleName` found references in `docs/changelog.md` indicating it was refactored to `NewModuleName` in v2.1." or "No additional context found regarding `MissingSymbol`."
+
+    5.  **Determine Next Action Based on Investigation:**
+        *   **Path A: Simple Fix Apparent (e.g., Renamed/Moved):**
+            *   **Condition:** If findings from Step 3 and 4 clearly indicate a simple, direct fix (e.g., the module was renamed and the new name is identified, a symbol was moved to a known different module).
+            *   **Action:** Formulate a plan to correct the dependency reference (e.g., update import statement). This becomes the current plan. Proceed with Step 3 planning for this corrective edit.
+            *   **Report:** "Conclusion: Dependency `[OldName]` appears to have been renamed to `[NewName]`. Planning to update the import statement in `[FileContainingReference]`."
+        *   **Path B: Dependency Unused and Safe to Remove:**
+            *   **Condition:** If the Usage Check (Step 3) found **NO actual usage** of the specific symbol(s) from the failed dependency reference *within the referencing file*, **AND** the Broader Context Search (Step 4) does not suggest it's critical or used indirectly in a way not caught by the direct usage check.
+            *   **Action:** The default plan should be to **remove the stale dependency reference statement** (e.g., the unused import).
+            *   **Report:** "Conclusion: `[MissingSymbol]` from `[ModulePath]` is not used in `[FileContainingReference]`. Planning to remove the import statement."
+            *   **Verification for Removal:** The plan to remove **MUST** include a brief verification step (e.g., a quick `grep_search` to ensure this specific import isn't unexpectedly critical for a build tool or a very indirect mechanism, though this is rare for unused in-file symbols).
+        *   **Path C: Unclear or Complex Issue (Requires Deeper Analysis):**
+            *   **Condition:** If usage *was* found (Step 3) but the reason for the failure isn't a simple fix (Path A), OR if context is insufficient/ambiguous, OR if the dependency seems intentionally removed but usage persists.
+            *   **Action:** **MUST** execute `Procedure: Handle Unclear Root Cause / Missing Info` (Section 5).
+            *   **Report:** "Conclusion: Usage of `[MissingSymbol/Module]` was found in `[FileContainingReference]`, but the reason for its unavailability is unclear or complex. Escalating to `Procedure: Handle Unclear Root Cause / Missing Info`." Provide all findings from this current procedure as input to the next.
+
+*   **Reporting:** The AI's communication during this procedure (stating the discrepancy, detailing search actions and findings, and concluding with the determined next action path) serves as the primary report.
 
 **`Procedure: Handle Deviation`**
-*   **Trigger:** Called by `Procedure: Verify Diff` (Step 3) whenever deviations (unplanned changes) are identified between the `diff` being checked and the `intent`.
-*   **Purpose:** To fact-check and decide on unplanned lines ("Deviations") in a proposed `code_edit` diff.
-*   **Steps (For EACH Deviation):**
-    1.  **Fact-check Deviation:** Use tools to confirm the existence and correctness of the deviation.
-    2.  **Justify Deviation:** If deviation is intentional, justify it. If not, state it's unplanned and report it.
-    3.  **Integrate or Revise:** If the deviation is verified, justified as beneficial/necessary, and accepted: **formally update the current working plan and the intended `code_edit` to incorporate this deviation.** The `code_edit` can then be considered aligned with the *updated* plan. If the deviation is not acceptable, **revise the proposed `code_edit` to remove the deviation** and align with the original (or a newly revised) plan.
+*   **Purpose:** To define a systematic process for analyzing and addressing any unplanned or unexpected lines ("Deviations") that appear in a `code_edit` diff (either a proposed diff during pre-application verification or an actually applied diff during post-application verification) when compared against the AI's specific, documented intent for that edit.
+*   **Core Principle:** All changes to the codebase must be intentional and verified. Deviations from the plan require explicit analysis and justification before being accepted or require correction of the `code_edit`.
+*   **Trigger:** This procedure is called by `Procedure: Verify Diff` (Step 4 of that procedure) whenever deviations (unplanned additions, deletions, or modifications) are identified between the `diff` being reviewed and the specific `intent` for that edit.
+
+*   **Steps (MUST be performed for EACH identified Deviation):**
+
+    1.  **Isolate and Identify the Deviation:**
+        *   Clearly state the specific line(s) in the `diff` that constitute the deviation from the intended plan. (e.g., "Deviation identified: Line 42 `new_variable = unexpected_value;` was added but not planned.", "Deviation identified: Planned deletion of line 50 did not occur in the diff.")
+
+    2.  **Fact-Check the Deviation (Mandatory Tool Use):**
+        *   **Objective:** To determine if the deviation reflects an actual state of the code or a tool artifact, and to understand its immediate context.
+        *   **Action:** Use appropriate tools (`read_file` for context, `grep_search` for related symbols if the deviation introduces new ones or unexpectedly modifies existing ones) to investigate the code surrounding the deviation in the *current version of the file*.
+        *   **Report:** Briefly state the tools used and the findings. *Example: "Fact-check for unexpected addition on line 42: `read_file` confirms `new_variable` is not in the current version of the file before this diff. `grep_search` for `unexpected_value` found no other uses."
+
+    3.  **Analyze Potential Cause and Impact of the Deviation:**
+        *   Hypothesize the cause (e.g., AI oversight in `code_edit` generation, tool misinterpretation of context, an attempt by the AI to be 'helpful' but outside of plan).
+        *   Assess the potential impact of the deviation: Is it beneficial, benign, or harmful? Does it introduce new logic, change existing behavior, or is it purely cosmetic? Does it align with project standards?
+
+    4.  **Decision and Justification (For EACH Deviation):**
+        *   **Path A: Accept Deviation (Requires Strong Justification):**
+            *   **Condition:** Only if the deviation is fact-checked (Step 2), analyzed (Step 3), and deemed demonstrably beneficial, verifiably correct, aligns with project standards, AND does not introduce significant unintended side effects.
+            *   **Action:**
+                i.  Provide explicit justification for accepting it. *Example: "Justification for accepting added line 42: While unplanned, `new_variable = default_config.TIMEOUT;` correctly initializes a variable that would be needed by the subsequent planned logic and uses the correct project configuration source."
+                ii. **CRITICAL:** The AI's internal working plan for the overall task **MUST** be immediately and explicitly updated to reflect this now-accepted change. The `code_edit` (if still in its proposed state) **MUST** also be updated to formally include this deviation, making it part of the new, verified intent.
+            *   **Report:** "Deviation (e.g., added line 42) accepted. Justification: [brief summary]. Plan and proposed `code_edit` (if applicable) updated."
+        *   **Path B: Reject Deviation (Default for Unjustified/Harmful Deviations):**
+            *   **Condition:** If the deviation is not beneficial, introduces errors, violates standards, or its impact is unclear/negative, or if it was an unintended deletion/modification that needs to be restored/corrected.
+            *   **Action:**
+                i.  State reason for rejection. *Example: "Rejecting unplanned deletion of logger call on line 75; essential for debugging."
+                ii. **CRITICAL:** If verifying a *proposed* `code_edit` (Step 4.2.1.b), this proposed `code_edit` **MUST** be revised to remove the deviation and accurately reflect the original (or a newly clarified) intent. The AI then re-evaluates the *revised* `code_edit`.
+                iii.If verifying an *applied* `diff` (Step 4.4.1) that contains an unacceptable deviation, this signals a failed edit application. The AI **MUST** trigger self-correction (Step 4.4.3) to revert the unacceptable deviation and achieve the correct state.
+            *   **Report:** "Deviation (e.g., unplanned deletion on line 75) rejected. Reason: [brief summary]. Action: [e.g., Revising proposed `code_edit` / Triggering self-correction for applied diff]."
+
+    5.  **Loop or Conclude for This Deviation:** After processing one deviation (accepted or rejected), if other deviations were identified in the same `diff`, return to Step 1 for the next deviation. If all deviations for the current `diff` have been processed, this procedure is complete for this call.
+
+*   **Reporting:** The AI's communication during this procedure (identifying each deviation, reporting fact-checking, stating justification for acceptance/rejection, and confirming plan/`code_edit` updates or corrective actions) serves as the primary report for each deviation handled.
 
 **`Procedure: Request Manual Edit`**
-*   **Trigger:** Called by Step 4.4.3.b.e if tool failures persist or edit application requires complex cleanup.
-*   **Advisory for "Unacceptable Original Edit Application with Failed Cleanup" Trigger:**
-    *   When this procedure is invoked because an automated edit achieved the primary goal but introduced unacceptable side-effects (churn, new errors in unrelated code) which a subsequent focused cleanup attempt also failed to resolve (as per Step 4.4.3.b.e.ii):
-        *   The explanation in "State Tool Failure" (Step 2 below) **MUST** clearly differentiate between the successful primary change and the failed cleanup of the unacceptable side-effects.
-        *   The primary goal of "Provide Specific Edit Details for Manual Application" (Step 3 below) **MUST** be to provide the user with the **original, minimal, and correct planned change** that was initially intended, presented cleanly with its necessary context, as if the side-effects had not occurred. This allows the user to apply the core intended change cleanly.
-1.  **STOP** tool attempts.
-2.  **State Tool Failure:** Explain the issue and the presumed incorrect file state based on last tool output.
-3.  **Provide Specific Edit Details for Manual Application:**
-    *   **MUST** clearly specify the target file.
-    *   **MUST** clearly state whether the action is an insertion, replacement, or deletion.
-    *   If an insertion or replacement, **MUST** provide the precise code block to be inserted/used as replacement.
-    *   If a deletion, **MUST** clearly describe or show the exact lines to be deleted.
-    *   **MUST** include sufficient surrounding context (a few lines before and after the change area) to uniquely identify the location of the edit.
-    *   **MUST** present this (for insertions/replacements) as a single, clearly demarcated code block, using the language's comment style for `// ... existing code ...` where appropriate, that the user can easily copy and paste to represent the *final state* of the edited section.
-    *   *Example (for insertion/replacement): "To manually apply the fix to `src/example.py`, please modify the relevant section to match the following (or insert at the indicated location):"*
-        ```python
-        // ... existing code ...
-        // Context line before change
-        // New code to be inserted / This block replaces the old code
-        // Further new code if applicable
-        // Context line after change
-        // ... existing code ...
-        ```
-    *   *Example (for deletion): "To manually apply the fix to `src/example.py`, please delete the following lines:"*
-        ```python
-        // ... existing code ...
-        // Context line before deletion
-        // Line to be deleted
-        // Another line to be deleted
-        // Context line after deletion
-        // ... existing code ...
-        ```
-    *   **After providing these details, the AI MUST explicitly state: "Please let me know once you have applied this manual edit."**
-    *   **BLOCKER:** The AI **MUST NOT** proceed until the user confirms they have applied the manual edit.
+*   **Purpose:** To provide a structured way for the AI to request user intervention when it cannot safely or reliably perform a file modification, especially after multiple `edit_file` / `reapply` failures, when dealing with highly complex/sensitive changes beyond its automated capabilities, or when an automated edit has produced unacceptable side-effects that cannot be cleanly self-corrected.
+*   **Core Principle:** When automated edits are repeatedly unsuccessful or introduce significant errors, deferring to manual user application is safer and more efficient than engaging in prolonged, unpredictable self-correction loops.
+*   **Trigger:** This procedure **MUST** be invoked if any of the following conditions are met:
+    *   Step 4.4.3.b.e.i: Persistent Correction Failure. Repeated attempts (e.g., >3 for the same logical change, or multiple `edit_file`/`reapply` calls for a single planned change fail to achieve a verified outcome without significant unintended side-effects, and further autonomous attempts are deemed unlikely to succeed). This includes persistent "no changes made" reports when changes are intended and verified as absent (as per Step 4.4.3.c.g).
+    *   Step 4.4.3.b.e.ii: Grossly Disproportionate or Corrupting Unintended Modifications by `edit_file`/`reapply` that cannot be cleanly self-corrected by a subsequent targeted edit.
+    *   Step 3.1.B.1.e: If a corrective plan (e.g., for refactoring to unblock an edit) is declined by the user or itself fails during execution.
+    *   Step 3.1.B.2.b: If no viable corrective strategy is identified for a previously blocked edit, or if a corrective strategy already failed.
 
-**4.  Verify Manual Edit Application (Mandatory after User Confirmation):**
-    *   **Trigger:** After the user confirms they have completed the manual edit.
-    *   **Action:**
-        *   `a.` **Acknowledge User Action:** Thank the user for applying the edit.
-        *   `b.` **Re-Read Modified File:** The AI **MUST** immediately use `read_file` (potentially with `should_read_entire_file=True` if necessary for full context and permitted) to get the current content of the manually edited file.
-        *   `c.` **Verify Against Intended State:** The AI **MUST** then compare the re-read content against the *specific intended state* that the manual edit was supposed to achieve (as described in Step 3 of this procedure). This verification should focus on:
-            *   Confirming that the specified lines were correctly inserted, replaced, or deleted.
-            *   Ensuring no obvious unintended changes were made in the immediate vicinity of the edit.
-            *   A basic syntax check (if feasible through linting or simple parsing, though full compilation might be out of scope for this quick check).
-        *   `d.` **Report Verification Outcome:**
-            *   **If Verified:** State, "Verification successful. The manual edit appears to be correctly applied, and the file `[filename]` is now in the expected state regarding this change. Resuming workflow." The AI can then proceed with its original task, potentially re-running relevant parts of Step 4 (Post-Apply Verification) or Step 5 (Adherence Checkpoint) for the overall task if the manual edit was a critical step.
-            *   **If Discrepancies Found:** State, "Verification of manual edit for `[filename]` found discrepancies: [Describe discrepancies briefly, e.g., 'The intended deletion on line X seems to be missing,' or 'An unexpected character was found at line Y']. Could you please double-check the manual application against the details provided?"
-            *   **BLOCKER (If Discrepancies):** The AI **MUST NOT** proceed with the main task assuming the edit is correct until discrepancies are resolved or the user explicitly instructs to proceed despite them. The AI may offer to provide the manual edit details again if helpful.
+*   **Advisory for "Unacceptable Original Edit Application with Failed Cleanup" Trigger (from Step 4.4.3.b.e.ii):**
+    *   When this procedure is invoked because an automated edit achieved the primary goal but introduced unacceptable side-effects (churn, new errors in unrelated code) which a subsequent focused cleanup attempt also failed to resolve:
+        *   The explanation in "State Tool Failure and Context" (Step 2 below) **MUST** clearly differentiate between the successful primary change (if any part was successful) and the failed cleanup of the unacceptable side-effects.
+        *   The primary goal of "Provide Specific Edit Details for Manual Application" (Step 3 below) **MUST** be to provide the user with the **original, minimal, and correct planned change** that was initially intended, presented cleanly with its necessary context, as if the side-effects had not occurred. This allows the user to apply the core intended change cleanly.
+
+*   **Steps:**
+
+    1.  **STOP All Automated Tool Attempts for This Specific Edit:** Cease further `edit_file` or `reapply` calls for the problematic planned modification in the target file.
+
+    2.  **State Tool Failure and Context:**
+        *   Clearly explain the issue that led to this manual edit request (e.g., persistent "no changes made" errors, repeated misapplication of diffs by tools, introduction of unacceptable side effects).
+        *   Summarize the history of automated attempts and strategies employed (e.g., "Initial `edit_file` failed. `reapply` also failed. Attempted granular `edit_file` which also reported 'no changes made'.").
+        *   Describe the presumed incorrect or problematic state of the file based on the last tool output or verification step.
+
+    3.  **Provide Specific Edit Details for Manual Application:**
+        *   **MUST** clearly specify the target file (e.g., "Target File: `src/modules/utils.py`").
+        *   **MUST** clearly state the action: "Action: [Insertion / Replacement / Deletion]".
+        *   **If an insertion or replacement:**
+            *   Provide the precise, complete code block to be inserted or to replace existing code.
+            *   This block **MUST** represent the final intended state of the section.
+            *   Include sufficient surrounding, unchanged context lines (typically 2-3 before and after the change area) to uniquely and unambiguously identify the location.
+            *   Use the language's comment style for `// ... existing code ...` to represent unchanged spans outside the immediate context lines.
+            *   Present this as a single, clearly demarcated code block. *Example (Python insertion/replacement):*
+                "To manually apply the fix to `src/example.py`, please ensure the relevant section matches the following (insert at the indicated location or use this to replace the old block):"
+                ```python
+                # ... existing code ...
+                # Context line immediately before the change
+                def new_function_or_updated_block():
+                    # New or corrected logic here
+                    pass # Ensure complete, valid syntax
+                # Context line immediately after the change
+                # ... existing code ...
+                ```
+        *   **If a deletion:**
+            *   Clearly describe or show the exact lines to be deleted.
+            *   Include sufficient surrounding, unchanged context lines (before and after) to uniquely identify the lines for deletion.
+            *   *Example (Python deletion):*
+                "To manually apply the fix to `src/example.py`, please delete the following highlighted lines (between the context lines):"
+                ```python
+                # ... existing code ...
+                # Context line immediately before the deletion target
+                line_to_be_deleted_1
+                another_line_to_be_deleted_2
+                # Context line immediately after the deletion target
+                # ... existing code ...
+                ```
+        *   **Crucial Concluding Statement:** After providing all details, the AI **MUST** explicitly state: "Please apply this manual edit to `[target_file]` and let me know once you have completed it so I can verify."
+
+    4.  **BLOCKER: Await User Confirmation of Manual Edit:**
+        *   The AI **MUST NOT** proceed with any further actions related to this file or dependent tasks until the user explicitly confirms they have applied the manual edit as requested.
+
+    5.  **Verify Manual Edit Application (Mandatory after User Confirmation):**
+        *   **Trigger:** After the user confirms they have completed the manual edit.
+        *   **Action:**
+            a.  **Acknowledge User Action:** Thank the user for applying the edit.
+            b.  **Re-Read Modified File Content:** The AI **MUST** immediately use `read_file` to get the current content of the manually edited file. Aim for a scope that covers the edited section and its immediate surroundings. If `should_read_entire_file=True` is permissible and necessary for reliable verification (e.g., if the change was extensive or had potential widespread impact), it should be used.
+            c.  **Verify Against Intended State:** The AI **MUST** then meticulously compare the re-read content against the *specific intended state* that the manual edit was supposed to achieve (as described in Step 3 of this procedure). This verification **MUST** confirm:
+                *   That the specified lines were correctly inserted, replaced, or deleted.
+                *   That the surrounding context lines (provided in Step 3) remain intact and correct.
+                *   That no obvious unintended changes or syntax errors were introduced in the immediate vicinity of the edit.
+            d.  **Report Verification Outcome:**
+                *   **If Verified Successfully:** State clearly: "Verification successful. The manual edit to `[filename]` appears to be correctly applied, and the file content matches the intended state regarding this change. Resuming workflow."
+                    *   The AI can then proceed, potentially re-running relevant parts of Step 4.4 (Post-Apply Verification, focusing on broader integration if needed) or Step 4.5 (Post-Action Verification Summary) and Step 5 (Adherence Checkpoint) for the overall task.
+                *   **If Discrepancies Found:** State clearly: "Verification of manual edit for `[filename]` found discrepancies: [Describe discrepancies specifically, e.g., 'The intended deletion on line X seems to be still present,' or 'An unexpected modification was found at line Y within the provided context lines', 'The new function seems to be missing its closing parenthesis']. Could you please double-check the manual application against the details provided in Step 3?"
+                    *   **BLOCKER (If Discrepancies Persist):** The AI **MUST NOT** proceed with the main task assuming the edit is correct. It should offer to provide the manual edit details (Step 3) again if helpful. If, after a second user confirmation of correction, verification still fails with significant discrepancies, the AI should state the persistent discrepancy and ask the user how they wish to proceed (e.g., user will investigate further, AI should abandon this specific change, etc.).
 
 ---
 
