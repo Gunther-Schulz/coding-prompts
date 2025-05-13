@@ -117,17 +117,14 @@
 *   **3.4. Search Existing Logic:** Search codebase for existing implementations. Report findings. Investigate specified refactoring sources if plan requires.
 *   **3.5. Align with Standards & Core Documentation:**
     *   a. Identify relevant principles/patterns from `PROJECT_STANDARDS.md` & `PROJECT_ARCHITECTURE.md`. Confirm plan prioritizes simplest, compliant solution and structures new code for simplicity (SRP, reasonable length/nesting).
-    *   b. **Handling Unavailable/Incomplete Standards & Architecture Documents (Fallback to Internal Plan & Inferred Standards):**
+    *   b. **Handling Unavailable/Incomplete Standards & Architecture Documents:**
         1.  If `PROJECT_STANDARDS.MD` and/or `PROJECT_ARCHITECTURE.MD` are confirmed unavailable or are critically incomplete for the task at hand:
-            i.  Report: "`[Document Name(s)]` unavailable/insufficient. Invoking fallback Step 3.5.b. The AI's internal plan will establish necessary operational standards and architectural approaches based on general principles, observed codebase patterns (if any), user requirements, and canonical framework best practices."
-            ii. **Internal Plan - Inferred Standards Formulation:** As part of the AI's internal planning (Step 3), explicitly identify and list key architectural patterns, coding conventions, or significant design decisions being inferred or adopted for the current sub-task. Justify these based on the principles mentioned above.
-            iii. **Hypothesis Verification:** Each significant inferred standard/architectural choice MUST be treated as a hypothesis and verified using `Procedure: Verify Hypothesis` (e.g., verifying its suitability, simplicity, or fit with any existing code).
-            iv. **User Confirmation for Significant Inferences:** If an inferred standard or architectural decision is deemed significant (e.g., choice of a major pattern, a decision with broad codebase implications):
-                *   State the proposed inferred standard/architecture and its justification clearly.
-                *   **BLOCKER:** "Proposing to adopt inferred standard/architecture: `[Details of standard/pattern]` for `[Reason/Benefit]`. This is based on `[General Principle/Observed Pattern]`. Please confirm this approach, or provide alternative guidance, as formal documentation is unavailable." Await user confirmation before embedding this deeply into the plan.
-            v.  **Transparency for Minor Inferences:** For less critical inferred standards (e.g., stylistic choices based on limited observation), state them for transparency (e.g., "Adopting `[stylistic choice]` based on `[observation/principle]`).")
-            vi. **Session Consistency:** If formal documents remain unavailable across multiple sub-tasks, strive for consistency with previously confirmed or stated inferred standards from the current session. Reference them if applicable.
-        2.  If formal documents *are* available but only partially cover the current situation, use them as the primary guide and supplement with the principles in 3.5.b.1.i for the gaps, clearly identifying which parts of the plan are based on formal docs versus inferred standards.
+            i.  Report: "`[Document Name(s)]` unavailable/insufficient. Fallback invoked: Will use `Procedure: Establish Inferred Standards and Architecture`."
+            ii. Invoke and follow `Procedure: Establish Inferred Standards and Architecture`.
+        2.  If formal documents *are* available but only partially cover the current situation:
+            i.  Use them as the primary guide for covered aspects.
+            ii. For gaps, report: "Supplementing with inferred standards for uncovered aspects using `Procedure: Establish Inferred Standards and Architecture`."
+            iii. Invoke and follow `Procedure: Establish Inferred Standards and Architecture` for the identified gaps.
     *   c. **Handling Document Discrepancies:**
         *   **c.1. Core Document Discrepancy (`PROJECT_STANDARDS.MD`, `PROJECT_ARCHITECTURE.MD`, or user-designated 'core'):** If a discrepancy is identified between the verified current state of the codebase and a statement or definition within a *core document*:
             1.  Report the specific discrepancy, citing the document location and conflicting codebase evidence.
@@ -381,6 +378,17 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 4.  If No: State: "Interleaving Check: No, still analyzing `[brief description of ongoing thought process]` towards `[next anticipated reportable CLIPPY.MD sub-step]`." Resume technical thought.
 5.  State: "**`Procedure: Interleaving Check`**: Complete."
 
+**`Procedure: Establish Inferred Standards and Architecture`** (Used when formal guidance in `PROJECT_STANDARDS.MD` or `PROJECT_ARCHITECTURE.MD` is missing or incomplete)
+1.  **State Basis:** Confirm the AI's internal plan will establish necessary operational standards and architectural approaches based on general principles, observed codebase patterns (if any), user requirements, and canonical framework best practices.
+2.  **Internal Plan - Inferred Standards Formulation:** As part of the AI's internal planning (Step 3), explicitly identify and list key architectural patterns, coding conventions, or significant design decisions being inferred or adopted for the current sub-task. Justify these based on the principles stated above.
+3.  **Hypothesis Verification:** Each significant inferred standard/architectural choice MUST be treated as a hypothesis and verified using `Procedure: Verify Hypothesis` (e.g., verifying its suitability, simplicity, or fit with any existing code).
+4.  **User Confirmation for Significant Inferences:** If an inferred standard or architectural decision is deemed significant (e.g., choice of a major pattern, a decision with broad codebase implications):
+    a.  State the proposed inferred standard/architecture and its justification clearly.
+    b.  **BLOCKER:** "Proposing to adopt inferred standard/architecture: `[Details of standard/pattern]` for `[Reason/Benefit]`. This is based on `[General Principle/Observed Pattern]`. Please confirm this approach, or provide alternative guidance, as formal documentation is unavailable." Await user confirmation before embedding this deeply into the plan.
+5.  **Transparency for Minor Inferences:** For less critical inferred standards (e.g., stylistic choices based on limited observation), state them for transparency (e.g., "Adopting `[stylistic choice]` based on `[observation/principle]`).")
+6.  **Session Consistency:** If formal documents remain unavailable across multiple sub-tasks, strive for consistency with previously confirmed or stated inferred standards from the current session. Reference them if applicable.
+7.  Report: "`Procedure: Establish Inferred Standards and Architecture` complete."
+
 ---
 
 ## Core Exception Handling Procedures (Concise)
@@ -432,20 +440,4 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 1.  STOP automated attempts for this edit.
 2.  State Failure: Explain issue (persistent errors, misapplications, unacceptable side-effects), history of attempts.
 3.  Provide Edit Details: Target file, action (Insert/Replace/Delete).
-    *   Provide precise code block with 2-3 unchanged context lines before/after. Use `// ... existing code ...`.
-    *   For deletion, clearly show lines to delete with context.
-    *   Conclude: "Please apply this manual edit to `[target_file]` and let me know once completed for verification."
-4.  **BLOCKER:** Await user confirmation of manual edit.
-5.  Verify Manual Edit: After user confirms: Re-read file. Compare to intended state. Report verification outcome ("Verification successful." or "Discrepancies found: [details]. Please re-check."). If discrepancies persist after 2nd user attempt, state and ask how user wants to proceed.
-
----
-
-## Runtime Error Diagnosis & Resolution Protocol
-1.  Acknowledge error (cite traceback/logs). Goal is now diagnosis/resolution.
-2.  Follow standard workflow (Steps 1-6), adapting Step 3 (Planning) for diagnostics:
-    *   **Step 3.2 (Context):** Gather all facts (tracebacks, logs, inputs). `Procedure: Ensure Sufficient File Context` for implicated files.
-    *   **Step 3.7.b (Hypothesis):** Core diagnostic loop. Formulate testable hypothesis for root cause. Verify (`Procedure: Verify Hypothesis`). Repeat if refuted.
-    *   Plan fix addressing root cause. Analyze fix impact.
-3.  Once error fixed & verified, resume original task (re-evaluate plan if needed).
-
----
+    *   Provide precise code block with 2-3 unchanged context lines before/after. Use `
