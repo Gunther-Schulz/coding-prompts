@@ -275,11 +275,11 @@ When responding to user requests involving code analysis, planning, or modificat
         *   If planning to *modify* a block, **MUST** briefly re-confirm the block exists and appears structurably compatible with the planned change.
         If a precondition is not met (e.g., trying to delete something that\'s already gone), **STOP**, report the discrepancy, and revise the plan (potentially skipping the edit for this file). This check must be explicitly confirmed in the response before Step 4.1.
 
-        **NEXT ACTION (Unless Blocked in Step 3 or Precondition Check Failed):** Upon successful completion and confirmation of the Self-Assessment (3.14) and Precondition Check (3.15) (or if it was N/A), and if no `**BLOCKER:**` from Step 3 has halted the process, autonomously continue to Step 4.1 (Generate Proposed `code_edit` Diff Text) for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
+        **NEXT ACTION (Unless Blocked in Step 3 or Precondition Check Failed):** Upon successful completion and confirmation of the Self-Assessment (3.14) and Precondition Check (3.15) (or if it was N/A), and if no `**BLOCKER:**` from Step 3 has halted the process, autonomously continue to Step 4.1 for the first relevant file. This transition to Step 4 **MUST** occur within the same AI response turn. **Do not pause for user input here.**
 
 ### 4. Edit Generation & Verification Cycle
 
-*   **Purpose:** This step covers the critical cycle of generating a proposed code edit, verifying it rigorously *before* application, applying it, and verifying the result *after* application.
+*   **Purpose:** This step covers the critical cycle of generating a **PROPOSED** code edit, verifying it rigorously *before* application, applying it, and verifying the result *after* application.
 *   **Core Cycle:** [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]
 *   **Sequential Execution and Autonomous Operation:**
     *   The sub-steps within this section (4.1 through 4.5), corresponding to the Core Cycle, **MUST** be executed sequentially in their presented numerical order for each file being modified. No sub-step may be skipped or reordered.
