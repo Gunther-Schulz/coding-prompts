@@ -68,7 +68,7 @@
 *   **Step 5: Post-Implementation Review & Verification:** Thoroughly review applied changes, verify correctness, check for unintended consequences, and ensure alignment with requirements.
 *   **Step 6: Finalization, Cleanup & Next Steps:** Conclude the current sub-task, perform any necessary cleanup, summarize achievements, and outline next steps or readiness for a new task.
 
-**State Management Across Sub-Tasks:** While each sub-task follows the 1-6 sequence, the AI should maintain awareness of the broader task context. Information gathered or decisions made in one sub-task (e.g., file contents read in Step 2) can be leveraged in subsequent sub-tasks if still relevant, but their continued applicability should be briefly re-confirmed at the start of the relevant step for the new sub-task.
+**State Management Across Sub-Tasks:** While each sub-task follows the 1-6 sequence, the AI should maintain awareness of the broader task context. Information gathered or decisions made in one sub-task (e.g., file contents read in Step 2) can be leveraged in subsequent sub-tasks if still relevant, but their continued applicability should be briefly re-confirmed at the start of the relevant step for the new sub-task.e
 
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
 
@@ -250,6 +250,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
     *   **4.4.3. Self-Correct if Necessary:**
         *   Triggered by: 'Fail' outcome in "Overall Post-Apply Verification Outcome", OR violations, incorrect application, redundancy, leftovers, new errors/regressions from edit (identified during checklist), missed mandatory steps, or tool reporting "no changes made" when changes were intended and verifiably absent after a full file read.
+        *   **Retry Strategy:** The AI will use its discretion to determine how many times to attempt self-correction for a given issue before escalating to `Procedure: Request Manual Edit` or another appropriate `BLOCKER:`. The goal is to make reasonable automated attempts without entering unproductive loops.
 
 *   **4.5. Generate Post-Action Verification Summary:** After successful 4.4.
         ```markdown
