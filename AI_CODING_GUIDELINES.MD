@@ -111,7 +111,11 @@ These mandates are absolute and govern all AI operations.
         iii.If documents conflict with verified codebase state: Report and invoke `Procedure P3: Handle Document Discrepancies`.
     e. **Ensure Robust Design:** This is a critical checklist. Each item MUST be addressed.
         i.  Invoke `Procedure P4: Analyze Impact`. Report summary.
-        ii. For EVERY assumption made (APIs, interfaces, data, library use): Invoke `Procedure P5: Verify Assumptions`. Report outcome. If failed for existing dependency, use `Procedure PX5`; otherwise, **HALT**, report, revise plan.
+        ii. For EVERY assumption made (APIs, interfaces, data, library use):
+            1.  Clearly state: "**Assumption:** `[The assumption]`."
+            2.  Clearly state: "**Verification Method:** `[Tool/Method to be used, e.g., read_file, grep_search, web_search for docs]`."
+            3.  Invoke `Procedure P5` to execute this verification. Report outcome (from P5).
+            4.  If P5 reports the assumption failed: If it was for an existing dependency, use `Procedure PX5`; otherwise, **HALT**, report the failure, and revise plan.
         iii.List potential edge cases/error conditions for new/modified logic and how the plan addresses each. Report.
         iv. If refactoring/replacing logic: Invoke `Procedure P6: Ensure Logic Preservation`. Report summary.
         v.  Assess & Report on: Configuration usage impact, testability, observability needs, resource management (acquisition/release).
@@ -188,7 +192,7 @@ These mandates are absolute and govern all AI operations.
             - `[ ] 3. No Unintended Structural Changes:` (No gross structural damage? *Verify by spot-checking critical structural elements near the edit, such as function/class signatures, indentation of surrounding blocks, and correctness of brackets/parentheses/quotes if modified.*)
             - `[ ] 4. Deviations Identified:` (List specific deviations. "None" if applicable.)
             - `[ ] 5. Deviations Handled:` (For each: "N/A", or plan via `Procedure PX6`.)
-            - `[ ] 6. Dependency Verification:` (`Procedure P5` applied to *all* dependencies in final applied code? Outcome?)
+            - `[ ] 6. Dependency Verification:` (For *all* dependencies in final applied code: State assumption about validity/correctness and verification method, then invoke `Procedure P5`. Report P5's outcome.)
             - `[ ] 7. Semantic Spot-Check:` (Key logic in *applied diff* semantically correct?)
             - `[ ] 8. Context Line Check:` (`// ... existing code ...` handled correctly? Context lines as expected?)
             - `[ ] 9. Logic Preservation (if appl.):` (Original logic preserved if refactoring per 2.3.e.iv plan?)
@@ -276,7 +280,7 @@ These mandates are absolute and govern all AI operations.
     1.  (P0) Report: "Formal standards documents are missing/incomplete for `[aspect]`. Inferring standards."
     2.  (P0) State basis for inference: general principles, codebase patterns, user requirements, framework best practices.
     3.  (P0) Internally plan and list key inferred architectural patterns, coding conventions, design decisions. Justify each.
-    4.  (P0) For each significant inferred choice, treat as hypothesis; verify via `Procedure P5` (suitability, simplicity, fit). Report.
+    4.  (P0) For each significant inferred choice, treat as hypothesis. State the assumption (e.g., "Assumption: Inferred choice X is suitable/simple/fits") and the verification method (e.g., "Method: Logical review, comparison with Y"), then invoke `Procedure P5` to execute verification. Report P5's outcome.
     5.  (P0) **For Significant Inferences (User Confirmation):**
         a.  Report: Proposed inferred standard/architecture `[Details]` for `[Reason/Benefit]`, based on `[Principle/Pattern]`.
         b.  **BLOCKER:** "Confirm proposed inferred standard/architecture for `[aspect]` or provide guidance." Await confirmation.
@@ -306,12 +310,10 @@ These mandates are absolute and govern all AI operations.
     4.  (P0) Report summary of findings and planned mitigations for identified impacts.
 
 **P5: Verify Assumptions** (Replaces "Verify Hypothesis")
-    1.  (P0) For EACH assumption made (e.g., API behavior, library function signature, data presence/format, file existence):
-        a.  State: "**Assumption:** `[The assumption]`."
-        b.  State: "**Verification Method:** `[Tool/Method to be used, e.g., read_file, grep_search, web_search for docs]`."
-        c.  Execute verification.
-        d.  Report: "**Verification Outcome:** `[Confirmed / Failed: details of finding]`."
-    2.  (P0) If an assumption Fails: This is critical. The plan relying on it MUST be revised or halted. Invoke appropriate handling (e.g., `PX1`, `PX5`, or return to planning step 2.3).
+    *(P0) Note: This procedure is called AFTER the calling step (e.g., 2.3.e.ii) has explicitly stated the 'Assumption' and 'Verification Method'.*
+    1.  (P0) Execute the verification detailed in the 'Verification Method' provided by the caller to test the 'Assumption' provided by the caller.
+    2.  (P0) Report: "**P5.2: Verification Outcome for assumption ('`[caller's assumption text]`'):** `[Confirmed / Failed: details of finding]`."
+    3.  (P0) If an assumption Fails: This is critical. Report this failure clearly in the outcome. The calling procedure (e.g., 2.3.e.ii) is responsible for subsequent handling (e.g., invoking `PX1`, `PX5`, or returning to planning).
 
 **P6: Ensure Logic Preservation** (For logic replacement/restructuring)
     1.  (P0) Document Existing: Analyze (`read_file`) and document original behavior, including key execution paths, conditions, and outcomes.
@@ -465,11 +467,11 @@ These mandates are absolute and govern all AI operations.
         b.  **2.3.e (Ensure Robust Design) - Focus on Diagnosis:**
             i.  The primary method for diagnosis within 2.3.e.ii (`Procedure P5: Verify Assumptions`) will be an **iterative diagnostic loop**:
                 1.  Formulate a specific, testable hypothesis about the root cause of the error based on available evidence (traceback, logs, code). State this as an **Assumption** for `P5`.
-                2.  Detail the precise steps (tool usage, code reads, specific checks) as the **Verification Method** for `P5`.
-                3.  Execute verification.
-                4.  If `P5` outcome confirms the hypothesis and a fix is clear, proceed to plan the fix details (impact analysis `P4`, edge cases for the fix, etc.).
-                5.  If `P5` outcome refutes the hypothesis or is inconclusive, analyze the findings, formulate a *new* hypothesis, and repeat the `P5` cycle.
-            ii. All other sub-points of 2.3.e (impact analysis for the *proposed fix*, edge cases for the *fix*, etc.) are critical once a viable fix is identified.
+                2.  Detail the precise steps (tool usage, code reads, specific checks) as the **Verification Method**.
+                3.  Invoke `Procedure P5` to execute this verification using the stated assumption and method.
+                4.  If `P5`'s outcome confirms the hypothesis and a fix is clear, proceed to plan the fix details (impact analysis `P4`, edge cases for the fix, etc.).
+                5.  If `P5`'s outcome refutes the hypothesis or is inconclusive, analyze the findings, formulate a *new* hypothesis, and repeat the assumption/method/P5 cycle.
+                        ii. All other sub-points of 2.3.e (impact analysis for the *proposed fix*, edge cases for the *fix*, etc.) are critical once a viable fix is identified.
     5.  (P0) **Resuming Original Task:**
         a.  After the error-resolution sub-task is successfully completed (i.e., Step 2.5 is reached and the fix is verified):
             i.  Report: "Runtime error `[brief summary]` successfully resolved and verified."
