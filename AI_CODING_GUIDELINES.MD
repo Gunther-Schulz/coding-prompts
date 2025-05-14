@@ -176,12 +176,13 @@ These mandates are absolute and govern all AI operations.
         i.  **Compulsory Full File Read (If Needed):** If `edit_file` output is ambiguous (e.g., summarized, "no changes" unexpectedly), or if any checklist item below indicates issues:
             1.  Report: "Step 2.4.e.i: Edit tool output ambiguous/indicates issues. Performing Compulsory Full File Read for `[filename]`."
             2.  Use `read_file` on `target_file` (request `should_read_entire_file=true` if AI edited it this turn and not excessively large).
-            3.  Report: "Full file read for `[filename]` complete. Proceeding with checklist."
+            3.  Report: "Full file read for `[filename]` complete. Proceeding with checklist. Crucially, if the edit was corrective, the persistence of the original issue will be the primary factor in the following checklist."
         ii. **Mandatory Explicit Post-Edit Verification Checklist (Report as Checklist, based on fresh content if read):**
             ```markdown
             **2.4.e.ii: Post-Edit Verification Checklist for `[filename]`**
             - `Procedure Used:` (State `P9: Verify Applied Diff`)
-            - `[ ] 1. Diff vs. Intent Match:` (Every line change in *actual applied diff* aligns with approved plan/intent from 2.4.b?)
+            - `[ ] 0. Original Issue Resolved (if edit was corrective):` (e.g., Is the linter error gone? Does the test now pass? Is the bug fixed based on re-evaluation of the original symptom? If "no changes" were reported by the tool but a fix was intended, this item failing means the overall outcome is 'Fail'.)
+            - `[ ] 1. File State vs. Intended State Match:` (Does the *current state of the file* reflect the *intended outcome* of the edit as per the plan? This considers the desired functionality/correction. If item 0 failed, this item likely also fails or is N/A.)
             - `[ ] 2. No Unintended Structural Changes:` (No gross structural damage?)
             - `[ ] 3. Deviations Identified:` (List specific deviations. "None" if applicable.)
             - `[ ] 4. Deviations Handled:` (For each: "N/A", or plan via `Procedure PX6`.)
@@ -328,13 +329,14 @@ These mandates are absolute and govern all AI operations.
     7.  (P0) Report Outcome: "Verified (staged proposal aligns with intent)" or "Failed (staged proposal has issues: `[list]`)." If failed, requires revision of 2.4.a or plan 2.3.
 
 **P9: Verify Applied Diff** (For validation of ACTUAL `edit_file` / `reapply` output from 2.4.d, using checklist in 2.4.e.ii)
-    1.  (P0) **Intent:** The final approved plan/intent from Step 2.4.b/c.
+    1.  (P0) **Intent:** The final approved plan/intent from Step 2.4.b/c, which includes the specific problem to be solved if the edit is corrective.
     2.  (P0) **Actual Diff:** The diff output from the `edit_file` or `reapply` tool call, or derived from `read_file` if tool output was ambiguous.
     3.  (P0) Systematically complete all items in the **Mandatory Explicit Post-Edit Verification Checklist (2.4.e.ii)**.
-        *   Item 1 (Diff vs. Intent): Meticulously check every line.
-        *   Item 3 (Deviations): If any, they MUST be handled via `Procedure PX6`.
+        *   Item 0 (Original Issue Resolved): This is paramount for corrective edits. If the `edit_file` operation was intended to resolve a specific pre-identified issue (e.g., linter error, bug, test failure), this item *must* confirm that the specific issue is no longer present in the file's current state. An `edit_file` tool output of "no changes" when a change *was* intended to fix such an issue means the intent was *not* met if the issue persists, and Item 0 fails.
+        *   Item 1 (File State vs. Intended State Match): Meticulously check that the file's content aligns with the desired state. If Item 0 failed, this item must also be considered failed or N/A regarding the specific fix.
+        *   Item 3 (Deviations): If any (including the original issue persisting), they MUST be handled via `Procedure PX6`. The persistence of a targeted original issue is a critical deviation.
         *   Item 5 (Dependency Verification): Invoke `Procedure P5` for *every* dependency (new or existing) in the *final applied code*.
-    4.  (P0) Based on checklist completion, determine the `Procedure P9 Outcome` ('Verified', 'Verified with deviations (handled)', or 'Needs Correction') and the `Overall Post-Apply Outcome` ('Pass' or 'Fail'). Report these as part of checklist 2.4.e.ii.
+    4.  (P0) Based on checklist completion, determine the `Procedure P9 Outcome` ('Verified', 'Verified with deviations (handled)', or 'Needs Correction') and the `Overall Post-Apply Outcome` ('Pass' or 'Fail'). Report these as part of checklist 2.4.e.ii. If Item 0 (Original Issue Resolved) is marked false for a corrective edit, the `Overall Post-Apply Outcome` MUST be 'Fail'.
     5.  (P0) If 'Needs Correction' or 'Fail', this triggers self-correction (Step 2.4.f).
 
 **P10: Verify Tool Output** (For information-gathering tools like `read_file`, `codebase_search`, `grep_search`, `web_search`)
