@@ -188,6 +188,7 @@ These mandates are absolute and govern all AI operations.
             **2.4.e.ii: Post-Edit Verification Checklist for `[filename]`**
             - `Procedure Used:` (State `P9: Verify Applied Diff`)
             - `[ ] 1. Original Issue Resolved (if edit was corrective):` (e.g., Is the linter error gone? Does the test now pass? Is the bug fixed? *Verification Method: Where the original issue was identified by an automated tool like a linter or test, re-run the specific tool/test if feasible. Otherwise, re-evaluate original symptom based on code analysis.* If "no changes" were reported by the tool but a fix was intended and the issue persists post-re-check, this item fails, and the overall outcome is 'Fail'.)
+            **- `[ ] 1.b. No New File-Level Regressions Introduced:` (e.g., No new linter errors, no new syntax errors across the entire file. *Verification Method: If linter/tooling is available and was run by the system, check its output for new errors. If new errors are present anywhere in the file, this item fails.* This check is critical even if Item 1 passes.)**
             - `[ ] 2. File State vs. Intended State Match:` (Does the *current state of the file* reflect the *intended outcome* of the edit as per the plan? This considers the desired functionality/correction. If item 1 failed, this item likely also fails or is N/A.)
             - `[ ] 3. No Unintended Structural Changes:` (No gross structural damage? *Verify by spot-checking critical structural elements near the edit, such as function/class signatures, indentation of surrounding blocks, and correctness of brackets/parentheses/quotes if modified.*)
             - `[ ] 4. Deviations Identified:` (List specific deviations. "None" if applicable.)
@@ -199,12 +200,14 @@ These mandates are absolute and govern all AI operations.
             - `Procedure P9 Outcome:` ('Verified', 'Verified with deviations (handled)', 'Needs Correction')
             - `[ ] 10. No unintended redundancy introduced?` (Yes/No. If No, explain.)
             - `[ ] 11. No leftover placeholders/comments (unless planned, e.g. diagnostics)?` (Yes/No. If No, explain.)
-            - `Overall Post-Apply Outcome:` ('Pass' or 'Fail')
+            - `Overall Post-Apply Outcome:` ('Pass' or 'Fail' - **Must be 'Fail' if Item 1 (for corrective edits) or Item 1.b indicates failure.**)
             ```
     f. **Self-Correct (If Necessary):**
         i. Triggered by: 'Fail' in "Overall Post-Apply Outcome", or other issues identified in 2.4.e.
         ii.Report: "Self-correction triggered for `[filename]` due to `[reason]`."
+            **If the `reason` is a new, specific tool-reported error (e.g., a linter error at a particular line), the report MUST state this clearly, including the error type and location.**
         iii.Attempt correction (e.g., re-plan relevant part in 2.3, then re-attempt 2.4.a-e, or use `reapply`).
+            **If triggered by a new, specific tool-reported error, the corrective plan (re-plan relevant part in 2.3, then re-attempt 2.4.a-e) MUST prioritize a targeted fix for that specific error at its reported location. This may involve invoking `Procedure P1` for the error location if context is insufficient.**
         iv. Limit retry attempts (e.g., 2-3 times) for a specific issue before invoking `Procedure PX7`.
     g. **Post-Action Verification Summary (Report as Checklist, after 'Pass' in 2.4.e or successful 2.4.f):**
         ```markdown
@@ -343,11 +346,12 @@ These mandates are absolute and govern all AI operations.
     2.  (P0) **Actual Diff:** The diff output from the `edit_file` or `reapply` tool call, or derived from `read_file` if tool output was ambiguous.
     3.  (P0) Systematically complete all items in the **Mandatory Explicit Post-Edit Verification Checklist (2.4.e.ii)**.
         *   Item 1 (Original Issue Resolved): This is paramount for corrective edits. This item *must* confirm that the specific issue is no longer present in the file's current state. Where the original issue was identified by an automated tool (e.g., linter, test suite), verification of resolution *must involve attempting to re-execute that specific tool or check* against the modified code if feasible, and reporting the outcome. An AI's visual inspection alone for such cases should be a fallback only if direct tool re-execution is not possible. If the `edit_file` tool reported 'no changes' but a fix was intended, and the subsequent tool-based (or symptom-based) re-check shows the issue persists, Item 1 fails.
+        *   **Item 1.b (No New File-Level Regressions Introduced): This confirms the edit did not introduce regressions like new linter errors or syntax errors *anywhere in the file*. If such new issues are present (e.g., a linter reports an error at a specific line), Item 1.b fails. The `Overall Post-Apply Outcome` (P9.4) MUST then be 'Fail'. Subsequent self-correction (Step 2.4.f) must prioritize addressing the *specifically reported new issue at its reported location*.**
         *   Item 2 (File State vs. Intended State Match): Meticulously check that the file's content aligns with the desired state. If Item 1 failed, this item must also be considered failed or N/A regarding the specific fix.
         *   Item 3 (No Unintended Structural Changes): For Item 2, this involves more than a cursory glance. The AI should actively look for common structural errors that can be introduced by edits, especially around the boundaries of the changed code block, including indentation, block delimiters, and syntax of nearby unchanged lines.
         *   Item 4 (Deviations): If any (including the original issue persisting), they MUST be handled via `Procedure PX6`. The persistence of a targeted original issue is a critical deviation.
         *   Item 5 (Dependency Verification): Invoke `Procedure P5` for *every* dependency (new or existing) in the *final applied code*.
-    4.  (P0) Based on checklist completion, determine the `Procedure P9 Outcome` ('Verified', 'Verified with deviations (handled)', or 'Needs Correction') and the `Overall Post-Apply Outcome` ('Pass' or 'Fail'). Report these as part of checklist 2.4.e.ii. If Item 1 (Original Issue Resolved) is marked false for a corrective edit, the `Overall Post-Apply Outcome` MUST be 'Fail'.
+    4.  (P0) Based on checklist completion, determine the `Procedure P9 Outcome` ('Verified', 'Verified with deviations (handled)', or 'Needs Correction') and the `Overall Post-Apply Outcome` ('Pass' or 'Fail'). Report these as part of checklist 2.4.e.ii. If Item 1 (Original Issue Resolved) is marked false for a corrective edit, **or if Item 1.b (No New File-Level Regressions Introduced) is marked false,** the `Overall Post-Apply Outcome` MUST be 'Fail'.
     5.  (P0) If 'Needs Correction' or 'Fail', this triggers self-correction (Step 2.4.f).
 
 **P10: Verify Tool Output** (For information-gathering tools like `read_file`, `codebase_search`, `grep_search`, `web_search`)
