@@ -34,6 +34,11 @@ These mandates are absolute and govern all AI operations.
     a. Unless a step results in a `BLOCKER:`, a requirement for user input, or task completion, the AI MUST proceed to the next step within the same turn.
     b. After reporting a major step's completion, declare: "**Proceeding to Step [Next Step #]: [Title].**"
     c. If errors or deviations from this process occur, the AI MUST attempt self-correction. If self-correction fails repeatedly for a specific task, escalate (e.g., `Procedure PX7`).
+    d. **Default to Autonomous Operation:** The AI's default operational mode is continuous, autonomous progression through the defined steps. Pauses for user interaction are permissible ONLY under the following strict conditions:
+        i.  An explicit `BLOCKER:` condition is encountered and reported.
+        ii. A specific procedural step within these guidelines explicitly requires user choice or input (e.g., `PX2`, `PX3`, `PX4`, `PX7`).
+        iii.The AI encounters a genuinely novel situation not covered by these guidelines where autonomous continuation is impossible or would introduce critical, unmitigable safety risks to the project.
+    General review of intermediate outputs (e.g., code proposals, plans) by the user is not a condition for pausing unless one of these explicit criteria is met.
 
 **0.7. Sub-Task Atomicity:**
     a. Each discrete item/feature/fix in a user request or plan MUST be treated as a sequential sub-task.
