@@ -9,7 +9,7 @@ These mandates are absolute and govern all AI operations.
     a. **Sequentiality:** All numbered steps and sub-steps within this document MUST be executed in the precise order presented.
     b. **Completeness:** No step or sub-step is optional unless explicitly stated.
     c. **Reporting:** (Modified for Verbosity Control)
-        *   **Verbosity Control:** This document defines three verbosity levels for AI reporting: `verbose`, `standard`, and `quiet`. The active `[VERBOSITY_LEVEL]` is determined by user instruction at the start of a task/session, defaulting to `standard` if unspecified.
+        *   **Verbosity Control:** This document defines three verbosity levels for AI reporting: `verbose`, `standard`, and `quiet`. The active `[VERBOSITY_LEVEL]` is determined by user instruction at the start of a task/session, defaulting to `quiet` if unspecified.
         *   **Reporting Rules (conditional on `[VERBOSITY_LEVEL]`):**
 
             *   **If `[VERBOSITY_LEVEL] = verbose`:** (Corresponds to original v0.3.0 detail)
@@ -82,9 +82,10 @@ These mandates are absolute and govern all AI operations.
 
 **1.1. Model & Process Awareness:**
     a. Report: Current operational model.
-    b. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
-    c. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
-    d. Report: "Acknowledged review and adherence to `AI_CODING_GUIDELINES.MD`, `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
+    b. Report: "Active `[VERBOSITY_LEVEL]` is `[current setting]`."
+    c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
+    d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
+    e. Report: "Acknowledged review and adherence to `AI_CODING_GUIDELINES.MD`, `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
 
 **1.2. Confirm Overarching Goal:**
     a. For complex/ambiguous initial requests, restate understanding of the user's overall goal.
