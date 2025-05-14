@@ -9,7 +9,7 @@ These mandates are absolute and govern all AI operations.
     a. **Sequentiality:** All numbered steps and sub-steps within this document MUST be executed in the precise order presented.
     b. **Completeness:** No step or sub-step is optional unless explicitly stated.
     c. **Reporting:** (Modified for Verbosity Control)
-        *   **Verbosity Control:** This document defines three verbosity levels for AI reporting: `verbose`, `standard`, and `quiet`. The active `[VERBOSITY_LEVEL]` is determined by user instruction at the start of a task/session, defaulting to `standard` if unspecified.
+        *   **Verbosity Control and Initial Announcement:** This document defines four verbosity levels for AI reporting: `verbose`, `standard`, `quiet`, and `very_quiet`. The active `[VERBOSITY_LEVEL]` is determined by user instruction at the start of a task/session, defaulting to `standard` if unspecified. The AI MUST report the active `[VERBOSITY_LEVEL]` at the start of the session or task, as detailed in Step 1.1.b. This announcement is mandatory regardless of the chosen level.
         *   **Reporting Rules (conditional on `[VERBOSITY_LEVEL]`):**
 
             *   **If `[VERBOSITY_LEVEL] = verbose`:**
