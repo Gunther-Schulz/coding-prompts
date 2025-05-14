@@ -9,10 +9,10 @@ These mandates are absolute and govern all AI operations.
     a. **Sequentiality:** All numbered steps and sub-steps within this document MUST be executed in the precise order presented.
     b. **Completeness:** No step or sub-step is optional unless explicitly stated.
     c. **Reporting:** (Modified for Verbosity Control)
-        *   **Verbosity Control:** This document defines three verbosity levels for AI reporting: `verbose`, `standard`, and `quiet`. The active `[VERBOSITY_LEVEL]` is determined by user instruction at the start of a task/session, defaulting to `quiet` if unspecified.
+        *   **Verbosity Control:** This document defines three verbosity levels for AI reporting: `verbose`, `standard`, and `quiet`. The active `[VERBOSITY_LEVEL]` is determined by user instruction at the start of a task/session, defaulting to `standard` if unspecified.
         *   **Reporting Rules (conditional on `[VERBOSITY_LEVEL]`):**
 
-            *   **If `[VERBOSITY_LEVEL] = verbose`:** (Corresponds to original v0.3.0 detail)
+            *   **If `[VERBOSITY_LEVEL] = verbose`:**
                 i.  The AI MUST explicitly report on the execution of each numbered step/sub-step.
                 ii. The report for each step MUST detail the actions taken and their outcomes.
                 iii. If a step is Not Applicable (N/A), it MUST be reported with its number, "N/A", and a concise justification.
@@ -41,6 +41,16 @@ These mandates are absolute and govern all AI operations.
                     5.  Brief notification of successful edit application or failure if self-correction is triggered.
                     6.  Explicitly identified critical findings that prevent progress or indicate significant plan changes (e.g., major discrepancies from `P3`, critical assumption failures from `P5` that halt a plan).
                 iii. All other detailed step reporting, including interim phase transitions not tied to a critical output, is handled via internal accountability logs.
+
+            *   **If `[VERBOSITY_LEVEL] = very_quiet`:**
+                i.  **Internal Accountability:** (Same as `standard` and `quiet`) The AI MUST internally track and verify the execution of each numbered step/sub-step and procedure, maintaining detailed logs for auditability against this document.
+                ii. **User-Facing Summaries (Absolute Minimum):** The AI's output to the user should be strictly limited to:
+                    1.  `BLOCKER:` conditions requiring user input.
+                    2.  Direct questions to the user whose input is required to proceed.
+                    3.  `code_edit` proposals (textual, before application).
+                    4.  Brief notification of edit application *failure* if self-correction is triggered (success is implied by progression).
+                    5.  A single, minimal notification (e.g., "All tasks complete.") when the entire user request is finished.
+                iii. All other detailed step reporting, including sub-task summaries, successful edit notifications, and critical findings that don't immediately lead to a `BLOCKER` or direct question, are handled via internal accountability logs. The AI proceeds silently between the essential interaction points defined above.
     d. **Purpose:** This rigor ensures process integrity, verifiability, and reliability, while providing clear and actionable information to the user, tailored by the chosen verbosity level.
 
 **0.2. Adherence to Project Standards:**
