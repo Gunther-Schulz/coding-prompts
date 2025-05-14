@@ -100,3 +100,26 @@ While `CLIPPY.md` includes planning steps sufficient for most tasks, `PLANNER.md
     *   To incorporate your project standards and architecture into the planning phase:
     *   *`@PLANNER.md @PROJECT_STANDARDS.md @PROJECT_ARCHITECTURE.md Design the database schema for the new inventory management module and write the plan to a markdown file.`*
 *   **(Currently in Alpha status - see `KNOWN_ISSUES.md` for details)**
+
+**4. Controlling Output Verbosity (`CLIPPY.MD`)**
+
+`CLIPPY.MD` allows you to control the level of detail in the AI's reporting during its execution. This helps you tailor the output to your preference, from highly detailed step-by-step accounts to concise summaries.
+
+*   **Verbosity Levels:**
+    *   `verbose`: The AI reports on every single step and sub-step. Maximum transparency.
+    *   `standard` (Default): The AI provides summaries of major phases, key decisions, critical findings, and proposed changes. Balances detail with conciseness.
+    *   `quiet`: The AI primarily reports only critical items like `BLOCKER:` conditions, direct questions, final outcomes, and `code_edit` proposals.
+    *   `very_quiet`: The AI limits output to the absolute minimum: `BLOCKER:`s, direct questions, `code_edit` proposals, and final completion notices.
+
+*   **How to Set Verbosity:**
+    *   You can instruct the AI to use a specific verbosity level at the beginning of your task or session when invoking `@CLIPPY.MD`.
+    *   **Example:**
+        *   *`@CLIPPY.MD Set verbosity to verbose. Add a new API endpoint for /products`*
+        *   *`@CLIPPY.MD Use quiet mode. Refactor the user_service.py file.`*
+    *   If no verbosity is specified, `CLIPPY.MD` defaults to `standard` as per its internal guidelines.
+
+*   **Impact on Process:**
+    *   Importantly, changing the verbosity level **does not change the underlying rigor of the `CLIPPY.MD` process**. The AI is still required to perform all internal checks, verifications, and adhere to all procedural steps (including self-assessment via `P11`), regardless of the reporting level. The verbosity setting only affects what is shown to you.
+    *   However, a general challenge with AI is ensuring deep execution versus superficial "box-checking," especially for internal steps not immediately reported. The detailed articulation required by `verbose` mode naturally encourages thorough processing. For lower verbosity levels (especially `quiet` and `very_quiet`), `CLIPPY.MD` heavily relies on the AI's mandated internal diligence and specifically on **`Procedure P11: Perform Self-Assessment` (which includes a "Substantive Thoroughness Review")** to ensure that all steps are fully executed and not just superficially acknowledged. While the framework is designed for consistent rigor, `verbose` or `standard` modes offer users greater real-time insight into the AI's detailed execution and depth of analysis.
+    *   Conversely, `verbose` mode, while maximizing transparency, also requires the AI to dedicate resources to the detailed articulation of every step. In highly complex or lengthy tasks, this extensive reporting *could* subtly increase the overall cognitive load on the AI, potentially diverting some processing effort from the core problem-solving.
+    *   Finally, consider the practical trade-offs in interaction speed and error discovery. `verbose` mode leads to longer AI turns and higher token usage, potentially slowing the overall task rhythm. `quiet` or `very_quiet` modes offer faster individual turns but may delay the detection of non-critical missteps due to less frequent detailed feedback, potentially requiring more significant corrections later. The `standard` verbosity level is generally recommended as it aims to provide a practical balance across these factors.
