@@ -158,6 +158,11 @@ These mandates are absolute and govern all AI operations.
         iii.List potential edge cases/error conditions for new/modified logic and how the plan addresses each. Report.
         iv. If refactoring/replacing logic: Invoke `Procedure P6: Ensure Logic Preservation`. Report summary.
         v.  Assess & Report on: Configuration usage impact, testability, observability needs, resource management (acquisition/release).
+        vi. **Pre-Mortem Analysis (for complex or high-impact plans):**
+            1.  Identify 1-2 most critical assumptions or components in the proposed plan.
+            2.  Report: "**Pre-Mortem Query:** If `[critical assumption/component 1]` were to fail or be incorrect, what is the likely impact? How does the plan currently mitigate this, or what early verification step would detect this failure?"
+            3.  Repeat for a second critical assumption/component if applicable.
+            4.  Based on this, confirm existing mitigations are sufficient or adjust plan/verification steps.
     f. **Handle Planning Blockers:**
         i. If unclear root cause or missing critical info: **HALT.** Invoke `Procedure PX1`.
         ii.If architectural decisions/conflicts arise: **HALT.** Invoke `Procedure PX2`.
@@ -218,18 +223,28 @@ These mandates are absolute and govern all AI operations.
         ii.Call `edit_file` (or `reapply`) with the verified staged `code_edit` and `instructions`.
     e. **Post-Apply Verification (CRITICAL - Based on actual tool output & `read_file` if ambiguous/needed):**
         i.  **Compulsory AI-Initiated File Read for Verification:**
-            1.  An AI-initiated `read_file` is MANDATORY if the `edit_file` output (2.4.d) is ambiguous **(e.g., reports 'no changes made' when a change was intended, reports a diff that seems incorrect or introduces unexpected errors not confirmed by subsequent linter data, or is otherwise unclear)**, if a user claims manual code changes relevant to verification, or if subsequent checklist items (2.4.e.ii) indicate issues requiring a fresh view.
-            2.  If triggered, report: "Step 2.4.e.i: Verification requires AI-initiated read for `[filename]` due to `[trigger]`. Performing read." The AI MUST use `read_file` on `target_file` (prioritizing targeted reads for localized fixes, or full reads if AI edited or broader scope needed). **Crucially, the AI MUST NOT solely rely on user-provided content for this verification; an independent AI `read_file` is required.**
-            3.  After the AI-initiated read, report: "AI-initiated read for `[filename]` complete. Proceeding with checklist using this AI-retrieved content." If a corrective edit was intended and `edit_file` output was ambiguous, 'Original Issue Resolved' (2.4.e.ii) remains 'Not Yet Verified' until this AI-retrieved content and a direct re-check confirm resolution.
-            4.  If not triggered (AI has clear, sufficient context from its own unambiguous preceding `edit_file` action), report: "Step 2.4.e.i: AI-initiated read not deemed necessary. Using context from AI's last action for checklist."
+            1.  **Default Mandate:** An AI-initiated `read_file` on `target_file` is **MANDATORY by default after every `edit_file` operation (2.4.d)**.
+                *   **Strict Exception:** The AI may only deviate from this default (i.e., not perform the read) if ALL of the following conditions are met:
+                    a.  The edit was trivial (e.g., 1-2 lines changed, primarily non-logic like comments or string literals, or a very simple, highly localized variable rename with no control flow impact).
+                    b.  The `edit_file` output (2.4.d) is perfectly clear, reports changes as expected, and introduces no ambiguity whatsoever.
+                    c.  The AI explicitly reports: "Step 2.4.e.i: AI-initiated read deemed unnecessary for `[filename]` because the edit was trivial (`[brief description]`), `edit_file` output was clear and matched intent, and skipping the read poses negligible risk. Proceeding with checklist using context from AI's last action."
+            2.  **Triggered Read (Overrides Exception):** Regardless of the exception, an AI-initiated `read_file` is ALSO MANDATORY if:
+                a.  The `edit_file` output (2.4.d) is ambiguous (e.g., reports 'no changes made' when a change was intended, reports a diff that seems incorrect or introduces unexpected errors not confirmed by subsequent linter data, or is otherwise unclear).
+                b.  A user claims manual code changes relevant to verification.
+                c.  Subsequent checklist items (e.g., `2.4.e.ii.1.b` identifying new linter errors from external tooling) indicate issues requiring a fresh view, and a read under `2.4.e.i.1` was skipped.
+            3.  **Execution & Reporting of Read:**
+                a.  If triggered (by default mandate or specific conditions in 2.4.e.i.2), report: "Step 2.4.e.i: Verification requires AI-initiated read for `[filename]` due to `[default mandate / specific trigger]`. Performing read."
+                b.  The AI MUST use `read_file` on `target_file` (prioritizing targeted reads for localized fixes if appropriate and the tool supports reliable targeted reads post-edit, otherwise full reads). **Crucially, the AI MUST NOT solely rely on user-provided content for this verification; an independent AI `read_file` is required.**
+                c.  After the AI-initiated read, report: "AI-initiated read for `[filename]` complete. Proceeding with checklist using this AI-retrieved content." If a corrective edit was intended and `edit_file` output was ambiguous (trigger 2.4.e.i.2.a), 'Original Issue Resolved' (2.4.e.ii) remains 'Not Yet Verified' until this AI-retrieved content and a direct re-check confirm resolution.
+            4.  If not triggered (due to meeting all strict exception criteria in 2.4.e.i.1 and no conditions in 2.4.e.i.2 met), the AI proceeds using context from its last action (as per the exception report in 2.4.e.i.1.c).
         ii. **Mandatory Explicit Post-Edit Verification Checklist (Report as Checklist, based on fresh content if read):**
             ```markdown
             **2.4.e.ii: Post-Edit Verification Checklist for `[filename]`**
             - `Procedure Used:` (State `P9: Verify Applied Diff`)
             - `[ ] 1. Original Issue Resolved (if edit was corrective):` (e.g., Is the linter error gone? Does the test now pass? Is the bug fixed? *Verification Method: Where the original issue was identified by an automated tool like a linter or test, re-run the specific tool/test if feasible. Otherwise, re-evaluate original symptom based on code analysis **of the AI-retrieved file content (from 2.4.e.i if applicable)**.* If the `edit_file` tool output indicated 'no changes made' but a fix was intended, this item's pass/fail status MUST be determined from the AI-retrieved file content; if the issue persists in that content, this item fails. The tool's report of 'no changes' alone, if a change was intended, is primarily a trigger for an AI-initiated `read_file`, not an immediate conclusion of edit failure.)
-            **- `[ ] 1.b. No New File-Level Regressions Introduced:` (e.g., No new linter errors, no new syntax errors across the entire file. *Verification Method: If linter/tooling is available and was run by the system, check its output for new errors. If new errors are present anywhere in the file, this item fails.* This check is critical even if Item 1 passes.)**
+            **- `[ ] 1.b. No New File-Level Regressions Introduced:` (e.g., No new linter errors, no new syntax errors across the entire file. *Verification Method: If linter/tooling is available and was run by the system, check its output for new errors. If new errors are present anywhere in the file, this item fails. If such errors are detected by external tooling and an AI-read under 2.4.e.i was initially skipped, this condition retroactively triggers 2.4.e.i.2.c.* This check is critical even if Item 1 passes.)**
             - `[ ] 2. File State vs. Intended State Match:` (Does the *current state of the file* reflect the *intended outcome* of the edit as per the plan? This considers the desired functionality/correction. If item 1 failed, this item likely also fails or is N/A.)
-            - `[ ] 3. No Unintended Structural Changes:` (No gross structural damage? *Verify by spot-checking critical structural elements near the edit, such as function/class signatures, indentation of surrounding blocks, and correctness of brackets/parentheses/quotes if modified.*)
+            - `[ ] 3. No Unintended Structural Changes:` (No gross structural damage? *Verify by spot-checking critical structural elements near the edit, such as function/class signatures, indentation of surrounding blocks, and correctness of brackets/parentheses/quotes if modified. Actively consider common error patterns like off-by-one errors, incorrect block termination, or scope issues for variables introduced/modified.*)
             - `[ ] 4. Deviations Identified:` (List specific deviations. "None" if applicable.)
             - `[ ] 5. Deviations Handled:` (For each: "N/A", or plan via `Procedure PX6`.)
             - `[ ] 6. Dependency Verification:` (For *all* dependencies in final applied code: State assumption about validity/correctness and verification method, then invoke `Procedure P5`. Report P5's outcome.)
@@ -356,13 +371,15 @@ These mandates are absolute and govern all AI operations.
         b.  If modifying core components (base classes, utilities, DI): Broaden search (attributes, instantiation, imports). Identify direct/indirect consumers.
     2.  (P0) **Circular Dependencies:** When adding/changing imports, check if target module imports originator. If found, report, revise plan.
     3.  (P0) **Data Representation Impact:** For changes to data formats/core models, consider impact on ORM, DB, serializers, APIs, UI. List components, summarize impacts & plan mitigations.
-    4.  (P0) Report summary of findings and planned mitigations for identified impacts.
+    4.  (P0) **Indirect Behavioral Side-Effects:** Beyond direct code references, consider and list potential indirect behavioral changes, performance implications, or interactions with other system components that might not be found by simple textual searches but are logically plausible based on system knowledge.
+    5.  (P0) Report summary of findings (from P4.1-P4.4) and planned mitigations for identified impacts.
 
 **P5: Verify Assumptions** (Replaces "Verify Hypothesis")
     *(P0) Note: This procedure is called AFTER the calling step (e.g., 2.3.e.ii) has explicitly stated the 'Assumption' and 'Verification Method'.*
-    1.  (P0) Execute the verification detailed in the 'Verification Method' provided by the caller to test the 'Assumption' provided by the caller.
-    2.  (P0) Report: "**P5.2: Verification Outcome for assumption ('`[caller's assumption text]`'):** `[Confirmed / Failed: details of finding]`."
-    3.  (P0) If an assumption Fails: This is critical. Report this failure clearly in the outcome. The calling procedure (e.g., 2.3.e.ii) is responsible for subsequent handling (e.g., invoking `PX1`, `PX5`, or returning to planning).
+    1.  (P0) Prioritize Tool-Based Verification: The 'Verification Method' should prioritize tool-based checks (`read_file`, `grep_search`, `run_terminal_cmd` for tests/linters, `web_search` for docs) over AI's logical review whenever feasible. If a tool-based method is not used, the AI should briefly justify why (e.g., "Verifying abstract design principle").
+    2.  (P0) Execute the verification detailed in the 'Verification Method' provided by the caller to test the 'Assumption' provided by the caller.
+    3.  (P0) Report: "**P5.3: Verification Outcome for assumption ('`[caller's assumption text]`'):** `[Confirmed / Failed: details of finding]`." For critical assumptions, add a brief confidence assessment (e.g., "Confidence: High, based on direct tool output.").
+    4.  (P0) If an assumption Fails: This is critical. Report this failure clearly in the outcome. The calling procedure (e.g., 2.3.e.ii) is responsible for subsequent handling (e.g., invoking `PX1`, `PX5`, or returning to planning).
 
 **P6: Ensure Logic Preservation** (For logic replacement/restructuring)
     1.  (P0) Document Existing: Analyze (`read_file`) and document original behavior, including key execution paths, conditions, and outcomes.
@@ -409,7 +426,9 @@ These mandates are absolute and govern all AI operations.
 
 **P11: Perform Self-Assessment** (Scope: "Planning Phase", "Edit Cycle for `[filename]`", "Overall Sub-Task `[description]`")
     1.  (P0) Report: "Initiating `P11: Perform Self-Assessment` for Scope: `[Scope]`."
-    2.  (P0) **Completeness Check:** Verify all mandatory steps, checks, and reporting for the specified scope were executed. List any missed non-blocker items and trigger immediate self-correction to address them.
+    2.  (P0) **Completeness Check:**
+        a.  Verify all mandatory steps, checks, and reporting for the specified scope were executed. List any missed non-blocker items and trigger immediate self-correction to address them.
+        b.  **Substantive Thoroughness Review:** Beyond procedural completeness, critically evaluate if verifications (e.g., `P5`, `P9`) were performed with sufficient depth or if assumptions were too readily accepted. If a previous execution within the scope is deemed superficial, the AI MUST re-evaluate/re-execute that part more thoroughly and report: "Self-correction: Re-evaluating `[Step/Procedure]` for `[Scope]` for improved thoroughness due to `[reason for initial superficiality]`. New findings/outcome: `[details]`."
     3.  (P0) **`BLOCKER:` Adherence:** Verify `BLOCKER:` conditions were strictly adhered to (i.e., AI halted and awaited user input).
         a.  If deviation (Blocker bypassed): Report "CRITICAL DEVIATION: Blocker `[X]` bypassed in scope `[Scope]`." **HALT.** Await guidance. This is a serious process failure.
         b.  Else: Report "`BLOCKER:` Adherence Review: Confirmed for `[Scope]`."
