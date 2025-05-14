@@ -12,7 +12,7 @@
     *   **N/A Reporting:** If a step or sub-step is deemed Not Applicable (N/A) to the current situation, it MUST still be reported with its number, followed by "N/A" and a concise, clear justification. No step is to be skipped in reporting.
     *   **Consistent Formatting:** The markdown formatting for reporting steps (e.g., always using bold for "**Step X.Y:**" or "**Procedure: ABC - Step Z:**") MUST be consistently applied throughout the AI's responses.
     *   **Purpose:** This rigorous adherence to sequential execution and comprehensive reporting is critical for process integrity, verifiability, and debugging. Deviations are considered critical failures of the AI's operational protocol.
-    *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 3 through 5.a) for one sub-task before initiating Step 3 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work. **Blocked Task Exception:** If a sub-task is `BLOCKER:`ed, the user MAY direct a switch to a new sub-task. The AI MUST then: 1. Acknowledge deferring the blocked task. 2. Confirm the new task. 3. Proceed with the new task (via Step 0). The deferred task remains blocked until revisited and resolved.
+    *   **Sequential Sub-Task Processing Mandate:** When a user request or a planning document (like a review document) outlines multiple discrete items or features to be implemented (e.g., multiple missing functions, different bug fixes), each such item MUST be treated as a sequential sub-task. The AI MUST complete the full `CLIPPY.MD` workflow (Steps 3 through 5.a) for one sub-task before initiating Step 3 for the next sub-task, unless the sub-tasks are explicitly and logically grouped by the user as a single, inseparable unit of work. **Blocked Task Exception:** If a sub-task is `BLOCKER:`ed, the user MAY direct a switch to a new sub-task. The AI MUST then: 1. Acknowledge deferring the blocked task. 2. Confirm the new task. 3. Proceed with the new task (via Step 1). The deferred task remains blocked until revisited and resolved.
     *   **Continuous Intra-Turn Execution, Explicit Transition & Self-Correction:**
         *   a. **Mandate to Continue:** Unless a step explicitly concludes with a `BLOCKER:`, a procedural requirement for user input (e.g., as defined in `Procedure: Ensure Sufficient File Context`), or marks the completion of the entire user request (as verified by Step 5.c), the AI Assistant MUST immediately prepare to initiate the subsequent `CLIPPY.MD` major step.
         *   b. **Explicit Next-Step Declaration:** After completing all reporting for the current major numbered step (e.g., all sub-points of Step 1, Step 2), and before initiating any actions (including tool calls) for the *next major numbered step*, the AI MUST state: "**Proceeding immediately to Step [Next Major Step #]: [Brief Title of Next Step].**" This declaration confirms the AI's intent to continue within the same turn and serves as an explicit commitment.
@@ -76,21 +76,20 @@
 *   **Trigger:** Start of AI turn, before any major protocol/workflow. Also, effectively, the start of each defined sub-task due to its placement here.
 *   **Actions:**
     *   a. **Assess Active Blockers:** Check for any unresolved `BLOCKER:` (session or task-specific) from previous turns.
-        *   **If Blocker(s) Exist:** Report "**Step 0.a: Active Blocker(s) Detected.**" Reiterate each blocker and its requested user guidance. **HALT** processing of the affected protocol/workflow. Await user input.
-    *   b. **If No Blockers Prevent Current Focus:** Report "**Step 0.b: No active blockers impede `[intended action/task]`**."
+        *   **If Blocker(s) Exist:** Report "**Step 1.a: Active Blocker(s) Detected.**" Reiterate each blocker and its requested user guidance. **HALT** processing of the affected protocol/workflow. Await user input.
+    *   b. **If No Blockers Prevent Current Focus:** Report "**Step 1.b: No active blockers impede `[intended action/task]`**."
         *   Briefly restate the confirmed overarching goal (from S.2), if set and relevant to the intended action.
-        *   (Original Step 0.b actions concluded, proceeding to integrated steps from former Step 1)
-    *   c. **Adherence Reaffirmation:** State: "Reaffirming commitment to `CLIPPY.MD` procedures for this sub-task." (Formerly Step 1.a)
-    *   d. Re-evaluate/confirm overall understanding of the parent task goal and how the current sub-task contributes to it, especially referencing the outcome of any immediately preceding sub-task. (Formerly Step 1.b)
-    *   e. Clearly define and report the specific, actionable goal and scope of the *current* sub-task. (Formerly Step 1.c)
-    *   f. If the current sub-task is complex, decompose it into smaller logical steps for planning purposes. (Formerly Step 1.d)
-    *   g. Identify and report any immediate ambiguities or missing information critical for *this sub-task* and plan to address them (e.g., by asking the user or using verification procedures). (Formerly Step 1.e)
-    *   h. Briefly state the primary files or areas of the codebase anticipated to be involved in this sub-task. (Formerly Step 1.f)
-    *   i. Proceed to the planned step (e.g., S.1.1, or Workflow Step 2.a if continuing directly from this setup).
+    *   c. **Adherence Reaffirmation:** State: "Reaffirming commitment to `CLIPPY.MD` procedures for this sub-task."
+    *   d. Re-evaluate/confirm overall understanding of the parent task goal and how the current sub-task contributes to it, especially referencing the outcome of any immediately preceding sub-task.
+    *   e. Clearly define and report the specific, actionable goal and scope of the *current* sub-task.
+    *   f. If the current sub-task is complex, decompose it into smaller logical steps for planning purposes.
+    *   g. Identify and report any immediate ambiguities or missing information critical for *this sub-task* and plan to address them (e.g., by asking the user or using verification procedures).
+    *   h. Briefly state the primary files or areas of the codebase anticipated to be involved in this sub-task.
+    *   i. Proceed to Step 2: Ensure Sufficient File Context & Prerequisite Knowledge.
 
 
 ### 2. Ensure Sufficient File Context & Prerequisite Knowledge (Per Sub-Task)
-*   **Trigger:** After defining the sub-task in Step 0.
+*   **Trigger:** After defining the sub-task in Step 1.
 *   **Actions:**
     *   a. Based on the sub-task definition, identify all specific files/modules likely to be read or modified.
     *   b. For each identified file, use `Procedure: Ensure Sufficient File Context`, prioritizing full reads if modifications are planned or deep understanding is necessary.
@@ -114,7 +113,7 @@
     *   Analyze blockage cause.
     *   If viable corrective strategy (e.g., refactoring): Propose plan. **BLOCKER:** Await user approval. If approved, corrective plan becomes objective; upon completion, re-plan original item. If declined/fails, trigger `Procedure: Request Manual Edit` for original item.
     *   If no viable corrective strategy: Trigger `Procedure: Request Manual Edit` for original item.
-*   **3.2. Ensure Sufficient Context:** Use `Procedure: Ensure Sufficient File Context`. (Note: This refers to the procedure, main context gathering is Step 2)
+*   **3.2. Ensure Sufficient Context:** Use `Procedure: Ensure Sufficient File Context`.
 *   **3.3. Verify Tool Output:** After each info-gathering tool call, use `Procedure: Verify Tool Output`.
 *   **3.4. Search Existing Logic:** Search codebase for existing implementations. Report findings. Investigate specified refactoring sources if plan requires.
 *   **3.5. Align with Standards & Core Documentation:**
@@ -153,7 +152,7 @@
     - `[x/-] 3. Hypothesis Verification:` [Brief confirm 3.7.b]
     - `[x/-] 4. Logic Preservation Plan:` [Brief confirm 3.7.e]
     - `[x/-] 5. Tool Output Verification:` [Brief confirm 3.3]
-    - `[x/-] 6. Full File Read Verification:` [Brief confirm `Procedure: Ensure Sufficient File Context` Step 3, if full reads attempted] (Note: Main context gathering is Step 2)
+    - `[x/-] 6. Full File Read Verification:` [Brief confirm `Procedure: Ensure Sufficient File Context` Step 3, if full reads attempted]
     - `[x] 7. Confirmation:` Summary complete.
     ```
 *   **3.13. Planning Self-Assessment:** Execute `Procedure: Perform Self-Assessment` (Scope: "Planning Phase").
@@ -163,7 +162,7 @@
     *   b. **If NO Code Change is Required:**
         1.  State: "**Step 3.15.b: Conclusion - No code changes are required for sub-task `[sub-task description]` because `[brief reason, e.g., 'issue already resolved', 'analysis confirms N/A']`.**"
         2.  Report: "Skipping Step 4 (Implementation) and proceeding to a streamlined Step 5."
-        3.  **IMMEDIATE ACTION:** In the same AI turn, proceed directly to **Step 5.a (Final Self-Assessment)** for this sub-task, then **Step 5.b (Determine Next Action & Initiate)** to initiate Step 3 for the *next* sub-task. Steps 4.1 through 4.6 will be considered N/A and reported as such in a summary note if needed, but individual reporting for each N/A step in Step 4 is not required.
+        3.  **IMMEDIATE ACTION:** In the same AI turn, proceed directly to **Step 5.a (Final Self-Assessment)** for this sub-task, then **Step 5.b (Determine Next Action & Initiate)** to initiate Step 1 for the *next* sub-task. Steps 4.1 through 4.6 will be considered N/A and reported as such in a summary note if needed, but individual reporting for each N/A step in Step 4 is not required.
     *   c. **If Code Change IS Required:**
         1.  State: "**Step 3.15.c: Conclusion - Code changes are required for sub-task `[sub-task description]`.**"
         2.  Report: "Proceeding to Step 4.1 (Generate Proposed `code_edit`)."
@@ -258,7 +257,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
     - `[x/-] 1. Edit Application Analysis:` [Confirm 4.4.a/b/c. State: 'Applied diff matches final intent.' or 'Discrepancies: [List/Justification]'.]
     - `[x/-] 2. Leftover Code & Dependency Analysis:` [Confirm relevant checklist items from Step 4.4.a (e.g., item 5) and 4.4.c were performed.]
     - `[x/-] 3. Correction Assessment:` [Confirm 4.4.3 performed. State if corrections made.]
-    - `[x/-] 4. Full File Read Verification:` [Brief confirm `Procedure: Ensure Sufficient File Context` Step 3 if full reads in this phase.] (Note: Main context gathering is Step 2)
+    - `[x/-] 4. Full File Read Verification:` [Brief confirm `Procedure: Ensure Sufficient File Context` Step 3 if full reads in this phase.]
     - `[x] 5. Confirmation:` Summary complete for `[filename(s)/task]`.
         ```
 
@@ -271,7 +270,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
     *   `b.` **Determine Next Action & Initiate:**
         1. If the overall user request or guiding plan (e.g., `DXFPLANNER_REVIEW.MD`) has further pending, distinct sub-tasks:
             *   State the next sub-task to be addressed.
-            *   **IMMEDIATE ACTION (within the same AI turn):** Autonomously initiate **Step 3: Planning & Pre-computation Checks** for this *new* sub-task. Do not pause or await user confirmation unless the entire request/plan is complete or a `BLOCKER:` condition (as per Step 0.a for the new sub-task) is identified.
+            *   **IMMEDIATE ACTION (within the same AI turn):** Autonomously initiate **Step 1: Initial Setup, Task Decomposition & Understanding** for this *new* sub-task. Do not pause or await user confirmation unless the entire request/plan is complete or a `BLOCKER:` condition (as per Step 1.a for the new sub-task) is identified.
             *   (Guidance on sub-task granularity remains as originally stated: "A 'pending action'... favor a more granular re-entry into Step 3 for each distinct functional unit.")
         2. If all sub-tasks for the overall user request are complete:
             *   State this clearly (e.g., "All identified sub-tasks for the request `[original user request summary]` are now complete.").
@@ -282,7 +281,7 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
         2.  **Overall Request Status:** If the sub-task is concluded, and if all sub-tasks for the overarching user request are complete, has this been stated (as per Step 5.b.2)?
         3.  **Blocker Status:** Is there an active `BLOCKER:` that genuinely prevents further autonomous action *on the current or next immediately planned sub-task*?
         4.  **Action Continuity:**
-            *   If sub-task is complete AND more sub-tasks remain AND no blocker for the next: Has Step 3 for the *next* sub-task already been initiated in this turn? (As per Step 5.b.1)
+            *   If sub-task is complete AND more sub-tasks remain AND no blocker for the next: Has Step 1 for the *next* sub-task already been initiated in this turn? (As per Step 5.b.1)
             *   If current sub-task is *not* yet complete (e.g., mid-way through Step 4) AND no blocker: Is the AI about to correctly report the next step in sequence?
         5.  **Decision:**
             *   If all relevant conditions above indicate that the AI should continue processing (e.g., next sub-task not initiated, current sub-task not finished, no valid blocker), then **DO NOT YIELD**. State: "**Step 5.c: Pre-Yield Adherence Check: Self-correcting to continue process.**" Then, immediately proceed with the required next step in the same turn.
