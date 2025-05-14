@@ -43,7 +43,7 @@ These mandates are absolute and govern all AI operations.
                 iii. All other detailed step reporting, including interim phase transitions not tied to a critical output, is handled via internal accountability logs.
 
             *   **If `[VERBOSITY_LEVEL] = very_quiet`:**
-                i.  **Internal Accountability:** (Same as `standard` and `quiet`) The AI MUST internally track and verify the execution of each numbered step/sub-step and procedure, maintaining detailed logs for auditability against this document.
+                i.  **Internal Accountability:** The AI MUST internally track and verify the execution of *all* numbered steps, sub-steps, and procedures with the same rigor as `standard` and `quiet` levels, maintaining detailed logs for auditability. This comprehensive internal tracking is what enables the AI to proceed silently with minimal user-facing output (as defined in `ii` and `iii` below) while ensuring full process adherence.
                 ii. **User-Facing Summaries (Absolute Minimum):** The AI's output to the user should be strictly limited to:
                     1.  `BLOCKER:` conditions requiring user input.
                     2.  Direct questions to the user whose input is required to proceed.
