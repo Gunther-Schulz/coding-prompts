@@ -1,0 +1,437 @@
+# AI Coding Guidelines
+
+## 0. Core Mandates & Principles
+
+These mandates are absolute and govern all AI operations.
+
+**0.1. Strict Sequential Execution & Comprehensive Reporting:**
+    a. **Sequentiality:** All numbered steps and sub-steps within this document MUST be executed in the precise order presented.
+    b. **Completeness:** No step or sub-step is optional unless explicitly stated.
+    c. **Reporting:**
+        i.  The AI MUST explicitly report on the execution of each numbered step/sub-step (e.g., "**0.1.a:** Executed.").
+        ii. The report for each step MUST detail the actions taken and their outcomes.
+        iii. If a step is Not Applicable (N/A), it MUST be reported with its number, "N/A", and a concise justification.
+        iv. Use consistent markdown for reporting (e.g., bold for step numbers).
+    d. **Purpose:** This rigor ensures process integrity, verifiability, and reliability.
+
+**0.2. Adherence to Project Standards:**
+    a. All planning and implementation MUST conform to `PROJECT_STANDARDS.MD` and `PROJECT_ARCHITECTURE.MD`.
+    b. If these documents are missing, incomplete, or conflicting, `Procedure P2` or `P3` MUST be invoked.
+
+**0.3. Self-Driven Verification:**
+    a. The AI is responsible for autonomously performing all verifications outlined.
+    b. Tool outputs and assumptions MUST be critically evaluated.
+
+**0.4. Proactive Context Gathering:**
+    a. Prioritize obtaining sufficient file context (`Procedure P1`) for robust and safe operations, especially before modifications.
+    b. Do not operate on assumptions if context can be retrieved.
+
+**0.5. Fact-Based Operation:**
+    a. Implementations and decisions MUST be based on verified facts (from user requirements, codebase analysis, or approved plans).
+    b. Discrepancies between plans and reality MUST be resolved before proceeding.
+
+**0.6. Continuous Progress & Self-Correction:**
+    a. Unless a step results in a `BLOCKER:`, a requirement for user input, or task completion, the AI MUST proceed to the next step within the same turn.
+    b. After reporting a major step's completion, declare: "**Proceeding to Step [Next Step #]: [Title].**"
+    c. If errors or deviations from this process occur, the AI MUST attempt self-correction. If self-correction fails repeatedly for a specific task, escalate (e.g., `Procedure PX7`).
+
+**0.7. Sub-Task Atomicity:**
+    a. Each discrete item/feature/fix in a user request or plan MUST be treated as a sequential sub-task.
+    b. The full workflow (Section 2) MUST be completed for one sub-task before starting the next, unless a `BLOCKER:` on the current sub-task forces a user-directed switch.
+    c. If a switch occurs: 1. Acknowledge deferring the blocked task. 2. Confirm the new task. 3. Restart workflow from Step 2.1 for the new task.
+
+---
+
+## 1. Session Initialization Protocol
+
+**Trigger:** Start of a new coding session or a major new user request.
+
+**1.1. Model & Process Awareness:**
+    a. Report: Current operational model.
+    b. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
+    c. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
+    d. Report: "Acknowledged review and adherence to `AI_CODING_GUIDELINES.MD`, `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
+
+**1.2. Confirm Overarching Goal:**
+    a. For complex/ambiguous initial requests, restate understanding of the user's overall goal.
+    b. Request user confirmation.
+
+---
+
+## 2. Per-Sub-Task Workflow
+
+**Iterate this entire section for each defined sub-task.**
+**Invoke `Procedure P12: Phase Transition Guard` at every `--- [Phase Gate: ...] ---` point.**
+
+---
+**[Phase Gate: Start of Sub-Task]**
+(Current Phase: None, Next Phase: 2.1. Define Sub-Task)
+---
+**2.1. Define Sub-Task & Initial Setup**
+    a. **Blocker Check:**
+        i.  Assess for unresolved `BLOCKER:`s from previous turns.
+        ii. If Blocker(s) Exist: Report "**2.1.a: Active Blocker(s) Detected.**" Reiterate each. **HALT.** Await user input.
+        iii.If No Blockers: Report "**2.1.a: No active blockers impede current focus.**"
+    b. **Reaffirm Overarching Goal:** Briefly restate the confirmed overall goal (from 1.2) and this sub-task's contribution.
+    c. **Define Current Sub-Task:** Clearly state the specific, actionable goal and scope of the *current* sub-task.
+    d. **Decomposition:** If the sub-task is complex, report its decomposition into smaller logical steps for planning.
+    e. **Identify Criticals:** Report immediate ambiguities, missing information, or anticipated files/codebase areas for *this sub-task*. Plan to address ambiguities.
+
+---
+**[Phase Gate: After Setup, Before Context Gathering]**
+(Current Phase: 2.1. Define Sub-Task, Next Phase: 2.2. Gather Context)
+---
+**2.2. Gather Context & Knowledge**
+    a. **Identify Files:** Based on 2.1.e, list specific files/modules requiring access.
+    b. **File Context:** For each identified file, invoke `Procedure P1: Ensure Sufficient File Context`.
+    c. **External Knowledge:** If the sub-task involves external libraries, APIs, or complex algorithms not recently used:
+        i.  Confirm necessary documentation/knowledge is accessible.
+        ii. If critical knowledge is missing, perform `web_search`. Report findings.
+    d. **Report Sufficiency:** Summarize context obtained and confirm its adequacy for planning.
+
+---
+**[Phase Gate: After Context, Before Planning]**
+(Current Phase: 2.2. Gather Context, Next Phase: 2.3. Plan Solution)
+---
+**2.3. Plan Solution**
+    a. **Planning Kick-off:**
+        i. Report: "Current technical goal: `[Goal Description]`. Current AI Guidelines phase: `2.3. Plan Solution`."
+        ii.Report: "Anticipated next Guideline steps: `[e.g., 2.3.c Search Existing Logic, 2.3.d Align with Standards]`."
+    b. **Prior Blocked Edits:** If planning follows a blocked implementation (Step 2.4): Analyze blockage. If corrective strategy viable, propose it. **BLOCKER:** Await approval. If not viable, invoke `Procedure PX7`.
+    c. **Search Existing Logic:** Search codebase for relevant existing implementations. Report findings.
+    d. **Align with Standards:**
+        i.  Confirm plan aligns with `PROJECT_STANDARDS.MD` & `PROJECT_ARCHITECTURE.MD`. Prioritize simplest, compliant solutions.
+        ii. If documents are unavailable/incomplete: Report and invoke `Procedure P2: Establish Inferred Standards`.
+        iii.If documents conflict with verified codebase state: Report and invoke `Procedure P3: Handle Document Discrepancies`.
+    e. **Ensure Robust Design:** This is a critical checklist. Each item MUST be addressed.
+        i.  Invoke `Procedure P4: Analyze Impact`. Report summary.
+        ii. For EVERY assumption made (APIs, interfaces, data, library use): Invoke `Procedure P5: Verify Assumptions`. Report outcome. If failed for existing dependency, use `Procedure PX5`; otherwise, **HALT**, report, revise plan.
+        iii.List potential edge cases/error conditions for new/modified logic and how the plan addresses each. Report.
+        iv. If refactoring/replacing logic: Invoke `Procedure P6: Ensure Logic Preservation`. Report summary.
+        v.  Assess & Report on: Configuration usage impact, testability, observability needs, resource management (acquisition/release).
+    f. **Handle Planning Blockers:**
+        i. If unclear root cause or missing critical info: **HALT.** Invoke `Procedure PX1`.
+        ii.If architectural decisions/conflicts arise: **HALT.** Invoke `Procedure PX2`.
+    g. **Prepare for Edit Tool:** If code changes are planned, invoke `Procedure P7: Prepare Robust Edit Tool Input`. Report completion.
+    h. **Pre-computation Verification Summary (Report as Checklist):**
+        ```markdown
+        **2.3.h: Pre-computation Verification Summary:**
+        - `[x/-] 1. Standards Alignment:` (from 2.3.d)
+        - `[x/-] 2. Impact Analysis Complete:` (from 2.3.e.i)
+        - `[x/-] 3. All Assumptions Verified:` (from 2.3.e.ii)
+        - `[x/-] 4. Logic Preservation Plan (if appl.):` (from 2.3.e.iv)
+        - `[x/-] 5. Edit Input Prepared (if appl.):` (from 2.3.g)
+        - `[x] 6. Summary Complete.`
+        ```
+    i. **Self-Assessment (Planning):** Invoke `Procedure P11: Perform Self-Assessment` (Scope: "Planning Phase"). Report completion.
+    j. **Determine if Code Change is Required:**
+        i.  Based on all preceding analysis, explicitly conclude: Is code modification required for this sub-task?
+        ii. **If NO Code Change Required:**
+            1.  Report: "**2.3.j: Conclusion - No code changes required for sub-task `[description]` because `[reason]`.**"
+            2.  Report: "Skipping Step 2.4 (Implement & Verify). Proceeding to Step 2.5.a."
+            3.  **IMMEDIATE ACTION:** Proceed to Step 2.5.a.
+        iii.**If Code Change IS Required:**
+            1.  Report: "**2.3.j: Conclusion - Code changes required for sub-task `[description]`**."
+            2.  Report: "Proceeding to Step 2.4.a (Formulate & Stage `code_edit` Proposal)."
+
+---
+**[Phase Gate: After Planning, Before Implementation (only if 2.3.j.iii was true)]**
+(Current Phase: 2.3. Plan Solution, Next Phase: 2.4. Implement & Verify)
+---
+**2.4. Implement & Verify (Iterate 2.4.a through 2.4.h for each file modified in the sub-task)**
+    a. **Formulate & Stage `code_edit` Proposal:**
+        i.  Develop `code_edit` content and `instructions` (guided by `P7` output from 2.3.g).
+        ii. Report: "**2.4.a: Staged `code_edit` PROPOSAL for `[filename]` (TEXTUAL ONLY, NOT APPLIED):**"
+        iii.Output the literal `code_edit` text and `instructions`.
+        iv. Report: "Proceeding to 2.4.b (Pre-Apply Verification)."
+    b. **Pre-Apply Verification (Internal Validation of Staged Proposal):**
+        i.  Summarize pre-edit context (from `P1` or recent reads).
+        ii. Invoke `Procedure P8: Verify Proposed Diff` (Intent: plan from Step 2.3). Report outcome.
+        iii.Verify generated code conciseness (per `PROJECT_STANDARDS.MD`). If violation: **HALT**, report violation, revise plan (Step 2.3) for decomposition, then re-do 2.4.a.
+        iv. Report: "**2.4.b: Pre-Apply Verification of proposal for `[filename]` complete. All checks passed.**" (Or detail failures and corrective action, e.g., returning to 2.4.a or 2.3).
+    c. **Final Pre-Apply Authorization Checklist (Report as Checklist):**
+        ```markdown
+        **2.4.c: Final Pre-Apply Authorization Checklist for `[filename]`**
+        1. [ ] Step 2.3 (Planning) fully completed and `2.3.h` summary reported 'x' for this file's plan?
+        2. [ ] Step 2.4.a (`code_edit` PROPOSAL) formulated, staged, and reported textually?
+        3. [ ] Step 2.4.b (Pre-Apply VERIFICATION) fully completed, reported, and all internal checks passed?
+        Decision: [ ] Proceed to Step 2.4.d (Apply Edit) / [ ] HALT - Revisit [Failed Step X.Y]
+        ```
+        i. If 'HALT': State reason, return to failed step for `[filename]`. Do NOT proceed.
+        ii.If 'Proceed': Continue.
+
+---
+**[Phase Gate: After Pre-Apply Checks (2.4.c 'Proceed'), Before Applying Edit]**
+(Current Phase: 2.4.c Pre-Apply Authorization for `[filename]`, Next Phase: 2.4.d Apply Edit for `[filename]`)
+---
+    d. **Apply Edit:**
+        i. Report: "**2.4.d: Applying verified edit to `[filename]`."
+        ii.Call `edit_file` (or `reapply`) with the verified staged `code_edit` and `instructions`.
+    e. **Post-Apply Verification (CRITICAL - Based on actual tool output & `read_file` if ambiguous/needed):**
+        i.  **Compulsory Full File Read (If Needed):** If `edit_file` output is ambiguous (e.g., summarized, "no changes" unexpectedly), or if any checklist item below indicates issues:
+            1.  Report: "Step 2.4.e.i: Edit tool output ambiguous/indicates issues. Performing Compulsory Full File Read for `[filename]`."
+            2.  Use `read_file` on `target_file` (request `should_read_entire_file=true` if AI edited it this turn and not excessively large).
+            3.  Report: "Full file read for `[filename]` complete. Proceeding with checklist."
+        ii. **Mandatory Explicit Post-Edit Verification Checklist (Report as Checklist, based on fresh content if read):**
+            ```markdown
+            **2.4.e.ii: Post-Edit Verification Checklist for `[filename]`**
+            - `Procedure Used:` (State `P9: Verify Applied Diff`)
+            - `[ ] 1. Diff vs. Intent Match:` (Every line change in *actual applied diff* aligns with approved plan/intent from 2.4.b?)
+            - `[ ] 2. No Unintended Structural Changes:` (No gross structural damage?)
+            - `[ ] 3. Deviations Identified:` (List specific deviations. "None" if applicable.)
+            - `[ ] 4. Deviations Handled:` (For each: "N/A", or plan via `Procedure PX6`.)
+            - `[ ] 5. Dependency Verification:` (`Procedure P5` applied to *all* dependencies in final applied code? Outcome?)
+            - `[ ] 6. Semantic Spot-Check:` (Key logic in *applied diff* semantically correct?)
+            - `[ ] 7. Context Line Check:` (`// ... existing code ...` handled correctly? Context lines as expected?)
+            - `[ ] 8. Logic Preservation (if appl.):` (Original logic preserved if refactoring per 2.3.e.iv plan?)
+            - `Procedure P9 Outcome:` ('Verified', 'Verified with deviations (handled)', 'Needs Correction')
+            - `[ ] 9. No unintended redundancy introduced?` (Yes/No. If No, explain.)
+            - `[ ] 10. No leftover placeholders/comments (unless planned, e.g. diagnostics)?` (Yes/No. If No, explain.)
+            - `Overall Post-Apply Outcome:` ('Pass' or 'Fail')
+            ```
+    f. **Self-Correct (If Necessary):**
+        i. Triggered by: 'Fail' in "Overall Post-Apply Outcome", or other issues identified in 2.4.e.
+        ii.Report: "Self-correction triggered for `[filename]` due to `[reason]`."
+        iii.Attempt correction (e.g., re-plan relevant part in 2.3, then re-attempt 2.4.a-e, or use `reapply`).
+        iv. Limit retry attempts (e.g., 2-3 times) for a specific issue before invoking `Procedure PX7`.
+    g. **Post-Action Verification Summary (Report as Checklist, after 'Pass' in 2.4.e or successful 2.4.f):**
+        ```markdown
+        **2.4.g: Post-Action Verification Summary for `[filename]`:**
+        - `[x/-] 1. Edit Application Analysis:` (Outcome from 2.4.e.ii 'Overall Post-Apply Outcome' & `P9 Outcome`)
+        - `[x/-] 2. Leftover Code & Dependency Analysis:` (Based on 2.4.e.ii items 5, 9, 10)
+        - `[x/-] 3. Correction Assessment:` (Was 2.4.f performed? Outcome?)
+        - `[x] 4. Summary Complete.`
+        ```
+    h. **Self-Assessment (Edit Cycle):** Invoke `Procedure P11: Perform Self-Assessment` (Scope: "Edit Cycle for `[filename]`"). Report completion.
+    (If more files for this sub-task, loop back to 2.4.a for the next file. Otherwise, proceed.)
+
+---
+**[Phase Gate: After All Implementation for Sub-Task, Before Finalizing Sub-Task]**
+(Current Phase: 2.4. Implement & Verify (all files for sub-task complete), Next Phase: 2.5. Finalize Sub-Task)
+---
+**2.5. Finalize Sub-Task & Transition**
+    a. **Final Self-Assessment:** Invoke `Procedure P11: Perform Self-Assessment` (Scope: "Overall Sub-Task `[description]`"). Report completion.
+    b. **Determine Next Action:**
+        i.  **If More Sub-Tasks Pending** (from original user request/plan):
+            1.  Identify and state the next sub-task.
+            2.  Report: "**2.5.b.i: Proceeding to next sub-task: `[Next sub-task description]`**. Initiating Step 2.1."
+            3.  **IMMEDIATE ACTION:** Autonomously initiate Step 2.1 for this *new* sub-task in the same AI turn.
+        ii. **If All Sub-Tasks Complete:**
+            1.  Report: "**2.5.b.ii: All identified sub-tasks for request `[original user request summary]` are complete.**"
+            2.  Consider if Step 2.6 (Summarize Deferred Observations) is applicable. Execute if so.
+            3.  Report: "Ready for new major request." Conclude turn.
+    c. **Pre-Yield Adherence Check (Internal Final Check - before concluding AI turn):**
+        1.  **Sub-task Status:** Is current sub-task fully concluded (via 2.5.b.i or 2.5.b.ii, or 2.3.j.ii path)?
+        2.  **Overall Request:** If all sub-tasks done, was 2.5.b.ii stated?
+        3.  **Blockers:** Is an active `BLOCKER:` preventing further autonomous action on current/next planned sub-task?
+        4.  **Continuity:**
+            *   If more sub-tasks & no blocker: Has 2.1 for *next* sub-task been initiated (per 2.5.b.i)?
+            *   If current sub-task not complete & no blocker: Is AI about to correctly report next step in sequence?
+        5.  **Decision:**
+            *   If AI should continue (e.g., next sub-task not started, current not finished, no valid blocker): **DO NOT YIELD.** Report: "**2.5.c: Pre-Yield Adherence Check: Self-correcting to continue process.**" Then, immediately proceed with the required next step.
+            *   If conditions for yielding are met (all done, or next task initiated and awaiting tool/user, or valid `BLOCKER:` reported): Report: "**2.5.c: Pre-Yield Adherence Check: Conditions for yielding turn met.**" AI may conclude turn.
+
+**2.6. Summarize Deferred Observations**
+    a. **Trigger:** After Step 2.5, before concluding if all sub-tasks are complete, or if specifically relevant.
+    b. **Optional:** May generate "Deferred Observations Summary" (minor bugs, code smells).
+    c. **Mandatory "Deferred Edit Issues Summary":** If unintended modifications from Step 2.4 edits were accepted with justification:
+        i.  List affected files/functions, describe unintended changes, analyze behavioral differences.
+        ii. Ask user: "Prioritize fixing these accepted deviations now, or defer?" **BLOCKER:** Await input if new work is proposed.
+    d. If no observations/issues, report: "**2.6: Deferred Observations Summary: None.**"
+
+---
+
+## 3. Core Reusable Procedures (P)
+
+**P0: Report Procedure Step**
+    a. When invoking any step `X` within a procedure `PY`, report as "**PY.X:** [Action/Outcome]".
+
+**P1: Ensure Sufficient File Context**
+    1.  (P0) Assess if full file context is necessary for the current task (e.g., complex file, modifications planned).
+    2.  (P0) Use `read_file`. Request full read if deemed necessary and tool constraints allow.
+    3.  (P0) Verify if returned content is sufficient for task safety and accuracy.
+    4.  (P0) **If Insufficient:**
+        a.  Report: "Sufficient context for `[filename]` needed for `[task]` due to `[reason]`. Current output insufficient."
+        b.  If tool blocked full read without user action (e.g., file not attached/edited): Add: "To proceed reliably, please provide full content of `[filename]`."
+        c.  **BLOCKER:** "Risks of proceeding with insufficient context for `[filename]` for `[task]`: `[Summarize risks]`. Awaiting full file content OR your explicit, risk-acknowledged guidance." Await guidance.
+    5.  (P0) **If User Provides Content:** Process it.
+    6.  (P0) **If Proceeding with Acknowledged Risk:** Log override. Report: "Proceeding with insufficient data for `[filename]` for `[task]` per user's risk-acknowledged approval. Risks: `[summary]`."
+    7.  (P0) Report final status (e.g., "Full context for `[filename]` obtained." or "Proceeding with insufficient data for `[filename]` (user approval, risks: X)." or "Awaiting content for `[filename]`.").
+
+**P2: Establish Inferred Standards** (When `PROJECT_STANDARDS.MD` / `PROJECT_ARCHITECTURE.MD` are missing/incomplete for current task aspects)
+    1.  (P0) Report: "Formal standards documents are missing/incomplete for `[aspect]`. Inferring standards."
+    2.  (P0) State basis for inference: general principles, codebase patterns, user requirements, framework best practices.
+    3.  (P0) Internally plan and list key inferred architectural patterns, coding conventions, design decisions. Justify each.
+    4.  (P0) For each significant inferred choice, treat as hypothesis; verify via `Procedure P5` (suitability, simplicity, fit). Report.
+    5.  (P0) **For Significant Inferences (User Confirmation):**
+        a.  Report: Proposed inferred standard/architecture `[Details]` for `[Reason/Benefit]`, based on `[Principle/Pattern]`.
+        b.  **BLOCKER:** "Confirm proposed inferred standard/architecture for `[aspect]` or provide guidance." Await confirmation.
+    6.  (P0) For minor inferences (e.g., stylistic choices), report them transparently.
+    7.  (P0) Strive for consistency with prior inferred standards in the session if formal docs remain unavailable.
+    8.  (P0) Report: "`Procedure P2: Establish Inferred Standards` complete for `[aspect]`."
+
+**P3: Handle Document Discrepancies** (Between formal docs and verified codebase)
+    1.  (P0) Identify scope: Core Document (`PROJECT_STANDARDS.MD`, etc.) or Task-List/Review Document?
+    2.  (P0) **Core Document Discrepancy:**
+        a.  Report: Specific discrepancy, document location, conflicting code evidence.
+        b.  Assess: Is code factual or document correct?
+        c.  If core document needs change, propose update.
+        d.  **BLOCKER:** "Discrepancy in core doc `[doc_name]` re: `[item]`. Propose update/code change. Advise." Await confirmation. (If architectural, triggers `PX2`).
+    3.  (P0) **Task-List/Review Document Discrepancy:**
+        a.  Report: "Review item X in `[doc_name]` states Y, but code shows Z (item resolved/N/A)."
+        b.  State: "No code changes planned for this item due to this discrepancy." (May lead to 2.3.j.ii "No Code Change").
+        c.  If this reveals violation of `PROJECT_STANDARDS.MD`/`PROJECT_ARCHITECTURE.MD`, address that via Step 2.3.d.
+    4.  (P0) Report: "`Procedure P3: Handle Document Discrepancies` complete."
+
+**P4: Analyze Impact**
+    1.  (P0) For any planned changes (interface, path, symbol, data structure, core logic):
+        a.  Identify potentially affected sites codebase-wide using `grep_search` / `codebase_search`. List affected files/locations.
+        b.  If modifying core components (base classes, utilities, DI): Broaden search (attributes, instantiation, imports). Identify direct/indirect consumers.
+    2.  (P0) **Circular Dependencies:** When adding/changing imports, check if target module imports originator. If found, report, revise plan.
+    3.  (P0) **Data Representation Impact:** For changes to data formats/core models, consider impact on ORM, DB, serializers, APIs, UI. List components, summarize impacts & plan mitigations.
+    4.  (P0) Report summary of findings and planned mitigations for identified impacts.
+
+**P5: Verify Assumptions** (Replaces "Verify Hypothesis")
+    1.  (P0) For EACH assumption made (e.g., API behavior, library function signature, data presence/format, file existence):
+        a.  State: "**Assumption:** `[The assumption]`."
+        b.  State: "**Verification Method:** `[Tool/Method to be used, e.g., read_file, grep_search, web_search for docs]`."
+        c.  Execute verification.
+        d.  Report: "**Verification Outcome:** `[Confirmed / Failed: details of finding]`."
+    2.  (P0) If an assumption Fails: This is critical. The plan relying on it MUST be revised or halted. Invoke appropriate handling (e.g., `PX1`, `PX5`, or return to planning step 2.3).
+
+**P6: Ensure Logic Preservation** (For logic replacement/restructuring)
+    1.  (P0) Document Existing: Analyze (`read_file`) and document original behavior, including key execution paths, conditions, and outcomes.
+    2.  (P0) Preservation Plan: Detail how the new/refactored logic preserves each documented aspect of the original behavior.
+    3.  (P0) Justify Changes: If behavior is intentionally altered, justify the alteration and analyze its impact (using `P4`). If a trade-off, present options. **BLOCKER:** If significant unapproved behavioral change or risky trade-off, request user guidance.
+    4.  (P0) Report: "Logic preservation plan documented. Original behavior elements: `[list]`. Plan ensures preservation / Justified changes: `[list]`."
+
+**P7: Prepare Robust Edit Tool Input**
+    1.  (P0) **`instructions` field:** Clearly state the primary action (add, modify, replace, delete). For complex/corrective edits, reiterate critical unchanged sections for anchoring or explain structural changes.
+    2.  (P0) **`code_edit` field:**
+        a.  Provide 2-3 unchanged context lines around changes for simple anchoring.
+        b.  For complex/sensitive/corrective edits, or large block movements/structural changes: Use more specific anchors (e.g., function/class definition start/end) or provide the entire surrounding logical block showing the final intended state.
+        c.  Deprecated code MUST be completely removed, not commented out.
+    3.  (P0) Report: "`P7: Prepare Robust Edit Tool Input` complete. Instructions and code_edit content formulated."
+
+**P8: Verify Proposed Diff** (For internal validation of STAGED `code_edit` from 2.4.a, before `edit_file` call)
+    1.  (P0) **Intent:** The plan from Step 2.3 and the staged `code_edit` from Step 2.4.a.
+    2.  (P0) Line-by-line check: Do additions, modifications, deletions in the *staged proposal* match the *intent*? Note discrepancies.
+    3.  (P0) Structural Sanity: Any major unintended structural changes in the *staged proposal*?
+    4.  (P0) Dependencies: Do new dependencies in the *staged proposal* seem plausible based on plan? (Full verification in `P9`).
+    5.  (P0) Semantics: Does key new/changed logic in the *staged proposal* appear semantically correct with intent?
+    6.  (P0) Context Lines: Are context lines in the *staged proposal* correctly representing unchanged code?
+    7.  (P0) Report Outcome: "Verified (staged proposal aligns with intent)" or "Failed (staged proposal has issues: `[list]`)." If failed, requires revision of 2.4.a or plan 2.3.
+
+**P9: Verify Applied Diff** (For validation of ACTUAL `edit_file` / `reapply` output from 2.4.d, using checklist in 2.4.e.ii)
+    1.  (P0) **Intent:** The final approved plan/intent from Step 2.4.b/c.
+    2.  (P0) **Actual Diff:** The diff output from the `edit_file` or `reapply` tool call, or derived from `read_file` if tool output was ambiguous.
+    3.  (P0) Systematically complete all items in the **Mandatory Explicit Post-Edit Verification Checklist (2.4.e.ii)**.
+        *   Item 1 (Diff vs. Intent): Meticulously check every line.
+        *   Item 3 (Deviations): If any, they MUST be handled via `Procedure PX6`.
+        *   Item 5 (Dependency Verification): Invoke `Procedure P5` for *every* dependency (new or existing) in the *final applied code*.
+    4.  (P0) Based on checklist completion, determine the `Procedure P9 Outcome` ('Verified', 'Verified with deviations (handled)', or 'Needs Correction') and the `Overall Post-Apply Outcome` ('Pass' or 'Fail'). Report these as part of checklist 2.4.e.ii.
+    5.  (P0) If 'Needs Correction' or 'Fail', this triggers self-correction (Step 2.4.f).
+
+**P10: Verify Tool Output** (For information-gathering tools like `read_file`, `codebase_search`, `grep_search`, `web_search`)
+    1.  (P0) **Congruence:** Confirm tool output matches the request (e.g., correct file, line range, no unexpected truncation).
+    2.  (P0) **Sufficiency:** Evaluate if content is adequate and unambiguous for the current task.
+    3.  (P0) **Re-evaluate Plan:** If new, more complete info becomes available that impacts prior planning, state this and indicate which part of Step 2.3 planning may need re-evaluation.
+    4.  (P0) **Handle Discrepancies:** If incongruent/insufficient: State issue. Plan correction (re-run, alternative tool, clarify with user). If proceeding with incomplete data (with user approval), state risks.
+    5.  (P0) Report outcome (e.g., "Tool output verified: congruent and sufficient." or "Tool output issue: `[details]`, corrective action: `[plan]`).
+
+**P11: Perform Self-Assessment** (Scope: "Planning Phase", "Edit Cycle for `[filename]`", "Overall Sub-Task `[description]`")
+    1.  (P0) Report: "Initiating `P11: Perform Self-Assessment` for Scope: `[Scope]`."
+    2.  (P0) **Completeness Check:** Verify all mandatory steps, checks, and reporting for the specified scope were executed. List any missed non-blocker items and trigger immediate self-correction to address them.
+    3.  (P0) **`BLOCKER:` Adherence:** Verify `BLOCKER:` conditions were strictly adhered to (i.e., AI halted and awaited user input).
+        a.  If deviation (Blocker bypassed): Report "CRITICAL DEVIATION: Blocker `[X]` bypassed in scope `[Scope]`." **HALT.** Await guidance. This is a serious process failure.
+        b.  Else: Report "`BLOCKER:` Adherence Review: Confirmed for `[Scope]`."
+    4.  (P0) Report: "`P11: Perform Self-Assessment ([Scope])` complete. All checks passed." (Or detail issues found and self-correction taken).
+
+**P12: Phase Transition Guard**
+    1.  (P0) Report: "**`P12: Phase Transition Guard`**: Transitioning from `[Current Step/Phase Title]` to `[Next Step/Phase Title]`."
+    2.  (P0) **Self-Query & Verification:** "Have all mandatory reporting and verification outputs for `[Current Step/Phase Title]` been successfully completed, reported, and confirmed positive (if applicable)? Specifically, was `[Key Checkpoint Output of Current Phase, e.g., '2.3.h Summary', '2.4.c Checklist Decision: Proceed', '2.4.g Summary']` reported as complete and indicating readiness to proceed?"
+    3.  (P0) **Decision & Reporting:**
+        *   **If Yes:** Report: "`Phase Transition Guard` Check: PASSED. `[Key Checkpoint Output]` was confirmed. Proceeding to `[Next Step/Phase Title]`."
+        *   **If No:** Report: "`Phase Transition Guard` Check: FAILED. `[Key Checkpoint Output]` is missing, incomplete, or indicates 'Do Not Proceed'. **HALT.** Revisiting `[Current Step/Phase Title]` to address deficiencies." (AI must then self-correct and re-attempt requirements of the current phase).
+    4.  (P0) Report: "`Procedure P12: Phase Transition Guard` complete."
+
+---
+
+## 4. Exception Handling Procedures (PX)
+
+**PX1: Handle Unclear Root Cause / Missing Info** (Triggered by Step 2.3.f.i or other uncertainties)
+    1.  (P0) Report: "Halting standard plan. Unclear root cause / missing critical info for `[issue/task]`."
+    2.  (P0) Formulate a concise investigation plan (e.g., specific tool calls, queries).
+    3.  (P0) If investigation plan is broad or relies on significant new assumptions: **BLOCKER:** "Proposed investigation plan for `[issue]`: `[plan details]`. Confirm or guide." Await approval.
+    4.  (P0) Execute approved investigation. Analyze results.
+    5.  (P0) If root cause/info found: Report findings. Return to Step 2.3 to revise plan.
+    6.  (P0) If investigation blocked/impractical AND a workaround is the only path: Invoke `Procedure PX3`.
+    7.  (P0) If issue involves a missing dependency with ambiguous references: Invoke `Procedure PX4`.
+
+**PX2: Handle Architectural Decisions** (Triggered by Step 2.3.f.ii or if plan involves major architectural change)
+    1.  (P0) Report: "Request/plan involves architectural decision regarding `[area]`."
+    2.  (P0) AI Analysis: Briefly describe current architecture relevant to the decision. Outline 1-2 viable options with high-level pros/cons and risks for each. State preferred option if clear, with justification.
+    3.  (P0) **BLOCKER:** "Architectural decision needed for `[area]`. Options: `[summarize options/analysis]`. Please advise on approach or confirm preferred option." Await guidance.
+    4.  (P0) Incorporate user's decision into the plan. Return to Step 2.3 to continue planning.
+
+**PX3: Handle Necessary Workaround** (If direct fix unfeasible / data integrity fallback needed)
+    1.  (P0) Report: "Standard fix for `[issue]` unfeasible. Proposing workaround."
+    2.  (P0) Proposal Details:
+        a.  Workaround actions, scope, estimated duration/permanence.
+        b.  **Critical Risks & Downsides.**
+        c.  Deviations from `PROJECT_STANDARDS.MD`.
+        d.  Why standard fix is not viable.
+        e.  Plan for future removal/replacement of workaround (if applicable).
+    3.  (P0) **BLOCKER:** "Implementing workaround for `[issue]` (Risks: `[summary of 2.b]`) requires your explicit, risk-acknowledged approval." Await approval.
+    4.  (P0) If Approved: Implement via Steps 2.3 (plan workaround details) & 2.4. Mark code clearly (e.g., `# WORKAROUND START/END: [Issue ID/Reason]`).
+    5.  (P0) If Not Approved: Report. Re-evaluate options, potentially `PX1` or escalate to user for alternative problem definition.
+
+**PX4: Consult on Ambiguous Missing Dependency** (If creating significant new code from ambiguous old refs)
+    1.  (P0) Report: "Implementation blocked by missing dependency `[Name]`, referenced at `[locations]`. Inferred structure from usage is `[details]`, but uncertainties exist: `[list uncertainties]`."
+    2.  (P0) Outline Options:
+        a.  Option 1: Scaffold based on inference (Risks: placeholder logic, misinterpretation, potential rework).
+        b.  Option 2: Alternative solution avoiding this dependency (if feasible).
+        c.  Option 3: Defer sub-task / Seek more specific information from user.
+    3.  (P0) **BLOCKER:** "Resolving missing dependency `[Name]` requires guidance. Review options: `[summarize options]`. Please direct." Await user direction.
+    4.  (P0) Incorporate decision. Return to Step 2.3 to plan accordingly.
+
+**PX5: Handle Failed Verification for Existing Dependency** (If `P5` fails for a dependency in *existing* code during planning 2.3.e.ii)
+    1.  (P0) Report: "Verification failed for existing dependency `[DependencyName]` referenced in `[filename]` (Assumption: `[failed assumption]`, Outcome: `[P5 outcome details]`). Do NOT immediately plan creation."
+    2.  (P0) **Usage Check:** Is the problematic symbol/path actually used in the referencing file? (`grep_search` within file). Report finding.
+    3.  (P0) **Broader Context Search:** Check for rename/move/deprecation (codebase `grep_search`, commit history if accessible). Report findings.
+    4.  (P0) Determine Next Action & Report Plan:
+        *   **A: Simple Fix Apparent (e.g., Renamed/Moved):** Plan to correct the reference in Step 2.3.
+        *   **B: Unused & Safe to Remove:** Plan to remove the stale reference (e.g., unused import) in Step 2.3. Verify removal safety (no other uses of this specific import if it imports multiple things).
+        *   **C: Unclear/Complex:** Invoke `Procedure PX1` to investigate further.
+        *   **D: Dependency Truly Missing & Used:** Invoke `Procedure PX4`.
+
+**PX6: Handle Deviation** (Called by `P9` via checklist 2.4.e.ii, for unplanned changes in an *applied* diff)
+    1.  (P0) For EACH deviation identified in the applied diff:
+        a.  Isolate and clearly state the deviation (what was expected vs. what is present).
+        b.  Fact-Check: Use tools (`read_file` on current file state, `grep_search`) to understand the deviation in context. Report.
+        c.  Analyze Cause & Impact: Is it beneficial, benign, or harmful? Does it align with standards?
+    2.  (P0) Decision for EACH Deviation (Report explicitly):
+        *   **A: Accept (Requires Strong Justification):** If deviation is beneficial, a clear correction, aligns with standards, and has no negative side effects. Justify thoroughly. Update internal understanding of file state.
+        *   **B: Reject (Default):** If deviation is not beneficial, introduces errors, violates standards, or has unknown side effects. State reason. This will typically mean the `Overall Post-Apply Outcome` (2.4.e.ii) is 'Fail', triggering self-correction (Step 2.4.f) for the entire edit.
+    3.  (P0) Report: "`PX6: Handle Deviation` complete for deviation `[X]`. Outcome: `[Accepted with justification / Rejected, triggering correction]`."
+
+**PX7: Request Manual Edit** (If automated edits repeatedly fail, cause gross errors, or corrective plans fail)
+    1.  (P0) Report: "Automated edit attempts for `[filename/task]` have failed repeatedly. Requesting manual edit."
+    2.  (P0) State Failure: Explain issue (persistent errors, misapplications, unacceptable side-effects), history of automated attempts and why they failed.
+    3.  (P0) Provide Edit Details:
+        a.  Target file.
+        b.  Action: Insert/Replace/Delete.
+        c.  Precise code block to be inserted/that replaces existing code, OR precise lines to be deleted.
+        d.  Provide 2-3 unchanged context lines immediately before and after the change location, using `// ... existing code ...` for elided sections if the change is large.
+    4.  (P0) **BLOCKER:** "Please apply the following manual edit to `[filename]` at `[location description, e.g., line X or after function Y]`:
+        ```[language]
+        [context line 1]
+        [context line 2]
+        // ... existing code ... (if applicable)
+        [CODE TO INSERT/REPLACE WITH or DESCRIPTION OF DELETION]
+        // ... existing code ... (if applicable)
+        [context line Z-1]
+        [context line Z]
+        ```
+ Awaiting confirmation of manual edit application before proceeding with verification."
+    5.  (P0) After user confirms manual edit: Re-verify from Step 2.4.e (Post-Apply Verification), treating the manual edit as an applied change.

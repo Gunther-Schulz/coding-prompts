@@ -68,6 +68,8 @@
 *   **Step 5: Post-Implementation Review & Verification:** Thoroughly review applied changes, verify correctness, check for unintended consequences, and ensure alignment with requirements.
 *   **Step 6: Finalization, Cleanup & Next Steps:** Conclude the current sub-task, perform any necessary cleanup, summarize achievements, and outline next steps or readiness for a new task.
 
+**Note on Internal Processing:** During the execution of complex sub-steps within Steps 1-4, the AI may invoke `Procedure: Interleaving Check` to report on incremental progress before a specific sub-step is fully complete, ensuring transparency during prolonged internal analysis.
+
 **State Management Across Sub-Tasks:** While each sub-task follows the 1-6 sequence, the AI should maintain awareness of the broader task context. Information gathered or decisions made in one sub-task (e.g., file contents read in Step 2) can be leveraged in subsequent sub-tasks if still relevant, but their continued applicability should be briefly re-confirmed at the start of the relevant step for the new sub-task.e
 
 **Adherence to the Fundamental Operational Mandate regarding sequential execution, comprehensive reporting of each step (including N/A with justification), and consistent formatting is mandatory throughout this workflow.**
@@ -95,6 +97,10 @@
     *   b. For each identified file, use `Procedure: Ensure Sufficient File Context`, prioritizing full reads if modifications are planned or deep understanding is necessary.
     *   c. If the sub-task involves external libraries, APIs, or complex algorithms not recently used, confirm necessary documentation or knowledge is accessible/recalled. Perform `web_search` if critical knowledge is missing.
     *   d. Report on the context obtained and its sufficiency for proceeding to Step 3 (Planning).
+    *   e. **Transition to Step 3:**
+        1. Report: "Step 2 Ensure Sufficient File Context & Prerequisite Knowledge complete. Proceeding to `Procedure: Phase Transition Guard` before initiating Step 3."
+        2. **IMMEDIATE ACTION:** Invoke `Procedure: Phase Transition Guard` (Current Step/Phase: "Step 2 Ensure Sufficient File Context & Prerequisite Knowledge", Key Checkpoint: "Successful completion of all sub-steps of Step 2 (a-d), including the report in Step 2.d confirming sufficiency of context and readiness for Step 3.", Next Step/Phase: "Step 3 Planning & Pre-computation Checks").
+        3. **IMMEDIATE ACTION (If Guard PASSED):** Then, and only then, proceed to initiate Step 3 actions (starting with Step 3.0).
 
 ### 3. Planning & Pre-computation Checks (Per Sub-Task)
 *   **3.0. Planning Kick-off: Internal State Check & Forward Look:**
@@ -210,13 +216,13 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
     *   If 'HALT' is selected, the AI MUST state the reason and immediately return to the failed step for `[filename]`. It cannot proceed to 4.3.
     *   If 'Proceed' is selected, the AI MUST then invoke the Phase Transition Guard.
 
-*   **Transition to 4.3:**
-    *   Report: "Step 4.2.1 Checklist for `[filename]` resulted in 'Proceed'. Proceeding to `Procedure: Phase Transition Guard` before initiating Step 4.3."
-    *   **IMMEDIATE ACTION:** Invoke `Procedure: Phase Transition Guard` (Current Step/Phase: "Step 4.2 Pre-Apply Verification for `[filename]`", Key Checkpoint: "Step 4.2.1 Final Pre-Apply Authorization Checklist for `[filename]` decision to 'Proceed'", Next Step/Phase: "Step 4.3 Apply Edit for `[filename]`").
+*   **Transition to 4.3 (Apply Edit):**
+    *   Report: "Step 4.2 Pre-Apply Verification for `[filename]` complete. Proceeding to `Procedure: Phase Transition Guard` before initiating Step 4.3."
+    *   **IMMEDIATE ACTION:** Invoke `Procedure: Phase Transition Guard` (Current Step/Phase: "Step 4.2 Pre-Apply Verification for `[filename]`", Key Checkpoint: "Successful completion and positive outcome reported for Step 4.1 (Proposal Staging) and Step 4.2 (Pre-Apply Verification), including Step 4.2's explicit confirmation statement that all pre-apply verifications passed for `[filename]`", Next Step/Phase: "Step 4.3 Apply Edit for `[filename]`").
     *   **IMMEDIATE ACTION (If Guard PASSED):** Then, and only then, continue to Step 4.3.
 
-*   **4.3. Apply Edit (After Successful 4.2.1 and Phase Transition Guard):**
-    *   **Only after successfully completing Step 4.2.1 (with 'Proceed' decision) and the subsequent `Procedure: Phase Transition Guard` (with 'PASSED' outcome),** continue in the same AI turn and report: "Step 4.3: Applying the verified edit to `[filename]`."
+*   **4.3. Apply Edit (After Successful Phase Transition Guard from Step 4.2):**
+    *   **Only after successfully completing Step 4.2 (with 'Proceed' decision) and the subsequent `Procedure: Phase Transition Guard` (with 'PASSED' outcome),** continue in the same AI turn and report: "Step 4.3: Applying the verified edit to `[filename]`."
     *   Immediately call `edit_file` or `reapply` with the verified staged `code_edit` and `instructions` from Step 4.1 (or its revision).
 
 *   **4.4. Post-Apply Verification (Mandatory After 4.3 Tool Call Result):**
@@ -263,8 +269,15 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 
 *   **4.6. Mid-Cycle Self-Assessment:** After 4.5 for each file, `Procedure: Perform Self-Assessment` (Scope: "Edit Cycle for [filename]").
 
+*   **4.7. Transition to Adherence Checkpoint & Next Step (End of Sub-Task Implementation):**
+    *   **Trigger:** After `Step 4.6 Mid-Cycle Self-Assessment` is completed for the *final file* processed within the current sub-task.
+    *   **Actions:**
+        1.  Report: "All file-specific edit cycles (Steps 4.1 through 4.6) for the current sub-task `[sub-task description]` are complete. Proceeding to `Procedure: Phase Transition Guard` before initiating Step 5."
+        2.  **IMMEDIATE ACTION:** Invoke `Procedure: Phase Transition Guard` (Current Step/Phase: "Step 4 Edit Generation & Verification Cycle for sub-task `[sub-task description]`", Key Checkpoint: "Successful completion of all iterations of Steps 4.1 through 4.6 for all relevant files in the current sub-task. This includes all `4.5 Post-Action Verification Summaries` confirming completion and all `4.6 Mid-Cycle Self-Assessments` being reported as complete.", Next Step/Phase: "Step 5 Adherence Checkpoint & Next Step").
+        3.  **IMMEDIATE ACTION (If Guard PASSED):** Then, and only then, proceed to Step 5.a.
+
 ### 5. Adherence Checkpoint & Next Step
-*   **Trigger:** Before concluding, after all files processed through Step 4.
+*   **Trigger:** Before concluding, after all files processed through Step 4 and Step 4.7's Phase Transition Guard has PASSED.
 *   **Action:**
     *   `a.` **Final Self-Assessment:** `Procedure: Perform Self-Assessment` (Scope: "Overall Task Cycle").
     *   `b.` **Determine Next Action & Initiate:**
@@ -384,11 +397,11 @@ Sequential: [Generate -> Pre-Verify -> Apply -> Post-Verify -> Summarize]. Auton
 4.  **Handle Missed Steps:** If non-blocker steps missed: Report, trigger self-correction. STOP until addressed.
 5.  State: "**`Procedure: Perform Self-Assessment ([scope])`:** Complete."
 
-**`Procedure: Interleaving Check`** (To be called periodically by AI during very long Step 2 phases, or if a single sub-step of Step 2 involves extended internal thought before a reportable outcome.)
+**`Procedure: Interleaving Check`** (To be self-invoked by the AI if it detects it is engaged in prolonged internal analysis for any specific, reportable sub-step within the main workflow Steps 1 through 4, before it has produced the complete, reportable output for *that particular sub-step*.)
 1.  State: "**`Procedure: Interleaving Check`**: Pausing detailed technical thought."
 2.  Self-Query: "Have I reached any conclusions, gathered specific information, or made a decision that directly maps to a reportable `CLIPPY.MD` sub-step within the current overall phase (e.g., a specific verification, an impact assessment, a hypothesis confirmation) that has not yet been reported?"
-3.  If Yes: State: "Interleaving Check: Yes, completed `[Specific CLIPPY.MD sub-step, e.g., Step 2.7.b for assumption X]`." Immediately report that sub-step fully as per its requirements. Then, return to technical thought or proceed to next `CLIPPY.MD` step.
-4.  If No: State: "Interleaving Check: No, still analyzing `[brief description of ongoing thought process]` towards `[next anticipated reportable CLIPPY.MD sub-step]`." Resume technical thought.
+3.  If Yes: State: "Interleaving Check: Yes, completed `[Specific CLIPPY.MD sub-step and its outcome, e.g., 'verification of dependency X in Step 3.7.b: Confirmed', or 'impact analysis for module Y in Step 3.7.a: Identified 3 affected files']`." Immediately report that sub-step fully as per its requirements. Then, return to technical thought or proceed to next `CLIPPY.MD` step.
+4.  If No: State: "Interleaving Check: No, still analyzing `[brief description of ongoing thought process, e.g., 'evaluating search results for existing logic in Step 3.4']` towards `[next anticipated reportable CLIPPY.MD sub-step, e.g., 'reporting findings for Step 3.4']`." Resume technical thought.
 5.  State: "**`Procedure: Interleaving Check`**: Complete."
 
 **`Procedure: Handle Document Discrepancies`**
