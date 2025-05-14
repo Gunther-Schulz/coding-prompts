@@ -1,4 +1,5 @@
 # AI Coding Guidelines
+v0.3.0
 
 ## 0. Core Mandates & Principles
 
@@ -80,7 +81,7 @@ These mandates are absolute and govern all AI operations.
     b. **Reaffirm Overarching Goal:** Briefly restate the confirmed overall goal (from 1.2) and this sub-task's contribution.
     c. **Define Current Sub-Task:** Clearly state the specific, actionable goal and scope of the *current* sub-task.
     d. **Decomposition:** If the sub-task is complex, report its decomposition into smaller logical steps for planning.
-    e. **Identify Criticals:** Report immediate ambiguities, missing information, or anticipated files/codebase areas for *this sub-task*. Plan to address ambiguities.
+    e. **Identify Criticals:** Report immediate ambiguities, missing information, or anticipated files/codebase areas for *this sub-task*. Plan to address these during Step 2.2 or 2.3. Special attention should be given if the task description (e.g., from a review document or issue) claims a component is "missing," "incomplete," or "a stub," but preliminary observations (e.g., quick `file_search`, `grep_search` for imports) suggest it might already exist or has a different status. If such a suspicion arises, this MUST be noted, and **`Procedure P1` (when invoked for that component in Step 2.2.b) MUST be called with the `task_claimed_status` parameter populated** (e.g., with "missing", "incomplete") so `P1.4` can perform its specific verification.
 
 ---
 **[Phase Gate: After Setup, Before Context Gathering]**
@@ -254,16 +255,22 @@ These mandates are absolute and govern all AI operations.
     a. When invoking any step `X` within a procedure `PY`, report as "**PY.X:** [Action/Outcome]".
 
 **P1: Ensure Sufficient File Context**
-    1.  (P0) Assess if full file context is necessary for the current task (e.g., complex file, modifications planned).
+    *(P0) Note: P1 invocation requires `target_file` and `task_description_for_context`.*
+    1.  (P0) Assess if full file context is necessary for the current task (e.g., complex file, modifications planned), considering `task_description_for_context`.
     2.  (P0) Use `read_file`. Request full read if deemed necessary and tool constraints allow.
-    3.  (P0) Verify if returned content is sufficient for task safety and accuracy.
-    4.  (P0) **If Insufficient:**
-        a.  Report: "Sufficient context for `[filename]` needed for `[task]` due to `[reason]`. Current output insufficient."
-        b.  If tool blocked full read without user action (e.g., file not attached/edited): Add: "To proceed reliably, please provide full content of `[filename]`."
-        c.  **BLOCKER:** "Risks of proceeding with insufficient context for `[filename]` for `[task]`: `[Summarize risks]`. Awaiting full file content OR your explicit, risk-acknowledged guidance." Await guidance.
-    5.  (P0) **If User Provides Content:** Process it.
-    6.  (P0) **If Proceeding with Acknowledged Risk:** Log override. Report: "Proceeding with insufficient data for `[filename]` for `[task]` per user's risk-acknowledged approval. Risks: `[summary]`."
-    7.  (P0) Report final status (e.g., "Full context for `[filename]` obtained." or "Proceeding with insufficient data for `[filename]` (user approval, risks: X)." or "Awaiting content for `[filename]`.").
+    3.  (P0) Verify if returned content (or lack thereof, if file doesn't exist) is sufficient for task safety and accuracy.
+    4.  (P0) **If `task_claimed_status` (e.g., "missing", "incomplete") was provided for `target_file`:**
+        a.  Compare actual file state (from P1.2 `read_file` output) with `task_claimed_status`.
+        b.  **If a significant discrepancy is found** (e.g., actual state contradicts claimed status like 'file exists' vs. 'missing', or 'substantive content' vs. 'stub'):
+            i.  Report: "**P1.4.b.i: Critical Discrepancy for `[target_file]`**: Task claimed '`[task_claimed_status]`', actual state is `[describe actual state]`. `Procedure P3` (Step 2.3.d) may be needed."
+        c.  **Else (no significant discrepancy):** Report: "**P1.4.c: `task_claimed_status` ('`[task_claimed_status]`') for `[target_file]` aligns with actual state: `[describe actual state]`**."
+    5.  (P0) **If `read_file` (P1.2) returned insufficient content (and this insufficiency is not an expected outcome already handled by a `task_claimed_status` check in P1.4):**
+        a.  Report: "Sufficient context for `[target_file]` needed for `[task_description_for_context]` due to `[reason, e.g., read_file returned partial content, or file was unexpectedly empty and task did not claim it as such]`. Current output insufficient."
+        b.  If tool blocked full read without user action (e.g., file not attached/edited): Add: "To proceed reliably, please provide full content of `[target_file]`."
+        c.  **BLOCKER:** "Risks of proceeding with insufficient context for `[target_file]` for `[task_description_for_context]`: `[Summarize risks]`. Awaiting full file content OR your explicit, risk-acknowledged guidance." Await guidance.
+    6.  (P0) **If User Provides Content (in response to P1.5.c):** Process it. Update understanding of file context. Re-evaluate sufficiency (back to P1.3, then P1.4 if applicable, then P1.5 if still insufficient for other reasons).
+    7.  (P0) **If Proceeding with Acknowledged Risk (from P1.5.c):** Log override. Report: "Proceeding with insufficient data for `[target_file]` for `[task_description_for_context]` per user's risk-acknowledged approval. Risks: `[summary]`."
+    8.  (P0) Report final status for P1 (e.g., "Full context for `[target_file]` obtained." or "Proceeding with insufficient data for `[target_file]` (user approval, risks: X)." or "Awaiting content for `[target_file]` (Blocker P1.5.c).", or "Discrepancy with `task_claimed_status` noted in P1.4.b.i, proceeding to P1.8 to report overall P1 completion.").
 
 **P2: Establish Inferred Standards** (When `PROJECT_STANDARDS.MD` / `PROJECT_ARCHITECTURE.MD` are missing/incomplete for current task aspects)
     1.  (P0) Report: "Formal standards documents are missing/incomplete for `[aspect]`. Inferring standards."
