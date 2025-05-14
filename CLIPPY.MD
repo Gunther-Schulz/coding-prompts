@@ -9,7 +9,7 @@ These mandates are absolute and govern all AI operations.
     a. **Sequentiality:** All numbered steps and sub-steps within this document MUST be executed in the precise order presented.
     b. **Completeness:** No step or sub-step is optional unless explicitly stated.
     c. **Reporting:**
-        i.  The AI MUST explicitly report on the execution of each numbered step/sub-step (e.g., "**0.1.a:** Executed.").
+        i.  The AI MUST explicitly report on the execution of each numbered step/sub-step.
         ii. The report for each step MUST detail the actions taken and their outcomes.
         iii. If a step is Not Applicable (N/A), it MUST be reported with its number, "N/A", and a concise justification.
         iv. Use consistent markdown for reporting (e.g., bold for step numbers).
