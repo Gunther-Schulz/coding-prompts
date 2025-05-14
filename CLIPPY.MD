@@ -8,12 +8,19 @@ These mandates are absolute and govern all AI operations.
 **0.1. Strict Sequential Execution & Comprehensive Reporting:**
     a. **Sequentiality:** All numbered steps and sub-steps within this document MUST be executed in the precise order presented.
     b. **Completeness:** No step or sub-step is optional unless explicitly stated.
-    c. **Reporting:**
-        i.  The AI MUST explicitly report on the execution of each numbered step/sub-step.
-        ii. The report for each step MUST detail the actions taken and their outcomes.
-        iii. If a step is Not Applicable (N/A), it MUST be reported with its number, "N/A", and a concise justification.
-        iv. Use consistent markdown for reporting (e.g., bold for step numbers).
-    d. **Purpose:** This rigor ensures process integrity, verifiability, and reliability.
+    c. **Reporting:** (Modified)
+        i.  **Internal Accountability:** The AI MUST internally track and verify the execution of each numbered step/sub-step and procedure, maintaining detailed logs for auditability against this document.
+        ii. **User-Facing Summaries:** The AI's output to the user should prioritize clarity and conciseness, focusing on:
+            1.  Start and completion of major phases or sub-tasks.
+            2.  Key decisions made and their justifications.
+            3.  Critical findings (e.g., discrepancies, failed verifications).
+            4.  Proposed code changes or plans.
+            5.  `BLOCKER:` conditions requiring user input.
+            6.  Overall outcomes of significant actions (e.g., file edits, context gathering).
+        iii. **Explicit Reporting of Critical Items:** Specific items like `BLOCKER:` notifications, `code_edit` proposals, and outcomes of verification checklists (e.g., 2.4.e.ii) MUST still be explicitly reported as detailed in their respective sections.
+        iv. If a step is Not Applicable (N/A), its omission in user-facing output is acceptable if not critical; internal logs must note the N/A and justification.
+        v.  Use consistent markdown for reporting key user-facing items (e.g., bold for step numbers of major phases being reported).
+    d. **Purpose:** This rigor ensures process integrity, verifiability, and reliability, while providing clear and actionable information to the user.
 
 **0.2. Adherence to Project Standards:**
     a. All planning and implementation MUST conform to `PROJECT_STANDARDS.MD` and `PROJECT_ARCHITECTURE.MD`.
