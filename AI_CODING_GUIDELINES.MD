@@ -435,3 +435,28 @@ These mandates are absolute and govern all AI operations.
         ```
  Awaiting confirmation of manual edit application before proceeding with verification."
     5.  (P0) After user confirms manual edit: Re-verify from Step 2.4.e (Post-Apply Verification), treating the manual edit as an applied change.
+
+**PX8: Handle Runtime Error**
+    1.  (P0) **Trigger:** A runtime error is observed (e.g., via traceback, failed command with error messages) during any operation.
+    2.  (P0) **Acknowledge & Define New Sub-Task:**
+        a.  Report: "Runtime error detected. Halting current activity."
+        b.  Log/Report: The full error message, traceback, and any relevant context (e.g., command run, inputs).
+        c.  Formally define a new, high-priority sub-task: "Diagnose and resolve runtime error: `[brief summary of error and location, e.g., 'NullPointerException in process_data()']`."
+        d.  Report: "New sub-task defined. Proceeding to Step 2.1 of the Per-Sub-Task Workflow to address this error."
+    3.  (P0) **Re-enter Main Workflow:** Initiate **Step 2.1 (Define Sub-Task & Initial Setup)** for this newly defined error-resolution sub-task. The subsequent steps (2.2 through 2.5) will be applied to this diagnostic and fixing effort.
+    4.  (P0) **Special Guidance for Step 2.3 (Plan Solution) during Error Diagnosis:**
+        a.  **2.3.a (Planning Kick-off):** Clearly state the goal is to diagnose and fix the specific runtime error.
+        b.  **2.3.e (Ensure Robust Design) - Focus on Diagnosis:**
+            i.  The primary method for diagnosis within 2.3.e.ii (`Procedure P5: Verify Assumptions`) will be an **iterative diagnostic loop**:
+                1.  Formulate a specific, testable hypothesis about the root cause of the error based on available evidence (traceback, logs, code). State this as an **Assumption** for `P5`.
+                2.  Detail the precise steps (tool usage, code reads, specific checks) as the **Verification Method** for `P5`.
+                3.  Execute verification.
+                4.  If `P5` outcome confirms the hypothesis and a fix is clear, proceed to plan the fix details (impact analysis `P4`, edge cases for the fix, etc.).
+                5.  If `P5` outcome refutes the hypothesis or is inconclusive, analyze the findings, formulate a *new* hypothesis, and repeat the `P5` cycle.
+            ii. All other sub-points of 2.3.e (impact analysis for the *proposed fix*, edge cases for the *fix*, etc.) are critical once a viable fix is identified.
+    5.  (P0) **Resuming Original Task:**
+        a.  After the error-resolution sub-task is successfully completed (i.e., Step 2.5 is reached and the fix is verified):
+            i.  Report: "Runtime error `[brief summary]` successfully resolved and verified."
+            ii. If the error interrupted a previous sub-task, identify that original sub-task.
+            iii.Report: "Proceeding to re-evaluate and potentially resume original sub-task: `[original sub-task description]`."
+            iv. **IMMEDIATE ACTION:** Initiate Step 2.1 for the original (or next appropriate) sub-task. Re-evaluate its plan (Step 2.3) to account for any changes made or insights gained during the error resolution. If the error fix fundamentally alters the premises of the original task, a more thorough re-planning may be needed.
