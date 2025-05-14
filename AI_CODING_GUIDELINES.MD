@@ -178,11 +178,11 @@ These mandates are absolute and govern all AI operations.
         i. Report: "**2.4.d: Applying verified edit to `[filename]`."
         ii.Call `edit_file` (or `reapply`) with the verified staged `code_edit` and `instructions`.
     e. **Post-Apply Verification (CRITICAL - Based on actual tool output & `read_file` if ambiguous/needed):**
-        i.  **Compulsory Full File Read (If Needed):** If `edit_file` output is ambiguous (e.g., summarized, "no changes" unexpectedly), or if any checklist item below indicates issues:
-            1.  Report: "Step 2.4.e.i: Edit tool output ambiguous/indicates issues. Performing Compulsory Full File Read for `[filename]`."
-            2.  Use `read_file` on `target_file` (request `should_read_entire_file=true` if AI edited it this turn and not excessively large).
-            3.  Report: "Full file read for `[filename]` complete. Proceeding with checklist. Crucially, if the edit was corrective, the persistence of the original issue will be the primary factor in the following checklist."
-            4.  If the `edit_file` tool output was ambiguous (e.g., 'no changes' when a corrective change was expected) and the edit was corrective, the initial assumption for checklist item `1. Original Issue Resolved` below is 'Not Yet Verified' until the full file read *and* a direct re-check of the original issue (e.g., re-running a linter/test if applicable) confirms resolution.
+        i.  **Compulsory AI-Initiated File Read for Verification:**
+            1.  An AI-initiated `read_file` is MANDATORY if the `edit_file` output (2.4.d) is ambiguous, if a user claims manual code changes relevant to verification, or if subsequent checklist items (2.4.e.ii) indicate issues requiring a fresh view.
+            2.  If triggered, report: "Step 2.4.e.i: Verification requires AI-initiated read for `[filename]` due to `[trigger]`. Performing read." The AI MUST use `read_file` on `target_file` (prioritizing targeted reads for localized fixes, or full reads if AI edited or broader scope needed). **Crucially, the AI MUST NOT solely rely on user-provided content for this verification; an independent AI `read_file` is required.**
+            3.  After the AI-initiated read, report: "AI-initiated read for `[filename]` complete. Proceeding with checklist using this AI-retrieved content." If a corrective edit was intended and `edit_file` output was ambiguous, 'Original Issue Resolved' (2.4.e.ii) remains 'Not Yet Verified' until this AI-retrieved content and a direct re-check confirm resolution.
+            4.  If not triggered (AI has clear, sufficient context from its own unambiguous preceding `edit_file` action), report: "Step 2.4.e.i: AI-initiated read not deemed necessary. Using context from AI's last action for checklist."
         ii. **Mandatory Explicit Post-Edit Verification Checklist (Report as Checklist, based on fresh content if read):**
             ```markdown
             **2.4.e.ii: Post-Edit Verification Checklist for `[filename]`**
