@@ -28,7 +28,6 @@ These mandates are absolute and govern all AI operations.
                     3.  Critical findings (e.g., discrepancies, failed verifications).
                     4.  Proposed code changes or plans.
                     5.  `BLOCKER:` conditions requiring user input.
-                    6.  Overall outcomes of significant actions (e.g., file edits, context gathering).
                 iii. **Explicit Reporting of Critical Items:** Specific items like `BLOCKER:` notifications, `code_edit` proposals, and outcomes of verification checklists (e.g., 2.4.e.ii) MUST still be explicitly reported as detailed in their respective sections.
                 iv. If a step is Not Applicable (N/A), its omission in user-facing output is acceptable if not critical; internal logs must note the N/A and justification.
                 v.  Use consistent markdown for reporting key user-facing items (e.g., bold for step numbers of major phases being reported).
@@ -42,7 +41,7 @@ These mandates are absolute and govern all AI operations.
                     4.  `code_edit` proposals (textual, before application).
                     5.  Brief notification of successful edit application or failure if self-correction is triggered.
                     6.  Explicitly identified critical findings that prevent progress or indicate significant plan changes (e.g., major discrepancies from `P3`, critical assumption failures from `P5` that halt a plan).
-                iii. All other detailed step reporting, including interim phase transitions not tied to a critical output, is handled via internal accountability logs.
+                iii. All other detailed step reporting, including interim phase transitions not tied to a critical output, is handled via internal accountability logs. Under `quiet`, the AI MUST NOT report on the start/completion of non-critical individual steps or phases (unlike `verbose` or `standard` summaries of major phases). User-facing output is strictly confined to the items listed in `ii` above.
 
             *   **If `[VERBOSITY_LEVEL] = very_quiet`:**
                 i.  **Internal Accountability:** The AI MUST internally track and verify the execution of *all* numbered steps, sub-steps, and procedures with the same rigor as `standard` and `quiet` levels, maintaining detailed logs for auditability. This comprehensive internal tracking is what enables the AI to proceed silently with minimal user-facing output (as defined in `ii` and `iii` below) while ensuring full process adherence.
@@ -52,8 +51,22 @@ These mandates are absolute and govern all AI operations.
                     3.  `code_edit` proposals (textual, before application).
                     4.  Brief notification of edit application *failure* if self-correction is triggered (success is implied by progression).
                     5.  A single, minimal notification (e.g., "All tasks complete.") when the entire user request is finished.
-                iii. All other detailed step reporting, including sub-task summaries, successful edit notifications, and critical findings that don't immediately lead to a `BLOCKER` or direct question, are handled via internal accountability logs. The AI proceeds silently between the essential interaction points defined above.
-    d. **Purpose:** This rigor ensures process integrity, verifiability, and reliability, while providing clear and actionable information to the user, tailored by the chosen verbosity level.
+                iii. All other detailed step reporting, including sub-task summaries, successful edit notifications, and critical findings that don't immediately lead to a `BLOCKER:` or direct question, are handled via internal accountability logs. The AI proceeds silently between the essential interaction points defined above. Under `very_quiet`, the AI MUST NOT provide summaries of sub-task completion (beyond the single 'All tasks complete.' at the very end), notifications of successful edit applications (failure *is* reported), or any interim status updates not explicitly listed as permissible in `ii`. The AI's communication is minimal and event-driven only by `BLOCKER`s, direct questions, or edit proposal/failures.
+    d. **Strict Adherence to Verbosity Level (Mandatory Pre-Output Protocol):**
+        i. The AI MUST treat the active `[VERBOSITY_LEVEL]` (determined as per 0.1.c) as a non-negotiable constraint on all user-facing communication.
+        ii. **Pre-Output Protocol (Internal - Execute Before ANY User-Facing Text):**
+            1.  Confirm Active Level: Identify the current `[VERBOSITY_LEVEL]`.
+            2.  Recall Rules: Retrieve the specific reporting rules for this level from section 0.1.c.
+            3.  Draft Message: Internally formulate the intended user-facing message.
+            4.  Compliance Check: Scrutinize the drafted message. Does it strictly adhere to ALL rules for the active level (i.e., includes everything required, and excludes everything forbidden)?
+            5.  **If Non-Compliant:**
+                a.  The AI MUST NOT output the non-compliant draft.
+                b.  The AI MUST revise the draft until it strictly conforms. This may involve adding mandated details or removing superfluous information.
+            6.  **Principle of Least Verbosity (for `quiet` and `very_quiet`):** If, during the Compliance Check (step ii.4) for `quiet` or `very_quiet` levels, there is any ambiguity as to whether a piece of information is *essential* according to that level's rules, the AI MUST err on the side of omitting that information from the user-facing output. It should be logged internally instead.
+            6.5. **Internal Conformance Justification:** Before proceeding to output, the AI MUST internally articulate (as if explaining to an auditor) precisely how the finalized draft message (from step 5.b or step 3 if no revision was needed) aligns with EACH specific rule of the *currently active* `[VERBOSITY_LEVEL]` as defined in 0.1.c. This internal justification step is mandatory.
+            7.  Output: Only the final, compliant, and internally justified message may be output to the user.
+        iii. This entire Pre-Output Protocol is mandatory and non-optional for every instance of user-facing communication. Deviations are process failures.
+    e. **Purpose:** This rigor ensures process integrity, verifiability, and reliability, while providing clear and actionable information to the user, tailored by the chosen verbosity level.
 
 **0.2. Adherence to Project Standards:**
     a. All planning and implementation MUST conform to `PROJECT_STANDARDS.MD` and `PROJECT_ARCHITECTURE.MD`.
