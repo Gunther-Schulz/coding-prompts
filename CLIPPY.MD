@@ -48,24 +48,24 @@ These mandates are absolute and govern all AI operations.
 
 ---
 
-## 1. Session Initialization Protocol
+## **1. Session Initialization Protocol**
 
 **Trigger:** Start of a new coding session or a major new user request.
 
-**1.1. Model & Process Awareness:**
+### **1.1. Model & Process Awareness:**
     a. Report: Current operational model.
     b. Report: "This session will operate in verbose mode. I will explicitly report on the execution of each step and sub-step, detailing actions and their outcomes, and will adhere to all other guidelines in `AI_CODING_GUIDELINES.MD`."
     c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
     d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
     e. Report: "Acknowledged review and adherence to `AI_CODING_GUIDELINES.MD`, `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
 
-**1.2. Confirm Overarching Goal:**
+### **1.2. Confirm Overarching Goal:**
     a. For complex/ambiguous initial requests, restate understanding of the user's overall goal.
     b. Request user confirmation.
 
 ---
 
-## 2. Per-Sub-Task Workflow
+## **2. Per-Sub-Task Workflow**
 
 **Iterate this entire section for each defined sub-task.**
 **Invoke `Procedure P12: Phase Transition Guard` at every `--- [Phase Gate: ...] ---` point.**
@@ -74,7 +74,7 @@ These mandates are absolute and govern all AI operations.
 **[Phase Gate: Start of Sub-Task]**
 (Current Phase: None, Next Phase: 2.1. Define Sub-Task)
 ---
-**2.1. Define Sub-Task & Initial Setup**
+### **2.1. Define Sub-Task & Initial Setup**
     a. **Blocker Check:**
         i.  Assess for unresolved `BLOCKER:`s from previous turns.
         ii. If Blocker(s) Exist: Report "**2.1.a: Active Blocker(s) Detected.**" Reiterate each. **HALT.** Await user input.
@@ -88,7 +88,7 @@ These mandates are absolute and govern all AI operations.
 **[Phase Gate: After Setup, Before Context Gathering]**
 (Current Phase: 2.1. Define Sub-Task, Next Phase: 2.2. Gather Context)
 ---
-**2.2. Gather Context & Knowledge**
+### **2.2. Gather Context & Knowledge**
     a. **Identify Files:** Based on 2.1.e, list specific files/modules requiring access.
     b. **File Context:** For each identified file, invoke `Procedure P1: Ensure Sufficient File Context`.
     c. **External Knowledge:** If the sub-task involves external libraries, APIs, or complex algorithms not recently used:
@@ -100,7 +100,7 @@ These mandates are absolute and govern all AI operations.
 **[Phase Gate: After Context, Before Planning]**
 (Current Phase: 2.2. Gather Context, Next Phase: 2.3. Plan Solution)
 ---
-**2.3. Plan Solution**
+### **2.3. Plan Solution**
     a. **Planning Kick-off:**
         i. Report: "Current technical goal: `[Goal Description]`. Current AI Guidelines phase: `2.3. Plan Solution`."
         ii.Report: "Anticipated next Guideline steps: `[e.g., 2.3.c Search Existing Logic, 2.3.d Align with Standards]`."
@@ -154,7 +154,7 @@ These mandates are absolute and govern all AI operations.
 **[Phase Gate: After Planning, Before Implementation (only if 2.3.j.iii was true)]**
 (Current Phase: 2.3. Plan Solution, Next Phase: 2.4. Implement & Verify)
 ---
-**2.4. Implement & Verify (Iterate 2.4.a through 2.4.h for each file modified in the sub-task)**
+### **2.4. Implement & Verify (Iterate 2.4.a through 2.4.h for each file modified in the sub-task)**
     a. **Formulate & Stage `code_edit` Proposal:**
         i.  Develop `code_edit` content and `instructions` (guided by `P7` output from 2.3.g).
         ii. Report: "**2.4.a: Staged `code_edit` PROPOSAL for `[filename]` (TEXTUAL ONLY, NOT APPLIED):**"
@@ -242,7 +242,7 @@ These mandates are absolute and govern all AI operations.
 **[Phase Gate: After All Implementation for Sub-Task, Before Finalizing Sub-Task]**
 (Current Phase: 2.4. Implement & Verify (all files for sub-task complete), Next Phase: 2.5. Finalize Sub-Task)
 ---
-**2.5. Finalize Sub-Task & Transition**
+### **2.5. Finalize Sub-Task & Transition**
     a. **Final Self-Assessment:** Invoke `Procedure P11: Perform Self-Assessment` (Scope: "Overall Sub-Task `[description]`"). Report completion.
     b. **Determine Next Action:**
         i.  **If More Sub-Tasks Pending** (from original user request/plan):
@@ -264,7 +264,7 @@ These mandates are absolute and govern all AI operations.
             *   If AI should continue (e.g., next sub-task not started, current not finished, no valid blocker): **DO NOT YIELD.** Report: "**2.5.c: Pre-Yield Adherence Check: Self-correcting to continue process.**" Then, immediately proceed with the required next step.
             *   If conditions for yielding are met (all done, or next task initiated and awaiting tool/user, or valid `BLOCKER:` reported): Report: "**2.5.c: Pre-Yield Adherence Check: Conditions for yielding turn met.**" AI may conclude turn.
 
-**2.6. Summarize Deferred Observations**
+### **2.6. Summarize Deferred Observations**
     a. **Trigger:** After Step 2.5, before concluding if all sub-tasks are complete, or if specifically relevant.
     b. **Optional:** May generate "Deferred Observations Summary" (minor bugs, code smells).
     c. **Mandatory "Deferred Edit Issues Summary":** If unintended modifications from Step 2.4 edits were accepted with justification:
