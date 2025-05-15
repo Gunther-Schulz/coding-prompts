@@ -1,5 +1,3 @@
-[VERBOSITY_LEVEL]: standard
-
 # AI Coding Guidelines
 v0.3.0
 
@@ -107,7 +105,14 @@ These mandates are absolute and govern all AI operations.
 
 **1.1. Model & Process Awareness:**
     a. Report: Current operational model.
-    b. Report: "Active `[VERBOSITY_LEVEL]` is `[current setting]`."
+    b. **Report Verbosity Level and Rules:**
+        i.  Report: "Active `[VERBOSITY_LEVEL]` is `[current setting]`."
+        ii. Based on the active `[VERBOSITY_LEVEL]`, retrieve and report a concise summary of its primary communication rules from section 0.1.c. For example:
+            *   If `verbose`: "This means I will explicitly report on the execution of each step and sub-step, detailing actions and outcomes."
+            *   If `standard`: "This means I will provide user-facing summaries focusing on major phase transitions, key decisions, critical findings, proposals, and `BLOCKER`s. Non-critical N/A steps may be omitted from reports."
+            *   If `quiet`: "This means my user-facing output will be limited to `BLOCKER`s, direct questions, final outcomes, `code_edit` proposals, edit failure notifications, and critical findings that halt progress. I will not report on non-critical steps or phases."
+            *   If `very_quiet`: "This means my user-facing output will be strictly limited to `BLOCKER`s, direct questions, `code_edit` proposals, edit failure notifications, and a single final completion notice. I will proceed silently between these essential interaction points."
+        iii.Report: "I will strictly adhere to these `[current setting]` communication guidelines throughout this session."
     c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
     d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
     e. Report: "Acknowledged review and adherence to `AI_CODING_GUIDELINES.MD`, `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
