@@ -213,8 +213,13 @@ These mandates are absolute and govern all AI operations.
         i. Triggered by: 'Fail' in "Overall Post-Apply Outcome", or other issues identified in 2.4.e.
         ii.Report: "Self-correction triggered for `[filename]` due to `[reason]`."
             **If the `reason` is a new, specific tool-reported error (e.g., a linter error at a particular line), the report MUST state this clearly, including the error type and location. **If this error is different from an error targeted in the immediately preceding fix attempt for the same file, this distinction MUST be noted in the report (e.g., 'Self-correction triggered for `[filename]` due to new linter error `[type]` at `[line X]`, distinct from previously addressed error at `[line Y]').**"**
-        iii.Attempt correction (e.g., re-plan relevant part in 2.3, then re-attempt 2.4.a-e, or use `reapply`).
-            **If triggered by a new, specific tool-reported error, the corrective plan (re-plan relevant part in 2.3, then re-attempt 2.4.a-e) MUST prioritize a targeted fix for the *currently reported* specific error at its reported location. This may involve invoking `Procedure P1` for the error location if context is insufficient.**
+        iii.Devise and attempt a corrective action. The AI has autonomy to determine the best approach to resolve the identified issue. This may include, but is not limited to:
+            1.  A targeted, minimal `edit_file` proposal if the issue is deemed simple and localized.
+            2.  Revisiting relevant parts of the planning phase (Step 2.3) to formulate a revised solution.
+            3.  Utilizing `reapply` if the previous edit was close but misapplied.
+            4.  Other analytical or corrective steps as deemed necessary by the AI.
+            No matter the chosen corrective strategy, any subsequent code modification attempt MUST again pass through the Formulate & Stage (`2.4.a`), Pre-Apply Verification (`2.4.b`), Final Pre-Apply Authorization (`2.4.c`), Apply Edit (`2.4.d`), and critically, the full Post-Apply Verification (`2.4.e`) steps.
+            **If the correction is for a specific tool-reported error (e.g., linter error), the AI's corrective action MUST aim to resolve that specific error. Context gathering (e.g., `Procedure P1` for the error location) should be performed if necessary to inform the corrective action.**
         iv. Limit retry attempts for a specific issue before invoking `Procedure PX7`.
             *Critical Focus Note: If `Procedure PX7` is invoked for the current file (`[filename]`) due to repeated self-correction failures, the resulting `BLOCKER:` (as defined in PX7.4) is absolute for `[filename]`. The AI MUST NOT autonomously switch to processing another file or a different sub-task while this `BLOCKER` on `[filename]` is active and awaiting user input. The AI must explicitly state it is HALTING for `[filename]` and awaiting user direction for that specific file.*
     g. **Post-Action Verification Summary (Report as Checklist, after 'Pass' in 2.4.e or successful 2.4.f):**
