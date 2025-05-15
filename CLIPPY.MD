@@ -8,63 +8,12 @@ These mandates are absolute and govern all AI operations.
 **0.1. Strict Sequential Execution & Comprehensive Reporting:**
     a. **Sequentiality:** All numbered steps and sub-steps within this document MUST be executed in the precise order presented.
     b. **Completeness:** No step or sub-step is optional unless explicitly stated.
-    c. **Reporting:** (Modified for Verbosity Control)
-        *   **Verbosity Control and Initial Announcement:** This document defines four verbosity levels for AI reporting: `verbose`, `standard`, `quiet`, and `very_quiet`. The active `[VERBOSITY_LEVEL]` is determined by: (1) a `[VERBOSITY_LEVEL]: <level>` declaration at the top of this document (see first line), or (2) by user instruction at the start of a task/session. If specified in both, the user instruction at session start takes precedence. If unspecified by either method, it defaults to `standard`. The AI MUST report the active `[VERBOSITY_LEVEL]` at the start of the session or task, as detailed in Step 1.1.b. This announcement is mandatory regardless of the chosen level.
-        *   **Reporting Rules (conditional on `[VERBOSITY_LEVEL]`):**
-
-            *   **If `[VERBOSITY_LEVEL] = verbose`:**
-                i.  The AI MUST explicitly report on the execution of each numbered step/sub-step.
-                ii. The report for each step MUST detail the actions taken and their outcomes.
-                iii. If a step is Not Applicable (N/A), it MUST be reported with its number, "N/A", and a concise justification.
-                iv. Use consistent markdown for reporting (e.g., bold for step numbers).
-
-            *   **If `[VERBOSITY_LEVEL] = standard`:**
-                i.  **Internal Accountability:** The AI MUST internally track and verify the execution of each numbered step/sub-step and procedure, maintaining detailed logs for auditability against this document.
-                ii. **User-Facing Summaries:** The AI's output to the user should prioritize clarity and conciseness, focusing on:
-                    1.  Start and completion of major phases or sub-tasks.
-                    2.  Key decisions made and their justifications.
-                    3.  Critical findings (e.g., discrepancies, failed verifications).
-                    4.  Proposed code changes or plans.
-                    5.  `BLOCKER:` conditions requiring user input.
-                iii. **Explicit Reporting of Critical Items:** Specific items like `BLOCKER:` notifications, `code_edit` proposals, and outcomes of verification checklists (e.g., 2.4.e.ii) MUST still be explicitly reported as detailed in their respective sections.
-                iv. If a step is Not Applicable (N/A), its omission in user-facing output is acceptable if not critical; internal logs must note the N/A and justification.
-                v.  Use consistent markdown for reporting key user-facing items (e.g., bold for step numbers of major phases being reported).
-
-            *   **If `[VERBOSITY_LEVEL] = quiet`:**
-                i.  **Internal Accountability:** (Same as `standard`) The AI MUST internally track and verify the execution of each numbered step/sub-step and procedure, maintaining detailed logs for auditability against this document.
-                ii. **User-Facing Summaries (Critical Only):** The AI's output to the user should be limited to:
-                    1.  `BLOCKER:` conditions requiring user input.
-                    2.  Direct questions to the user whose input is required to proceed.
-                    3.  Final overall outcome/summary upon completion of a sub-task or the entire request.
-                    4.  `code_edit` proposals (textual, before application).
-                    5.  Brief notification of successful edit application or failure if self-correction is triggered.
-                    6.  Explicitly identified critical findings that prevent progress or indicate significant plan changes (e.g., major discrepancies from `P3`, critical assumption failures from `P5` that halt a plan).
-                iii. All other detailed step reporting, including interim phase transitions not tied to a critical output, is handled via internal accountability logs. Under `quiet`, the AI MUST NOT report on the start/completion of non-critical individual steps or phases (unlike `verbose` or `standard` summaries of major phases). User-facing output is strictly confined to the items listed in `ii` above.
-
-            *   **If `[VERBOSITY_LEVEL] = very_quiet`:**
-                i.  **Internal Accountability:** The AI MUST internally track and verify the execution of *all* numbered steps, sub-steps, and procedures with the same rigor as `standard` and `quiet` levels, maintaining detailed logs for auditability. This comprehensive internal tracking is what enables the AI to proceed silently with minimal user-facing output (as defined in `ii` and `iii` below) while ensuring full process adherence.
-                ii. **User-Facing Summaries (Absolute Minimum):** The AI's output to the user should be strictly limited to:
-                    1.  `BLOCKER:` conditions requiring user input.
-                    2.  Direct questions to the user whose input is required to proceed.
-                    3.  `code_edit` proposals (textual, before application).
-                    4.  Brief notification of edit application *failure* if self-correction is triggered (success is implied by progression).
-                    5.  A single, minimal notification (e.g., "All tasks complete.") when the entire user request is finished.
-                iii. All other detailed step reporting, including sub-task summaries, successful edit notifications, and critical findings that don't immediately lead to a `BLOCKER:` or direct question, are handled via internal accountability logs. The AI proceeds silently between the essential interaction points defined above. Under `very_quiet`, the AI MUST NOT provide summaries of sub-task completion (beyond the single 'All tasks complete.' at the very end), notifications of successful edit applications (failure *is* reported), or any interim status updates not explicitly listed as permissible in `ii`. The AI's communication is minimal and event-driven only by `BLOCKER`s, direct questions, or edit proposal/failures.
-    d. **Strict Adherence to Verbosity Level (Mandatory Pre-Output Protocol):**
-        i. The AI MUST treat the active `[VERBOSITY_LEVEL]` (determined as per 0.1.c) as a non-negotiable constraint on all user-facing communication.
-        ii. **Pre-Output Protocol (Internal - Execute Before ANY User-Facing Text):**
-            1.  Confirm Active Level: Identify the current `[VERBOSITY_LEVEL]`.
-            2.  Recall Rules: Retrieve the specific reporting rules for this level from section 0.1.c.
-            3.  Draft Message: Internally formulate the intended user-facing message.
-            4.  Compliance Check: Scrutinize the drafted message. Does it strictly adhere to ALL rules for the active level (i.e., includes everything required, and excludes everything forbidden)?
-            5.  **If Non-Compliant:**
-                a.  The AI MUST NOT output the non-compliant draft.
-                b.  The AI MUST revise the draft until it strictly conforms. This may involve adding mandated details or removing superfluous information.
-            6.  **Principle of Least Verbosity (for `quiet` and `very_quiet`):** If, during the Compliance Check (step ii.4) for `quiet` or `very_quiet` levels, there is any ambiguity as to whether a piece of information is *essential* according to that level's rules, the AI MUST err on the side of omitting that information from the user-facing output. It should be logged internally instead.
-            6.5. **Internal Conformance Justification:** Before proceeding to output, the AI MUST internally articulate (as if explaining to an auditor) precisely how the finalized draft message (from step 5.b or step 3 if no revision was needed) aligns with EACH specific rule of the *currently active* `[VERBOSITY_LEVEL]` as defined in 0.1.c. This internal justification step is mandatory.
-            7.  Output: Only the final, compliant, and internally justified message may be output to the user.
-        iii. This entire Pre-Output Protocol is mandatory and non-optional for every instance of user-facing communication. Deviations are process failures.
-    e. **Purpose:** This rigor ensures process integrity, verifiability, and reliability, while providing clear and actionable information to the user, tailored by the chosen verbosity level.
+    c. **Reporting:**
+        i.  The AI MUST explicitly report on the execution of each numbered step/sub-step.
+        ii. The report for each step MUST detail the actions taken and their outcomes.
+        iii. If a step is Not Applicable (N/A), it MUST be reported with its number, "N/A", and a concise justification.
+        iv. Use consistent markdown for reporting (e.g., bold for step numbers).
+    d. **Purpose:** This rigor ensures process integrity, verifiability, and reliability, while providing clear and actionable information to the user.
 
 **0.2. Adherence to Project Standards:**
     a. All planning and implementation MUST conform to `PROJECT_STANDARDS.MD` and `PROJECT_ARCHITECTURE.MD`.
@@ -105,14 +54,7 @@ These mandates are absolute and govern all AI operations.
 
 **1.1. Model & Process Awareness:**
     a. Report: Current operational model.
-    b. **Report Verbosity Level and Rules:**
-        i.  Report: "Active `[VERBOSITY_LEVEL]` is `[current setting]`."
-        ii. Based on the active `[VERBOSITY_LEVEL]`, retrieve and report a concise summary of its primary communication rules from section 0.1.c. For example:
-            *   If `verbose`: "This means I will explicitly report on the execution of each step and sub-step, detailing actions and outcomes."
-            *   If `standard`: "This means I will provide user-facing summaries focusing on major phase transitions, key decisions, critical findings, proposals, and `BLOCKER`s. Non-critical N/A steps may be omitted from reports."
-            *   If `quiet`: "This means my user-facing output will be limited to `BLOCKER`s, direct questions, final outcomes, `code_edit` proposals, edit failure notifications, and critical findings that halt progress. I will not report on non-critical steps or phases."
-            *   If `very_quiet`: "This means my user-facing output will be strictly limited to `BLOCKER`s, direct questions, `code_edit` proposals, edit failure notifications, and a single final completion notice. I will proceed silently between these essential interaction points."
-        iii.Report: "I will strictly adhere to these `[current setting]` communication guidelines throughout this session."
+    b. Report: "This session will operate in verbose mode. I will explicitly report on the execution of each step and sub-step, detailing actions and their outcomes, and will adhere to all other guidelines in `AI_CODING_GUIDELINES.MD`."
     c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
     d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
     e. Report: "Acknowledged review and adherence to `AI_CODING_GUIDELINES.MD`, `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
@@ -337,9 +279,7 @@ These mandates are absolute and govern all AI operations.
 ## 3. Core Reusable Procedures (P)
 
 **P0: Report Procedure Step**
-    a. When invoking any step `X` within a procedure `PY`:
-        *   If `[VERBOSITY_LEVEL] = verbose`, report as "**PY.X:** [Action/Outcome]".
-        *   Otherwise (`standard`, `quiet`, or `very_quiet`), internal logging of PY.X is sufficient unless the outcome of PY.X is a `CRITICAL_USER_NOTIFICATION` (e.g., a `BLOCKER:`, a critical discrepancy identified in P1.4.b.i, a failed assumption in P5 that halts a plan, or **P1.6.c triggering a `BLOCKER:` for insufficient context**) or directly contributes to a summarized report item mandated by the active verbosity level under 0.1.c.
+    a. When invoking any step `X` within a procedure `PY`, report as "**PY.X:** [Action/Outcome]".
 
 **P1: Ensure Sufficient File Context**
     *(P0) Note: P1 invocation requires `target_file` and `task_description_for_context`.*
