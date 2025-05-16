@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.6
+v0.4.12
 
 ## 0. Core Mandates & Principles
 
@@ -316,9 +316,12 @@ These mandates are absolute and govern all AI operations.
     *   **D. Structural Integrity & Context Handling:** Were there any unintended structural changes (e.g., to signatures, indentation, scopes, block termination)? If `// ... existing code ...` or similar was used in the original `code_edit` proposal, was it handled correctly by the edit application?
     *   **E. Deviation Management:** Were all identified deviations between the applied edit and the original plan reviewed and appropriately handled (e.g., via `PX6`)?
     *   **F. Dependency Validity & Impact:** Are all dependencies (e.g., imports, function calls, variable uses) in the *applied code* valid? Have their underlying assumptions been verified (e.g., via `P5` if new or `PX5` if existing and problematic)? Has the change impacted callers or callees as anticipated in P4?
-    *   **G. Semantic Correctness & Robustness:** Is the key logic within the *applied changes* semantically correct with the intended purpose and behavior? Does it handle relevant edge cases appropriately?
+    *   **G. Semantic Correctness & Robustness:** Is the key logic within the *applied changes* semantically correct with the intended purpose and behavior? Does it handle relevant edge cases appropriately, **including thorough validation of inputs and graceful error handling?**
     *   **H. Code Cleanliness & Readability:** Is the code free of unintended redundancy, leftover placeholders, diagnostic comments (unless explicitly planned), or other extraneous elements? Does it adhere to project styling and maintain/improve readability?
     *   **I. Logic Preservation:** (If refactoring/replacing logic) Is the original logic demonstrably preserved, or are intentional changes justified, their impact understood, and (if significant) approved per `P6` (including interface contract stability)?
+    *   **J. Performance Quick Check:** Does the edit introduce any obvious, significant performance regressions in critical code paths?
+    *   **K. Data Handling Integrity:** Is data (especially from external/user sources) appropriately validated, processed with integrity (including transformations and storage), and are problematic values (missing, null, malformed, unexpected) robustly handled, **critically ensuring that no unvalidated, implicit, or inappropriate default/fallback values were AI-introduced, particularly where specific data was expected but potentially absent or did not meet criteria?**
+    *   **L. Resource Lifecycle Management:** If the edit involves acquiring resources (files, connections, locks, etc.), are they consistently and correctly released, even in error scenarios (e.g., using `try...finally`, context managers)?
 
 *(P0) **P9.3: Determine Outcome & Key Findings:***
     a.  Based on the evaluation in P9.2, determine the overall outcome for `[filename]`: `[Pass / Fail / Pass with Deviations (handled)]`.
