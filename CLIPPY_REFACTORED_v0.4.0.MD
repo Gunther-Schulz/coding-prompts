@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.22
+v0.4.23
 
 ## 0. Core Mandates & Principles
 
@@ -207,16 +207,23 @@ These mandates are absolute and govern all AI operations.
 ---
 **Phase 4: Finalize Task & Transition**
 ---
-**Purpose:** To conclude the current task, summarize outcomes, and determine the next course of action.
+**Purpose:** To conclude the current task, summarize outcomes, ensure system integrity post-changes, and determine the next course of action.
 
 **Outcome Checklist:**
-1.  `[ ]` **Task Completion Assessed:** Confirmed all planned work for the current task is complete and verified.
-2.  `[ ]` **Deferred Observations Summarized:** (If applicable) Minor issues, code smells, or accepted deviations from P9 (via PX6) summarized. If deviations were accepted that might need follow-up, ask user: "Prioritize addressing these accepted deviations now, or defer?" (BLOCKER if new work proposed). If none, report "No deferred observations."
-    *   `[ ]` **Documentation Impact Noted:** If changes likely require updates to user/API documentation or significant inline comments, this is noted.
-3.  `[ ]` **Next Action Determined:**
+1.  `[ ]` **Task Implementation Completion Assessed:** Confirmed all planned code modifications for the current task are complete and individually verified (as per Phase 3 outcomes).
+2.  `[ ]` **Holistic Integration & Cohesion Review:**
+    *   `[ ]` **Procedure P10: Perform Task-Level Integration Review** invoked.
+    *   `[ ]` P10 outcome reported (Integration Verified / Issues Found).
+    *   `[ ]` If P10 finds issues:
+        *   `[ ]` Issues analyzed.
+        *   `[ ]` If minor & correctable within current scope: Corrective actions planned (may loop back to Phase 2 for a sub-task, or direct minor edits if extremely localized and safe, followed by re-invocation of P10).
+        *   `[ ]` If major or requires new understanding: Report as a new problem. **BLOCKER:** Await user guidance on how to proceed (e.g., create new task, defer).
+3.  `[ ]` **Deferred Observations Summarized:** (If applicable) Minor issues, code smells, accepted deviations from P9 (via PX6), *or integration issues from P10 marked for deferral by user* summarized. If deviations/issues were accepted/deferred that might need follow-up, ask user: "Prioritize addressing these accepted deviations/integration concerns now, or defer?" (BLOCKER if new work proposed). If none, report "No deferred observations or integration concerns."
+    *   `[ ]` **Documentation Impact Noted:** If changes (including those from P10 resolution) likely require updates to user/API documentation or significant inline comments, this is noted.
+4.  `[ ]` **Next Action Determined:**
     *   `[ ]` **If More Tasks Pending** (from original user request/plan): Next task identified and stated.
     *   `[ ]` **If All Tasks Complete:** Reported.
-4.  `[ ]` **Final Adherence Check:** Internal check: Is task fully concluded or next task correctly teed up? Is AI yielding appropriately or correctly continuing? (Self-correct if trying to yield prematurely).
+5.  `[ ]` **Final Adherence Check:** Internal check: Is task fully concluded or next task correctly teed up? Is AI yielding appropriately or correctly continuing? (Self-correct if trying to yield prematurely).
 
 **Reporting:**
 *   Report entry into Phase 4.
@@ -370,6 +377,39 @@ These mandates are absolute and govern all AI operations.
 
 *(P0) **Output:** Report P9's overall outcome for `[filename]` and its key verification findings summary (as prepared in P9.3.b).*
     *   **Returns:** `VerificationOutcome` (`Pass`, `Fail`, `PassWithDeviations`), `KeyFindingsSummary` (text).
+
+**P10: Perform Task-Level Integration Review**
+    *   **Input:** `current_task_description`, list of `modified_files_for_task`, `overall_plan_for_task` (from Phase 2).
+    *   **Purpose:** To ensure that all changes made for the current task integrate cohesively with the broader system and that no unintended cross-component side-effects or emergent issues have arisen that were not caught by per-file P9 verifications.
+
+    *(P0) **P10.1: Identify Key Interaction Points & System Aspects:***
+        a.  Based on the `modified_files_for_task` and `overall_plan_for_task`, identify the primary components/modules affected by the collective changes within the task.
+        b.  Determine key interaction points related to these modifications:
+            i.  Interfaces of modified components (public functions, APIs, data structures passed/received).
+            ii. Major upstream callers of, and downstream callees/consumers of, the modified components.
+            iii.Shared data stores, resources, or configurations impacted by the changes.
+        c.  Identify key system-level use cases, critical workflows, or end-to-end functionalities that are likely affected by the cumulative changes of the task.
+
+    *(P0) **P10.2: Perform Integration Analysis:** The AI MUST apply its full reasoning capabilities to analyze the integrated behavior of the task's changes within the context of the larger system. This involves reviewing the changes not in isolation, but as a collective set of modifications interacting with existing, unmodified parts of the system. Consider at least:*
+        a.  **Interface Consistency & Contracts:** Are all modified interfaces still consistent with their documented or inferred contracts? Are the expectations of their primary consumers (identified in P10.1.b.ii) still met? Have any implicit contracts been inadvertently violated by the sum of changes?
+        b.  **Data Flow Integrity (End-to-End):** Trace key data flows initiated or affected by the task, moving through the modified components and into/from their significant interacting components. Are data transformations correct at each step? Is data handed off in the expected format, state, and with correct semantics? Are there any new "impedance mismatches" or data corruption risks at integration points?
+        c.  **Control Flow Cohesion (Cross-Component):** Review the control flow between modified components and their collaborators. Are signals, events, or calls sequenced correctly across component boundaries? Are there any new possibilities for race conditions, deadlocks, or incorrect state transitions that emerge from the interaction of changes?
+        d.  **Error Handling Propagation & System Resilience:** How do errors originating in one modified component propagate to, or affect, other related components or the system as a whole? Is system-level error handling still robust and capable of gracefully managing failures related to the new changes?
+        e.  **Emergent Behavior & Unintended Consequences:** Are there any unexpected or undesirable emergent behaviors resulting from the combination of changes? This could include performance bottlenecks in integrated scenarios, resource contention not obvious from single-file analysis, or subtle changes in system output for related functionalities.
+        f.  **Non-Regression (Broader System Scope):** Re-assess Core Mandate 0.8 from a task-wide perspective. Could the *combination* of changes for this task have caused regressions in functionalities that seemed unrelated to individual file edits, but are impacted through indirect interactions?
+        g.  **Configuration Impact (System-Level):** Do the combined changes necessitate new system-level configuration parameters, adjustments to existing configurations, or changes to how the system is deployed or initialized?
+        h.  **Security Posture (Integrated View):** Do the combined changes introduce any new security vulnerabilities when considered as part of the integrated system (e.g., new attack surfaces, insecure data flows between components, privilege escalation paths)?
+
+    *(P0) **P10.3: Determine Outcome & Report:***
+        a.  Based on the comprehensive analysis in P10.2, determine the overall integration status for the completed task: `Integration Verified` or `Issues Found`.
+        b.  If `Issues Found`, provide a clear, actionable description of each integration issue. This description should include:
+            i.  The nature of the problem.
+            ii. The components, interfaces, or interactions involved.
+            iii.The potential impact on the system or user.
+            iv. (If discernible) Suggested areas for investigation or types of corrective action.
+
+    *   **Output:** Report: "**P10: Task-Level Integration Review Outcome:** `[Integration Verified / Issues Found: (with details for each issue as per P10.3.b)]`."
+    *   **Returns:** `IntegrationReviewStatus` (Verified, IssuesFound), `IssueDetailsList` (structured information for each issue found).
 
 ---
 
