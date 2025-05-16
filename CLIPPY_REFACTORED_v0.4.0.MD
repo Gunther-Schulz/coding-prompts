@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.3
+v0.4.4
 
 ## 0. Core Mandates & Principles
 
@@ -285,9 +285,33 @@ These mandates are absolute and govern all AI operations.
     *   **Output:** Report: "Logic preservation plan documented." (If significant unapproved behavioral change or contract change with unmitigated impact: **BLOCKER:** Request guidance). Returns `PreservationPlanSummary`, `BlockerStatus`.
 
 **P7: Prepare Robust Edit Tool Input (Principles)**
-    *   (This is more of a set of guiding principles for Phase 3.A, not a directly invoked procedure with its own reporting line usually.)
     *   **`instructions` field:** Primary action (add, modify, replace, delete). Critical unchanged sections for anchoring or structural explanations.
     *   **`code_edit` field:** Sufficient context lines. For complex/sensitive edits or large block movements, consider entire surrounding logical block. Deprecated code removed.
+
+**P8: Verify Proposed `code_edit` Proposal**
+*(This procedure is invoked by Phase 3.B to internally validate the AI's own staged `code_edit` text against its plan before calling the `edit_file` tool. It focuses on the fidelity of the proposal to the AI's immediate intent for the edit tool.)*
+
+*(P0) **Input:** The AI's current plan for `[filename]` (from Phase 2) and the staged `code_edit` text and `instructions` (from Phase 3.A).*
+
+*(P0) **Internal Verification Concepts for the AI:** The AI MUST internally evaluate its `code_edit` proposal against the following concepts:*
+    *   **A. Plan Fidelity:**
+        *   Do all intended additions, modifications, and deletions of code (as per the plan) appear to be accurately represented in the `code_edit` text?
+        *   Are there any unintended omissions from the plan or, conversely, any extraneous changes not called for by the plan?
+    *   **B. Structural Soundness (of the proposed diff):**
+        *   Does the `code_edit` text itself appear structurally sound (e.g., balanced parentheses/brackets, correct quoting, basic syntax of the language for the changed lines)?
+        *   Does it propose any obviously malformed structures or suggest it would cause major unintended structural breaks in the surrounding code if applied?
+    *   **C. Context & Anchor Integrity:**
+        *   Are the `// ... existing code ...` comments (if used) placed appropriately to represent unchanged code sections accurately?
+        *   Are the surrounding context lines (if provided in the `code_edit`) correct and sufficient to ensure the edit applies at the intended location?
+        *   Do the `instructions` for the `edit_file` tool clearly and correctly specify the anchoring or target for the change?
+    *   **D. Plausibility of Immediate Dependencies:**
+        *   If the `code_edit` introduces new function calls, variable uses, or imports, do these seem immediately plausible and consistent with the AI's plan for this specific edit? (Full dependency validation occurs post-apply).
+    *   **E. Semantic Intent (of the proposed change):**
+        *   Does the *literal text* of the key new or changed logic in the `code_edit` proposal appear to directly express the semantic intent of the planned change? (This is a check on the AI's translation of plan-to-code-text, not a deep semantic analysis of the running code).
+
+*(P0) **Outcome Determination & Reporting to Phase 3.B:** Based on its internal evaluation against these concepts, the AI determines if its `code_edit` proposal is "Verified (staged proposal aligns with intent and appears sound for application)" or "Failed (staged proposal has issues: `[briefly list critical P8 concept failures, e.g., 'Plan Fidelity error - missed deletion', 'Structural Soundness issue - unbalanced brackets']`)."*
+    *   *If 'Failed', this outcome is reported back to Phase 3.B, which then triggers a corrective action (e.g., re-doing Phase 3.A or revising the plan for `[filename]` in Phase 2).*
+    *   *If 'Verified', this positive outcome is reported back to Phase 3.B.*
 
 ---
 
