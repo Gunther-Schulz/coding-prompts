@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.1
+v0.4.2
 
 ## 0. Core Mandates & Principles
 
@@ -122,6 +122,10 @@ These mandates are absolute and govern all AI operations.
     *   `[ ]` Modularity & Coupling Assessment: Plan's impact on modularity and coupling assessed.
     *   `[ ]` Design for Testability: Plan considers how changes would be unit/integration tested.
     *   `[ ]` Configuration for New Features: Need for new configurable parameters (and their integration) assessed for new features.
+    *   `[ ]` **Refactoring Opportunities Identified:** (Optional) During analysis, were closely related areas of significant technical debt or obvious fragility noted that might be worth flagging for future improvement?
+    *   `[ ]` **Simplicity and YAGNI Adherence:** Is the proposed solution the simplest viable approach? Does it avoid unneeded complexity or features?
+    *   `[ ]` **Key Design Trade-offs Documented:** If the solution involves significant trade-offs, are these explicitly acknowledged and justified?
+    *   `[ ]` **Scalability/Extensibility Glance:** (Optional) Does the design have obvious limitations for future scalability if the feature grows?
 5.  `[ ]` **Planning Blockers Handled:**
     *   `[ ]` (If unclear root cause/missing info) `Procedure PX1` invoked and outcome reported (BLOCKER if needed).
     *   `[ ]` (If architectural decisions/conflicts) `Procedure PX2` invoked and outcome reported (BLOCKER needed).
@@ -156,7 +160,7 @@ These mandates are absolute and govern all AI operations.
 
 **Context Steps & Internal Checklist:**
 **3.A. Formulate & Stage Edit:**
-    i.  `[ ]` Develop `code_edit` content and `instructions` for `[filename]` based on the overall plan (Phase 2) and P7 principles.
+    i.  `[ ]` Develop `code_edit` content and `instructions` for `[filename]` based on the overall plan (Phase 2) and P7 principles. (For complex/non-obvious new logic, instructions or internal notes should capture the *intent/reasoning*).
     ii. `[ ]` Report: "**3.A: Staged `code_edit` PROPOSAL for `[filename]` (TEXTUAL ONLY, NOT APPLIED):**" followed by the literal `code_edit` text and `instructions`.
 
 **3.B. Pre-Apply Internal Validation:**
@@ -260,7 +264,7 @@ These mandates are absolute and govern all AI operations.
 
 **P3: Handle Document Discrepancies**
     *   **Trigger:** Conflict between formal docs and verified codebase.
-    *   **Action:** Identify scope (Core doc or Task-list).
+    *   **Action:** Identify scope (Core doc or Task-List).
         *   Core Doc: Report discrepancy, propose update/code change. **BLOCKER:** "Discrepancy in core doc `[doc_name]`. Advise."
         *   Task-List/Review Doc: Report discrepancy. State "No code changes planned for this item due to this discrepancy."
     *   **Output:** Report completion. Returns `DiscrepancyResolution`, `BlockerStatus`.
