@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.16
+v0.4.20
 
 ## 0. Core Mandates & Principles
 
@@ -277,9 +277,10 @@ These mandates are absolute and govern all AI operations.
 **P8: Verify Proposed `code_edit` Proposal**
 *(This procedure is invoked by Phase 3.B to internally validate the AI's own staged `code_edit` text against its plan before calling the `edit_file` tool. It focuses on the fidelity of the proposal to the AI's immediate intent for the edit tool.)*
 
-*(P0) **Input:** The AI's current plan for `[filename]` (from Phase 2) and the staged `code_edit` text and `instructions` (from Phase 3.A).*
+*(P0) **P8.1: Define Proposal Under Review:***
+    a.  The subject for verification is the AI's current plan for `[filename]` (from Phase 2) and the specific staged `code_edit` text and `instructions` prepared in Phase 3.A for `[filename]`.
 
-*(P0) **Internal Verification using Comprehensive Reasoning & Conceptual Prompts:** The AI MUST apply its full reasoning capabilities to internally evaluate its `code_edit` proposal (text and instructions). As a minimum, this evaluation MUST scrutinize the proposal against the following critical conceptual prompts. The AI is encouraged to extend its analysis beyond these prompts if its reasoning identifies other potential flaws, areas for improvement, or overlooked considerations in the staged `code_edit` or `instructions` before they are formally submitted for application:*
+*(P0) **P8.2: Perform Internal Verification using Comprehensive Reasoning & Conceptual Prompts:** The AI MUST apply its full reasoning capabilities to internally evaluate its `code_edit` proposal (text and instructions from P8.1.a). As a minimum, this evaluation MUST scrutinize the proposal against the following critical conceptual prompts. The AI is encouraged to extend its analysis beyond these prompts if its reasoning identifies other potential flaws, areas for improvement, or overlooked considerations in the staged `code_edit` or `instructions` before they are formally submitted for application:*
     *   **A. Plan Fidelity:**
         *   Do all intended additions, modifications, and deletions of code (as per the plan) appear to be accurately represented in the `code_edit` text?
         *   Are there any unintended omissions from the plan or, conversely, any extraneous changes not called for by the plan?
@@ -295,11 +296,20 @@ These mandates are absolute and govern all AI operations.
     *   **E. Semantic Intent (of the proposed change):**
         *   Does the *literal text* of the key new or changed logic in the `code_edit` proposal appear to directly express the semantic intent of the planned change? (This is a check on the AI's translation of plan-to-code-text, not a deep semantic analysis of the running code).
 
-    *Following its comprehensive internal evaluation (including but not limited to the prompts A-E above), the AI will proceed to determine the outcome for reporting back to Phase 3.B, including any insights that arose from reasoning beyond the explicit conceptual prompts.*
+    *Following its comprehensive internal evaluation (including but not limited to the prompts A-E above), the AI will proceed to P8.3 to determine the outcome for reporting back to Phase 3.B, including any insights that arose from reasoning beyond the explicit conceptual prompts.*
 
-*(P0) **Outcome Determination & Reporting to Phase 3.B:** Based on its internal evaluation against these concepts, the AI determines if its `code_edit` proposal is "Verified (staged proposal aligns with intent and appears sound for application)" or "Failed (staged proposal has issues: `[briefly list critical P8 concept failures, e.g., 'Plan Fidelity error - missed deletion', 'Structural Soundness issue - unbalanced brackets']`)."*
-    *   *If 'Failed', this outcome is reported back to Phase 3.B, which then triggers a corrective action (e.g., re-doing Phase 3.A or revising the plan for `[filename]` in Phase 2).*
-    *   *If 'Verified', this positive outcome is reported back to Phase 3.B.*
+*(P0) **P8.3: Determine Outcome & Report to Phase 3.B:***
+    a.  Based on its internal evaluation (from P8.2), the AI determines the overall outcome for its staged `code_edit` proposal: "Verified (staged proposal aligns with intent and appears sound for application)" or "Failed (staged proposal has issues)".
+    b.  A summary of internal verification findings MUST be prepared. This summary MUST explicitly list:
+        i.  The outcome for **EACH** conceptual prompt (A-E) from P8.2.
+            *   For conceptual prompts that revealed issues in the staged `code_edit` or `instructions`, details of these issues MUST be provided (e.g., "P8.2.A Plan Fidelity: Failed - missed deletion of X", "P8.2.B Structural Soundness: Failed - unbalanced brackets in new Y block").
+            *   For conceptual prompts that passed without special note, a simple "Pass" or "Verified" status is sufficient.
+            *   If a P8.2 concept was not applicable for a very simple proposal, it can be noted as "Not Applicable."
+        ii. A statement on whether any **extended analysis beyond prompts A-E** (as encouraged in P8.2's preamble) was performed and, if so, a brief summary of any additional potential flaws or improvements identified in the staged proposal. (e.g., "No additional considerations beyond A-E." or "Extended analysis suggested a minor refinement to instruction clarity for [Z].")
+    c.  The overall outcome from P8.3.a MUST be consistent with the individual outcomes of the P8.2 conceptual prompts and any findings from extended analysis.
+    d.  This outcome (Verified/Failed) and the summary of findings (from P8.3.b) are reported back to Phase 3.B.
+        *   *If 'Failed', Phase 3.B then triggers a corrective action (e.g., re-doing Phase 3.A or revising the plan for `[filename]` in Phase 2).*
+        *   *If 'Verified', Phase 3.B proceeds.*
 
 **P9: Verify Applied Edit**
 *(This procedure is invoked by Phase 3.D.i to guide the holistic verification of an applied edit, using the authoritative file state.)*
@@ -331,7 +341,14 @@ These mandates are absolute and govern all AI operations.
 
 *(P0) **P9.3: Determine Outcome & Key Findings:***
     a.  Based on the evaluation in P9.2, determine the overall outcome for `[filename]`: `[Pass / Fail / Pass with Deviations (handled)]`.
-    b.  Prepare a concise summary of key verification findings. This summary MUST explicitly mention any failures, significant deviations, critical confirmations (e.g., "Original bug confirmed fixed by re-running test X"), or areas where the edit performed particularly well or had notable implications. Trivial passes for concepts with no issues can be omitted or briefly grouped (e.g., "Concepts C, D, H were verified with no issues.").
+    b.  Prepare a summary of verification findings. This summary MUST explicitly list:
+        i.  The outcome for **EACH** conceptual prompt (A-L) from P9.2.
+            *   For conceptual prompts that resulted in a **failure** or **significant deviation**, details of that failure/deviation MUST be provided.
+            *   For conceptual prompts that represented **critical confirmations** of success (e.g., "Original bug confirmed fixed," "Complex intended state achieved"), these SHOULD be highlighted.
+            *   For conceptual prompts that passed without special note, a simple "Pass" or "Verified" status is sufficient for that item.
+            *   If a P9.2 concept was genuinely not applicable to the edit (e.g., resource lifecycle for a minor text change), it should be noted as "Not Applicable."
+        ii. A statement on whether any **extended analysis beyond prompts A-L** (as encouraged in the P9.2 preamble) was performed and, if so, a brief summary of any significant factors or potential issues identified. (e.g., "No additional critical factors identified beyond A-L." or "Extended analysis considered [X] and confirmed [Y].")
+    c.  The overall outcome from P9.3.a MUST be consistent with the individual outcomes of the P9.2 conceptual prompts and any findings from extended analysis.
 
 *(P0) **Output:** Report P9's overall outcome for `[filename]` and its key verification findings summary (as prepared in P9.3.b).*
     *   **Returns:** `VerificationOutcome` (`Pass`, `Fail`, `PassWithDeviations`), `KeyFindingsSummary` (text).
