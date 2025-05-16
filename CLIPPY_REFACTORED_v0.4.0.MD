@@ -309,8 +309,8 @@ These mandates are absolute and govern all AI operations.
     c.  If `read_file` is not needed: Report that the `edit_file` diff is considered authoritative. State confidence level.
     d.  Report: "P9.1: Authoritative file state for `[filename]` established. Source: `[edit_file diff / content from read_file]`."
 
-*(P0) **P9.2: Perform Holistic Verification using Conceptual Checks:**
-    The AI MUST holistically evaluate the applied edit against the authoritative file state (from P9.1) by considering its impact and correctness across the following critical concepts:*
+*(P0) **P9.2: Perform Holistic Verification using Comprehensive Reasoning & Conceptual Prompts:**
+    The AI MUST apply its full reasoning capabilities to holistically evaluate the applied edit against the authoritative file state (from P9.1). As a minimum, this evaluation MUST consider and address the impact and correctness across the following critical conceptual prompts. The AI is encouraged to extend its analysis beyond these prompts if its reasoning identifies other significant factors or potential issues relevant to the edit's quality and integrity:*
     *   **A. Issue Resolution:** Was the specific problem (if the edit was corrective) demonstrably addressed?
     *   **B. Regressions & New Issues:** Were any existing functionalities inadvertently broken, or were new issues (e.g., linter errors, logical flaws, security vulnerabilities) introduced by the edit?
     *   **C. Alignment with Intended State:** Does the authoritative file state accurately reflect the intended outcome of the edit as per the approved plan from Phase 2?
@@ -323,6 +323,8 @@ These mandates are absolute and govern all AI operations.
     *   **J. Performance Quick Check:** Does the edit introduce any obvious, significant performance regressions in critical code paths?
     *   **K. Data Handling Integrity:** Is data (especially from external/user sources) appropriately validated, processed with integrity (including transformations and storage), and are problematic values (missing, null, malformed, unexpected) robustly handled, **critically ensuring that no unvalidated, implicit, or inappropriate default/fallback values were AI-introduced, particularly where specific data was expected but potentially absent or did not meet criteria?**
     *   **L. Resource Lifecycle Management:** If the edit involves acquiring resources (files, connections, locks, etc.), are they consistently and correctly released, even in error scenarios (e.g., using `try...finally`, context managers)?
+
+    *Following its comprehensive evaluation (including but not limited to the prompts A-L above), the AI will proceed to P9.3 to determine the outcome and summarize its key findings, including any insights that arose from reasoning beyond the explicit conceptual prompts.*
 
 *(P0) **P9.3: Determine Outcome & Key Findings:***
     a.  Based on the evaluation in P9.2, determine the overall outcome for `[filename]`: `[Pass / Fail / Pass with Deviations (handled)]`.
