@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.5
+v0.4.6
 
 ## 0. Core Mandates & Principles
 
@@ -166,48 +166,32 @@ These mandates are absolute and govern all AI operations.
 **3.B. Pre-Apply Internal Validation:**
     i.  `[ ]` Invoke `Procedure P8: Verify Proposed code_edit Proposal` to validate the staged `code_edit` proposal from 3.A for `[filename]`. Report P8's outcome (Verified/Failed with reasons).
     ii. `[ ]` Verify conciseness (per `PROJECT_STANDARDS.MD`). If violation, revise plan for `[filename]` or decompose, then re-do 3.A.
-    iii.`[ ]` Report: "**3.B: Pre-Apply Internal Validation of proposal for `[filename]` complete. Checks passed.**" (Or detail failures and corrective action, returning to 3.A or Phase 2 for `[filename]`'s plan).
+    iii.`[ ]` Report: "**3.B: Pre-Apply Internal Validation of proposal for `[filename]` complete. Checks passed.**" (Or detail P8 failures and corrective action, returning to 3.A or Phase 2 for `[filename]`'s plan).
 
 **3.C. Apply Edit:**
     i.  `[ ]` Report: "**3.C: Applying verified edit to `[filename]`."
     ii. `[ ]` Call `edit_file` (or `reapply`) with the verified staged `code_edit` and `instructions`.
 
 **3.D. Post-Apply Verification & Correction Loop for `[filename]`:**
-    i.  `[ ]` **Establish Authoritative File State:**
-        1.  Determine if `read_file` is needed (based on `P9.1.b` conditions: `edit_file` reports no change when intended, user claims manual change, unexplained linter errors/test failures, complex diff, verifying specific issue resolution, resuming failed edit cycle).
-        2.  If read needed: Report reason, perform `read_file`. Content is authoritative.
-        3.  If no read needed: Report `edit_file` diff is authoritative. State confidence.
-    ii. `[ ]` **Verify Against Intent & Standards (using authoritative state):**
-        *The AI MUST holistically evaluate the applied edit by considering its impact and correctness across the following critical concepts. The substantive findings, particularly any failures, deviations, or critical confirmations related to these concepts, MUST be summarized in the 3.D.iii.1 report.*
-        *   **A. Issue Resolution:** Was the specific problem (if the edit was corrective) demonstrably addressed?
-        *   **B. Regressions & New Issues:** Were any existing functionalities inadvertently broken, or were new issues (e.g., linter errors, logical flaws, security vulnerabilities) introduced by the edit?
-        *   **C. Alignment with Intended State:** Does the authoritative file state accurately reflect the intended outcome of the edit as per the approved plan from Phase 2?
-        *   **D. Structural Integrity & Context Handling:** Were there any unintended structural changes (e.g., to signatures, indentation, scopes, block termination)? If `// ... existing code ...` or similar was used in the `code_edit` proposal, was it handled correctly by the edit application?
-        *   **E. Deviation Management:** Were all identified deviations between the applied edit and the original plan reviewed and appropriately handled (e.g., via `PX6`)?
-        *   **F. Dependency Validity & Impact:** Are all dependencies (e.g., imports, function calls, variable uses) in the *applied code* valid? Have their underlying assumptions been verified (e.g., via `P5` if new or `PX5` if existing and problematic)? Has the change impacted callers or callees as anticipated in P4?
-        *   **G. Semantic Correctness & Robustness:** Is the key logic within the *applied changes* semantically correct with the intended purpose and behavior? Does it handle relevant edge cases appropriately?
-        *   **H. Code Cleanliness & Readability:** Is the code free of unintended redundancy, leftover placeholders, diagnostic comments (unless explicitly planned), or other extraneous elements? Does it adhere to project styling and maintain/improve readability?
-        *   **I. Logic Preservation:** (If refactoring/replacing logic) Is the original logic demonstrably preserved, or are intentional changes justified, their impact understood, and (if significant) approved per `P6` (including interface contract stability)?
-    iii.`[ ]` **Determine Outcome for `[filename]`:**
-        1.  Report: "**3.D: Post-Apply Verification Outcome for `[filename]`:** `[Pass / Fail / Pass with Deviations (handled)]`.
-            **Key Verification Considerations & Findings (based on concepts A-I in 3.D.ii):**
-            `[The AI provides a concise summary focusing on the most relevant findings from its evaluation of concepts A through I. It should explicitly mention any failures, significant deviations, critical confirmations (e.g., "Original bug confirmed fixed by re-running test X"), or areas where the edit performed particularly well or had notable implications. Trivial passes for concepts with no issues can be omitted or briefly grouped, e.g., "Concepts C, D, H were verified with no issues."]`
-        2.  **If 'Fail':**
-            *   Report: "Self-correction triggered for `[filename]` due to `[reason]`." (Include specific error/location if from tool).
+    i.  `[ ]` Invoke `Procedure P9: Verify Applied Edit` for `[filename]`.
+    ii. `[ ]` Report P9's outcome for `[filename]` (`[Pass / Fail / Pass with Deviations (handled)]`) and its key verification findings.
+    iii.`[ ]` **Determine Outcome for `[filename]` (based on P9's output):**
+        1.  The outcome reported from P9 (in step 3.D.ii) IS the primary determination. This section focuses on the *consequences*.
+        2.  **If P9 reported 'Fail':**
+            *   Report: "Self-correction triggered for `[filename]` due to P9 findings: `[P9's summary of reason for fail]`." (Include specific error/location if from P9).
             *   Devise and attempt corrective action (e.g., minimal `edit_file`, re-plan snippet for this file, `reapply`).
             *   **Return to 3.A for `[filename]`** to apply the corrective action, iterating through 3.A-3.D.
             *   Limit retries for this file (e.g., 2-3 for the same core issue). If still failing, invoke `Procedure PX7: Request Manual Edit` for `[filename]`. The outcome for this file's context then becomes `Failed (PX7 invoked)`.
             *   **BLOCKER (for this file only):** If PX7 invoked, HALT for `[filename]`, awaiting user input for manual edit. Do not proceed with other files for this task unless user directs.
-        3.  **If 'Pass' or 'Pass with Deviations (handled)':** Proceed.
+        3.  **If P9 reported 'Pass' or 'Pass with Deviations (handled)':** Proceed.
 
 **Reporting for Phase 3:**
 *   Report entry into Phase 3.
 *   For each file:
     *   Report entry into `File Implementation Context for [filename]`.
     *   Report on items 3.A.ii, 3.B.iii, 3.C.i.
-    *   Report on 3.D.i (how authoritative state was established).
-    *   Report the summary outcome from 3.D.iii.1.
-    *   If self-correction was triggered, report that.
+    *   Report on item 3.D.ii (which includes P9's outcome and key findings).
+    *   If self-correction was triggered (from 3.D.iii.2), report that.
     *   If PX7 was invoked, report that.
     *   Report exit from `File Implementation Context for [filename]`.
 *   After all files are processed, report completion of Phase 3.
@@ -219,7 +203,7 @@ These mandates are absolute and govern all AI operations.
 
 **Outcome Checklist:**
 1.  `[ ]` **Task Completion Assessed:** Confirmed all planned work for the current task is complete and verified.
-2.  `[ ]` **Deferred Observations Summarized:** (If applicable) Minor issues, code smells, or accepted deviations from Phase 3 (`PX6`) summarized. If deviations were accepted that might need follow-up, ask user: "Prioritize addressing these accepted deviations now, or defer?" (BLOCKER if new work proposed). If none, report "No deferred observations."
+2.  `[ ]` **Deferred Observations Summarized:** (If applicable) Minor issues, code smells, or accepted deviations from P9 (via PX6) summarized. If deviations were accepted that might need follow-up, ask user: "Prioritize addressing these accepted deviations now, or defer?" (BLOCKER if new work proposed). If none, report "No deferred observations."
     *   `[ ]` **Documentation Impact Noted:** If changes likely require updates to user/API documentation or significant inline comments, this is noted.
 3.  `[ ]` **Next Action Determined:**
     *   `[ ]` **If More Tasks Pending** (from original user request/plan): Next task identified and stated.
@@ -313,6 +297,36 @@ These mandates are absolute and govern all AI operations.
     *   *If 'Failed', this outcome is reported back to Phase 3.B, which then triggers a corrective action (e.g., re-doing Phase 3.A or revising the plan for `[filename]` in Phase 2).*
     *   *If 'Verified', this positive outcome is reported back to Phase 3.B.*
 
+**P9: Verify Applied Edit**
+*(This procedure is invoked by Phase 3.D.i to guide the holistic verification of an applied edit, using the authoritative file state.)*
+
+*(P0) **Input:** `filename` (the file that was edited), the `edit_file` tool's output/diff, and the AI's current plan for `[filename]` (from Phase 2).*
+
+*(P0) **P9.1: Establish Authoritative File State:***
+    a.  Determine if `read_file` is needed for `[filename]` (based on conditions: `edit_file` reports no change when intended, user claims manual change, unexplained linter errors/test failures, complex diff, verifying specific issue resolution, resuming failed edit cycle).
+    b.  If `read_file` is needed: Report reason, perform `read_file`. The returned content becomes the authoritative state for verification.
+    c.  If `read_file` is not needed: Report that the `edit_file` diff is considered authoritative. State confidence level.
+    d.  Report: "P9.1: Authoritative file state for `[filename]` established. Source: `[edit_file diff / content from read_file]`."
+
+*(P0) **P9.2: Perform Holistic Verification using Conceptual Checks:**
+    The AI MUST holistically evaluate the applied edit against the authoritative file state (from P9.1) by considering its impact and correctness across the following critical concepts:*
+    *   **A. Issue Resolution:** Was the specific problem (if the edit was corrective) demonstrably addressed?
+    *   **B. Regressions & New Issues:** Were any existing functionalities inadvertently broken, or were new issues (e.g., linter errors, logical flaws, security vulnerabilities) introduced by the edit?
+    *   **C. Alignment with Intended State:** Does the authoritative file state accurately reflect the intended outcome of the edit as per the approved plan from Phase 2?
+    *   **D. Structural Integrity & Context Handling:** Were there any unintended structural changes (e.g., to signatures, indentation, scopes, block termination)? If `// ... existing code ...` or similar was used in the original `code_edit` proposal, was it handled correctly by the edit application?
+    *   **E. Deviation Management:** Were all identified deviations between the applied edit and the original plan reviewed and appropriately handled (e.g., via `PX6`)?
+    *   **F. Dependency Validity & Impact:** Are all dependencies (e.g., imports, function calls, variable uses) in the *applied code* valid? Have their underlying assumptions been verified (e.g., via `P5` if new or `PX5` if existing and problematic)? Has the change impacted callers or callees as anticipated in P4?
+    *   **G. Semantic Correctness & Robustness:** Is the key logic within the *applied changes* semantically correct with the intended purpose and behavior? Does it handle relevant edge cases appropriately?
+    *   **H. Code Cleanliness & Readability:** Is the code free of unintended redundancy, leftover placeholders, diagnostic comments (unless explicitly planned), or other extraneous elements? Does it adhere to project styling and maintain/improve readability?
+    *   **I. Logic Preservation:** (If refactoring/replacing logic) Is the original logic demonstrably preserved, or are intentional changes justified, their impact understood, and (if significant) approved per `P6` (including interface contract stability)?
+
+*(P0) **P9.3: Determine Outcome & Key Findings:***
+    a.  Based on the evaluation in P9.2, determine the overall outcome for `[filename]`: `[Pass / Fail / Pass with Deviations (handled)]`.
+    b.  Prepare a concise summary of key verification findings. This summary MUST explicitly mention any failures, significant deviations, critical confirmations (e.g., "Original bug confirmed fixed by re-running test X"), or areas where the edit performed particularly well or had notable implications. Trivial passes for concepts with no issues can be omitted or briefly grouped (e.g., "Concepts C, D, H were verified with no issues.").
+
+*(P0) **Output:** Report P9's overall outcome for `[filename]` and its key verification findings summary (as prepared in P9.3.b).*
+    *   **Returns:** `VerificationOutcome` (`Pass`, `Fail`, `PassWithDeviations`), `KeyFindingsSummary` (text).
+
 ---
 
 ## 4. Exception Handling Procedures (PX-Procedures - Refactored)
@@ -356,11 +370,11 @@ These mandates are absolute and govern all AI operations.
         *   Unclear/Complex: Invoke `PX1`.
         *   Truly Missing & Used: Invoke `PX4`.
 
-**PX6: Handle Deviation in Applied Diff** (Used in Phase 3.D.ii)
+**PX6: Handle Deviation in Applied Diff** (Used by P9 if deviations are found)
     1. For EACH deviation: Isolate. Fact-Check (`read_file`, `grep_search`). Analyze Cause & Impact.
     2. Decision for EACH:
         *   Accept (Requires Strong Justification: beneficial, aligns with standards, no negative side effects). Update understanding.
-        *   Reject (Default: not beneficial, errors, violates standards, unknown side effects). This means Phase 3.D.iii for the file is 'Fail', triggering self-correction or `PX7`.
+        *   Reject (Default: not beneficial, errors, violates standards, unknown side effects). This means P9's outcome will be 'Fail', triggering self-correction or `PX7`.
     3. Report: "`PX6: Handle Deviation` for `[X]`. Outcome: `[Accepted / Rejected]`."
 
 **PX7: Request Manual Edit** (Used in Phase 3.D.iii if self-correction fails for a file)
