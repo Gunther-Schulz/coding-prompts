@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.20
+v0.4.21
 
 ## 0. Core Mandates & Principles
 
@@ -230,19 +230,31 @@ These mandates are absolute and govern all AI operations.
 
 **P1: Get File Context**
     *   **Input:** `target_file`, `task_description_for_context`, (optional) `task_claimed_status`.
-    *   **Action:**
-        A.  Assess if a recent comprehensive read of `target_file` is sufficient (no changes suspected, not overridden by `task_claimed_status` verification needs). If so, report presumed context, skip to J.
-        B.  Determine if full file context is needed for the task.
-        C.  Use `read_file`. Request full read if deemed necessary and tool constraints allow.
-        D.  Verify if returned content is sufficient.
-        E.  If `task_claimed_status` provided: Compare with actual state. Report discrepancy (`P1.E.b.i`) or alignment.
-        F.  If content insufficient (and not due to P1.E or inherent unsuitability of chunks): Consider autonomous chunking. Report attempt/outcome.
-        G.  If still insufficient (or chunking not viable/holistic view needed): Report reason. If tool blocked full read or holistic view essential, add: "To proceed reliably for `[target_file]`, please provide full content." State risks. **BLOCKER:** Await content or risk-acknowledged guidance.
-        H.  If user provides content: Process, re-evaluate sufficiency (D-G).
-        I.  If proceeding with risk: Log override, report.
-    *   **Output:**
-        J.  Report status: "Full context for `[target_file]` obtained.", "Proceeding with insufficient data for `[target_file]` (user approval, risks: X).", "Awaiting content for `[target_file]` (Blocker P1.G).", "Discrepancy with `task_claimed_status` noted (P1.E.b.i)."
-    *   **Returns:** `FileContextData`, `ContextStatus` (Sufficient, InsufficientRequiresUser, BlockedOnUser, SufficientWithDiscrepancy).
+
+    *(P0) **P1.1: Initial Context Assessment & Retrieval Strategy:***
+        a.  Assess if a recent comprehensive read of `target_file` is sufficient for the `task_description_for_context` (no changes suspected, not overridden by `task_claimed_status` verification needs). If so, report: "P1.1: Presuming existing context for `[target_file]` is sufficient." Proceed to P1.4.a, using existing context data.
+        b.  Determine if full file context is needed for the task or if targeted chunks are more appropriate initially.
+
+    *(P0) **P1.2: Execute Context Retrieval & Initial Sufficiency Check:***
+        a.  Based on P1.1.b, use `read_file`. Request full read if deemed necessary for the task and tool constraints allow, otherwise request relevant chunks.
+        b.  Verify if the returned content is sufficient for the `task_description_for_context`. Report preliminary sufficiency. (e.g., "P1.2: Initial content for `[target_file]` retrieved. Preliminary check: Appears sufficient/insufficient.")
+
+    *(P0) **P1.3: Handle Discrepancies, Insufficiencies, and User Input:***
+        a.  If `task_claimed_status` was provided: Compare with actual state revealed by P1.2. Report discrepancy (`P1.3.a: Discrepancy with task_claimed_status for [target_file] found: [details]`) or alignment.
+        b.  If content from P1.2.a is insufficient (and not due to P1.3.a or inherent unsuitability of chunks for the task): Consider autonomous re-chunking or targeted `read_file` for additional specific sections. Report attempt/outcome. Re-evaluate sufficiency (P1.2.b).
+        c.  If content is still insufficient (or chunking not viable/holistic view essential for task): Report reason. If tool blocked full read or holistic view is essential, state: "P1.3.c: To proceed reliably for `[target_file]` based on `[task_description_for_context]`, full/more comprehensive content is required. Risks of proceeding with current context: `[briefly state risks]`." Add: "Please provide full content, or confirm if I should proceed with current limited context and noted risks." **BLOCKER:** Await content or risk-acknowledged guidance.
+        d.  If user provides content: Process this content, then return to P1.2.b to re-evaluate sufficiency against the `task_description_for_context`.
+        e.  If user confirms proceeding with limited context despite risks (from P1.3.c): Log this override decision clearly. Report: "P1.3.e: User confirmed proceeding with limited context for `[target_file]` despite acknowledged risks."
+
+    *(P0) **P1.4: Report Final Context Status & Return Data:***
+        a.  Based on the process P1.1-P1.3, determine the final `ContextStatus`.
+        b.  Report status for `[target_file]`, e.g.:
+            *   "P1.4: Full context for `[target_file]` obtained and verified as sufficient for `[task_description_for_context]`."
+            *   "P1.4: Context for `[target_file]` obtained. Proceeding with insufficient data as per user approval (risks: `[X]`)."
+            *   "P1.4: Awaiting content/guidance for `[target_file]` (Blocker P1.3.c)."
+            *   "P1.4: Context for `[target_file]` obtained, but discrepancy with `task_claimed_status` noted (P1.3.a)."
+            *   (If applicable from P1.1.a) "P1.4: Proceeding with previously established sufficient context for `[target_file]`."
+    *   **Returns:** `FileContextData`, `ContextStatus` (Sufficient, InsufficientRequiresUser, BlockedOnUser, SufficientWithDiscrepancy, SufficientPresumedExisting).
 
 **P2: Establish Inferred Standards**
     *   **Trigger:** `PROJECT_STANDARDS.MD` / `PROJECT_ARCHITECTURE.MD` missing/incomplete for task aspects.
