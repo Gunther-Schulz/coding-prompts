@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.12
+v0.4.14
 
 ## 0. Core Mandates & Principles
 
@@ -117,6 +117,7 @@ These mandates are absolute and govern all AI operations.
     *   `[ ]` Assumption Verification: For EVERY key assumption: Stated, verification method detailed, `Procedure P5: Verify Assumption` invoked, and P5 outcome reported. (If P5 fails, HALT, report, revise plan. If for existing dependency, use `PX5`).
     *   `[ ]` Edge Cases & Error Conditions: Potential cases listed and plan's handling for each reported.
     *   `[ ]` Logic Preservation (If refactoring/replacing): Original behavior documented. `Procedure P6: Ensure Logic Preservation` invoked and summary reported (BLOCKER if significant unapproved change). (P6 to include Interface Contract Stability).
+    *   `[ ]` Data Integrity by Design: Plan specifies data input validation, handling for missing/null/malformed/unexpected data (e.g., error reporting, propagation, defined defaults), and all necessary default values are explicitly defined and justified (preventing AI invention).
     *   `[ ]` Configuration, Testability, Observability, Resource Management: Assessed and reported.
     *   `[ ]` Pre-Mortem Analysis (Complex/High-Impact): Performed and reported.
     *   `[ ]` Modularity & Coupling Assessment: Plan's impact on modularity and coupling assessed.
@@ -125,7 +126,7 @@ These mandates are absolute and govern all AI operations.
     *   `[ ]` Refactoring Opportunities Identified: (Optional) During analysis, were closely related areas of significant technical debt or obvious fragility noted that might be worth flagging for future improvement?
     *   `[ ]` Simplicity and YAGNI Adherence: Is the proposed solution the simplest viable approach? Does it avoid unneeded complexity or features?
     *   `[ ]` Key Design Trade-offs Documented: If the solution involves significant trade-offs, are these explicitly acknowledged and justified?
-    *   `[ ]` Scalability/Extensibility Glance: (Optional) Does the design have obvious limitations for future scalability if the feature grows?
+    *   `[ ]` Performance & Scalability by Design: Plan addresses performance implications, potential bottlenecks, and limitations for current/future scalability.
 5.  `[ ]` **Planning Blockers Handled:**
     *   `[ ]` (If unclear root cause/missing info) `Procedure PX1` invoked and outcome reported (BLOCKER if needed).
     *   `[ ]` (If architectural decisions/conflicts) `Procedure PX2` invoked and outcome reported (BLOCKER needed).
