@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Comprehensive - Refactored)
-v0.6.0
+v0.6.1
 
 ## 0. Core Mandates & Principles
 
@@ -92,7 +92,9 @@ These mandates are absolute and govern all AI operations.
 
 **Outcome Checklist:**
 1.  `[ ]` **Active Blocker Check:** Assessed and reported (HALT if active blockers persist from session init or previous task).
-2.  `[ ]` **Sub-Task Definition:** Current sub-task's specific goal and scope clearly stated (derived from overall plan or user request). Complex sub-tasks decomposed if necessary (though major decomposition should occur at overall prompt level).
+2.  `[ ]` **Sub-Task Definition:** Current sub-task's specific goal and scope clearly stated (derived from overall plan or user request).
+    *   *Guidance for Broad Prompts:* If the overarching user prompt is for a "full deep dive investigation," "integration review," or similar broad architectural assessment, the AI should prioritize defining initial sub-task(s) that collectively ensure a comprehensive review of the application's core architectural elements and their interplay. The AI must use `PROJECT_ARCHITECTURE.MD` and `PROJECT_STANDARDS.MD` (if available) and the nature of the request to identify and analyze these foundational aspects. The aim is to establish a solid structural understanding and address the most central aspects of component assembly and interaction first, before delving into more specific functional areas or peripheral components.
+    *   For subsequent sub-tasks, or for initially narrow user requests, the goal and scope are derived from the overall plan or specific user request. Complex sub-tasks are decomposed if necessary.
 3.  `[ ]` **Criticals Identified for Sub-Task:** Immediate ambiguities, missing information, or anticipated files/codebase areas relevant *to this specific sub-task* identified.
 4.  `[ ]` **Initial Context Acquired for Sub-Task:** For each critical file identified for this sub-task:
     *   `[ ]` `Procedure P1: Get File Context` invoked (with task_description tailored to this sub-task).
@@ -231,7 +233,9 @@ These mandates are absolute and govern all AI operations.
 4.  `[ ]` **Re-evaluation of Original Overarching User Prompt:**
     *   `[ ]` The AI *must* revisit the complete original user prompt (confirmed in Session Initialization 1.2) and its current understanding of the user's holistic goals.
     *   `[ ]` **Completeness Check**: Critically assess: "Are there explicit aspects or goals of the original overarching prompt that have *not* yet been addressed by any sub-task (completed, currently planned, or just identified)?"
-    *   `[ ]` **Emergent Discoveries & Implied Scope**: Evaluate: "Based on the work done in all sub-tasks so far (including the one just finalized) and the knowledge gained, are there *newly evident or implied* aspects of the original overarching prompt that now require attention or exploration to fully satisfy the user's likely intent?" (e.g., fixing one area reveals a related systemic issue; refactoring one module highlights broader inconsistencies relevant to the user's goal).
+    *   `[ ]` **Emergent Discoveries & Implied Scope**: Evaluate:
+            *   "Based on the work done in all sub-tasks so far (including the one just finalized) and the knowledge gained, are there *newly evident or implied* aspects of the original overarching prompt that now require attention or exploration to fully satisfy the user's likely intent?" (e.g., fixing one area reveals a related systemic issue; refactoring one module highlights broader inconsistencies relevant to the user's goal).
+            *   **"Specifically, after an initial architectural and core wiring review (if performed), has the functional completeness of key wired components been verified? Are there services or operations that were correctly wired but might still be placeholders or contain significant `NotImplementedError` sections or TODOs requiring implementation?"** This assessment should lead to defining new sub-tasks focused on "Verify and Complete Implementation of `[ComponentName]`" if necessary.
     *   `[ ]` **Impact Ripple & New Lines of Inquiry**: Consider: "Could the cumulative changes made, or insights gained from the latest sub-task, open up new, relevant lines of inquiry that are essential for fulfilling the original overarching prompt?"
 5.  `[ ]` **Decision on Further Action Based on Re-assessment:**
     *   `[ ]` **If Further Work Identified (New Sub-Tasks or Exploration Needed):**
