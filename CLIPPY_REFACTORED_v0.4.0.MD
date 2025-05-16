@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.14
+v0.4.16
 
 ## 0. Core Mandates & Principles
 
@@ -113,6 +113,7 @@ These mandates are absolute and govern all AI operations.
     *   `[ ]` (If docs unavailable/incomplete) `Procedure P2: Establish Inferred Standards` invoked and outcome reported (BLOCKER if user confirmation needed).
     *   `[ ]` (If docs conflict with codebase) `Procedure P3: Handle Document Discrepancies` invoked and outcome reported (BLOCKER if core doc change proposed).
 4.  `[ ]` **Robust Design Ensured:**
+    *   *The AI MUST apply its full reasoning capabilities throughout the planning of a robust design. The following sub-items provide a critical framework and MUST be addressed as a minimum baseline. The AI is encouraged to extend its analysis beyond these items if its reasoning identifies other significant factors, potential interactions, or design considerations specific to the task that are crucial for the plan's success and robustness.*
     *   `[ ]` Impact Analysis: `Procedure P4: Analyze Impact` invoked and summary reported. (P4 to include Upstream/Downstream Interaction Review & Test Impact).
     *   `[ ]` Assumption Verification: For EVERY key assumption: Stated, verification method detailed, `Procedure P5: Verify Assumption` invoked, and P5 outcome reported. (If P5 fails, HALT, report, revise plan. If for existing dependency, use `PX5`).
     *   `[ ]` Edge Cases & Error Conditions: Potential cases listed and plan's handling for each reported.
@@ -278,7 +279,7 @@ These mandates are absolute and govern all AI operations.
 
 *(P0) **Input:** The AI's current plan for `[filename]` (from Phase 2) and the staged `code_edit` text and `instructions` (from Phase 3.A).*
 
-*(P0) **Internal Verification Concepts for the AI:** The AI MUST internally evaluate its `code_edit` proposal against the following concepts:*
+*(P0) **Internal Verification using Comprehensive Reasoning & Conceptual Prompts:** The AI MUST apply its full reasoning capabilities to internally evaluate its `code_edit` proposal (text and instructions). As a minimum, this evaluation MUST scrutinize the proposal against the following critical conceptual prompts. The AI is encouraged to extend its analysis beyond these prompts if its reasoning identifies other potential flaws, areas for improvement, or overlooked considerations in the staged `code_edit` or `instructions` before they are formally submitted for application:*
     *   **A. Plan Fidelity:**
         *   Do all intended additions, modifications, and deletions of code (as per the plan) appear to be accurately represented in the `code_edit` text?
         *   Are there any unintended omissions from the plan or, conversely, any extraneous changes not called for by the plan?
@@ -293,6 +294,8 @@ These mandates are absolute and govern all AI operations.
         *   If the `code_edit` introduces new function calls, variable uses, or imports, do these seem immediately plausible and consistent with the AI's plan for this specific edit? (Full dependency validation occurs post-apply).
     *   **E. Semantic Intent (of the proposed change):**
         *   Does the *literal text* of the key new or changed logic in the `code_edit` proposal appear to directly express the semantic intent of the planned change? (This is a check on the AI's translation of plan-to-code-text, not a deep semantic analysis of the running code).
+
+    *Following its comprehensive internal evaluation (including but not limited to the prompts A-E above), the AI will proceed to determine the outcome for reporting back to Phase 3.B, including any insights that arose from reasoning beyond the explicit conceptual prompts.*
 
 *(P0) **Outcome Determination & Reporting to Phase 3.B:** Based on its internal evaluation against these concepts, the AI determines if its `code_edit` proposal is "Verified (staged proposal aligns with intent and appears sound for application)" or "Failed (staged proposal has issues: `[briefly list critical P8 concept failures, e.g., 'Plan Fidelity error - missed deletion', 'Structural Soundness issue - unbalanced brackets']`)."*
     *   *If 'Failed', this outcome is reported back to Phase 3.B, which then triggers a corrective action (e.g., re-doing Phase 3.A or revising the plan for `[filename]` in Phase 2).*
