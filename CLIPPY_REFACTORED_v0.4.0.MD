@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.2
+v0.4.3
 
 ## 0. Core Mandates & Principles
 
@@ -122,10 +122,10 @@ These mandates are absolute and govern all AI operations.
     *   `[ ]` Modularity & Coupling Assessment: Plan's impact on modularity and coupling assessed.
     *   `[ ]` Design for Testability: Plan considers how changes would be unit/integration tested.
     *   `[ ]` Configuration for New Features: Need for new configurable parameters (and their integration) assessed for new features.
-    *   `[ ]` **Refactoring Opportunities Identified:** (Optional) During analysis, were closely related areas of significant technical debt or obvious fragility noted that might be worth flagging for future improvement?
-    *   `[ ]` **Simplicity and YAGNI Adherence:** Is the proposed solution the simplest viable approach? Does it avoid unneeded complexity or features?
-    *   `[ ]` **Key Design Trade-offs Documented:** If the solution involves significant trade-offs, are these explicitly acknowledged and justified?
-    *   `[ ]` **Scalability/Extensibility Glance:** (Optional) Does the design have obvious limitations for future scalability if the feature grows?
+    *   `[ ]` Refactoring Opportunities Identified: (Optional) During analysis, were closely related areas of significant technical debt or obvious fragility noted that might be worth flagging for future improvement?
+    *   `[ ]` Simplicity and YAGNI Adherence: Is the proposed solution the simplest viable approach? Does it avoid unneeded complexity or features?
+    *   `[ ]` Key Design Trade-offs Documented: If the solution involves significant trade-offs, are these explicitly acknowledged and justified?
+    *   `[ ]` Scalability/Extensibility Glance: (Optional) Does the design have obvious limitations for future scalability if the feature grows?
 5.  `[ ]` **Planning Blockers Handled:**
     *   `[ ]` (If unclear root cause/missing info) `Procedure PX1` invoked and outcome reported (BLOCKER if needed).
     *   `[ ]` (If architectural decisions/conflicts) `Procedure PX2` invoked and outcome reported (BLOCKER needed).
@@ -178,19 +178,20 @@ These mandates are absolute and govern all AI operations.
         2.  If read needed: Report reason, perform `read_file`. Content is authoritative.
         3.  If no read needed: Report `edit_file` diff is authoritative. State confidence.
     ii. `[ ]` **Verify Against Intent & Standards (using authoritative state):**
-        *(Perform checks analogous to the `2.4.e.ii` checklist from original CLIPPY.MD, focusing on:*
-        *   Original issue resolved (if corrective).
-        *   **No Regressions:** Verify that core functionalities related to, but not directly part of the edit's primary goal, still appear to function as expected.
-        *   No new linter errors introduced by edit (on modified or dependent lines).
-        *   File state matches intended state.
-        *   No unintended structural changes.
-        *   Deviations from plan handled (`PX6` if necessary).
-        *   Dependencies in applied code verified (`P5`).
-        *   Semantic correctness of applied diff.
-        *   No unintended redundancy or leftover placeholders.
-        *   Logic preservation (if refactoring).
+        *The AI MUST holistically evaluate the applied edit by considering its impact and correctness across the following critical concepts. The substantive findings, particularly any failures, deviations, or critical confirmations related to these concepts, MUST be summarized in the 3.D.iii.1 report.*
+        *   **A. Issue Resolution:** Was the specific problem (if the edit was corrective) demonstrably addressed?
+        *   **B. Regressions & New Issues:** Were any existing functionalities inadvertently broken, or were new issues (e.g., linter errors, logical flaws, security vulnerabilities) introduced by the edit?
+        *   **C. Alignment with Intended State:** Does the authoritative file state accurately reflect the intended outcome of the edit as per the approved plan from Phase 2?
+        *   **D. Structural Integrity & Context Handling:** Were there any unintended structural changes (e.g., to signatures, indentation, scopes, block termination)? If `// ... existing code ...` or similar was used in the `code_edit` proposal, was it handled correctly by the edit application?
+        *   **E. Deviation Management:** Were all identified deviations between the applied edit and the original plan reviewed and appropriately handled (e.g., via `PX6`)?
+        *   **F. Dependency Validity & Impact:** Are all dependencies (e.g., imports, function calls, variable uses) in the *applied code* valid? Have their underlying assumptions been verified (e.g., via `P5` if new or `PX5` if existing and problematic)? Has the change impacted callers or callees as anticipated in P4?
+        *   **G. Semantic Correctness & Robustness:** Is the key logic within the *applied changes* semantically correct with the intended purpose and behavior? Does it handle relevant edge cases appropriately?
+        *   **H. Code Cleanliness & Readability:** Is the code free of unintended redundancy, leftover placeholders, diagnostic comments (unless explicitly planned), or other extraneous elements? Does it adhere to project styling and maintain/improve readability?
+        *   **I. Logic Preservation:** (If refactoring/replacing logic) Is the original logic demonstrably preserved, or are intentional changes justified, their impact understood, and (if significant) approved per `P6` (including interface contract stability)?
     iii.`[ ]` **Determine Outcome for `[filename]`:**
-        1.  Report: "**3.D: Post-Apply Verification Outcome for `[filename]`:** `[Pass / Fail / Pass with Deviations (handled)]`." Detail key findings.
+        1.  Report: "**3.D: Post-Apply Verification Outcome for `[filename]`:** `[Pass / Fail / Pass with Deviations (handled)]`.
+            **Key Verification Considerations & Findings (based on concepts A-I in 3.D.ii):**
+            `[The AI provides a concise summary focusing on the most relevant findings from its evaluation of concepts A through I. It should explicitly mention any failures, significant deviations, critical confirmations (e.g., "Original bug confirmed fixed by re-running test X"), or areas where the edit performed particularly well or had notable implications. Trivial passes for concepts with no issues can be omitted or briefly grouped, e.g., "Concepts C, D, H were verified with no issues."]`
         2.  **If 'Fail':**
             *   Report: "Self-correction triggered for `[filename]` due to `[reason]`." (Include specific error/location if from tool).
             *   Devise and attempt corrective action (e.g., minimal `edit_file`, re-plan snippet for this file, `reapply`).
