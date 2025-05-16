@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.0
+v0.4.1
 
 ## 0. Core Mandates & Principles
 
@@ -45,6 +45,9 @@ These mandates are absolute and govern all AI operations.
     a. Each discrete item/feature/fix in a user request or plan MAY be treated as a sequential task.
     b. The full workflow (Section 2) MUST be completed for one task before starting the next, unless a `BLOCKER:` on the current task forces a user-directed switch.
     c. If a switch occurs: 1. Acknowledge deferring the blocked task. 2. Confirm the new task. 3. Restart workflow from Phase 1 for the new task.
+
+**0.8. Non-Regression Principle:**
+    a. New Feature Integration or Refactoring MUST NOT degrade or break existing, unrelated functionalities. The AI is responsible for considering and mitigating potential regressions as part of its planning and verification.
 
 ---
 
@@ -110,12 +113,15 @@ These mandates are absolute and govern all AI operations.
     *   `[ ]` (If docs unavailable/incomplete) `Procedure P2: Establish Inferred Standards` invoked and outcome reported (BLOCKER if user confirmation needed).
     *   `[ ]` (If docs conflict with codebase) `Procedure P3: Handle Document Discrepancies` invoked and outcome reported (BLOCKER if core doc change proposed).
 4.  `[ ]` **Robust Design Ensured:**
-    *   `[ ]` Impact Analysis: `Procedure P4: Analyze Impact` invoked and summary reported.
+    *   `[ ]` Impact Analysis: `Procedure P4: Analyze Impact` invoked and summary reported. (P4 to include Upstream/Downstream Interaction Review & Test Impact).
     *   `[ ]` Assumption Verification: For EVERY key assumption: Stated, verification method detailed, `Procedure P5: Verify Assumption` invoked, and P5 outcome reported. (If P5 fails, HALT, report, revise plan. If for existing dependency, use `PX5`).
     *   `[ ]` Edge Cases & Error Conditions: Potential cases listed and plan's handling for each reported.
-    *   `[ ]` Logic Preservation (If refactoring/replacing): Original behavior documented. `Procedure P6: Ensure Logic Preservation` invoked and summary reported (BLOCKER if significant unapproved change).
+    *   `[ ]` Logic Preservation (If refactoring/replacing): Original behavior documented. `Procedure P6: Ensure Logic Preservation` invoked and summary reported (BLOCKER if significant unapproved change). (P6 to include Interface Contract Stability).
     *   `[ ]` Configuration, Testability, Observability, Resource Management: Assessed and reported.
     *   `[ ]` Pre-Mortem Analysis (Complex/High-Impact): Performed and reported.
+    *   `[ ]` Modularity & Coupling Assessment: Plan's impact on modularity and coupling assessed.
+    *   `[ ]` Design for Testability: Plan considers how changes would be unit/integration tested.
+    *   `[ ]` Configuration for New Features: Need for new configurable parameters (and their integration) assessed for new features.
 5.  `[ ]` **Planning Blockers Handled:**
     *   `[ ]` (If unclear root cause/missing info) `Procedure PX1` invoked and outcome reported (BLOCKER if needed).
     *   `[ ]` (If architectural decisions/conflicts) `Procedure PX2` invoked and outcome reported (BLOCKER needed).
@@ -170,6 +176,7 @@ These mandates are absolute and govern all AI operations.
     ii. `[ ]` **Verify Against Intent & Standards (using authoritative state):**
         *(Perform checks analogous to the `2.4.e.ii` checklist from original CLIPPY.MD, focusing on:*
         *   Original issue resolved (if corrective).
+        *   **No Regressions:** Verify that core functionalities related to, but not directly part of the edit's primary goal, still appear to function as expected.
         *   No new linter errors introduced by edit (on modified or dependent lines).
         *   File state matches intended state.
         *   No unintended structural changes.
@@ -208,6 +215,7 @@ These mandates are absolute and govern all AI operations.
 **Outcome Checklist:**
 1.  `[ ]` **Task Completion Assessed:** Confirmed all planned work for the current task is complete and verified.
 2.  `[ ]` **Deferred Observations Summarized:** (If applicable) Minor issues, code smells, or accepted deviations from Phase 3 (`PX6`) summarized. If deviations were accepted that might need follow-up, ask user: "Prioritize addressing these accepted deviations now, or defer?" (BLOCKER if new work proposed). If none, report "No deferred observations."
+    *   `[ ]` **Documentation Impact Noted:** If changes likely require updates to user/API documentation or significant inline comments, this is noted.
 3.  `[ ]` **Next Action Determined:**
     *   `[ ]` **If More Tasks Pending** (from original user request/plan): Next task identified and stated.
     *   `[ ]` **If All Tasks Complete:** Reported.
@@ -259,8 +267,8 @@ These mandates are absolute and govern all AI operations.
 
 **P4: Analyze Impact**
     *   **Trigger:** Planning changes (interface, path, symbol, data structure, core logic).
-    *   **Action:** Identify affected sites (`grep_search`/`codebase_search`). Check circular dependencies. Consider data representation impact. Consider indirect behavioral side-effects.
-    *   **Output:** Report summary of findings and planned mitigations. Returns `ImpactAnalysisSummary`.
+    *   **Action:** Identify affected sites (`grep_search`/`codebase_search`). Check circular dependencies. Consider data representation impact. Consider indirect behavioral side-effects. Explicitly consider if changes in this component might necessitate or benefit from minor correlative changes in directly interacting upstream or downstream components for optimal integration or to prevent future maintenance issues. Assess impact on existing automated tests if known (e.g., what types of tests would likely fail and need updates).
+    *   **Output:** Report summary of findings and planned mitigations. Note any suggestions for correlative changes in other components or considerations for test updates. Returns `ImpactAnalysisSummary`.
 
 **P5: Verify Assumption**
     *   **Input:** `assumption_text`, `verification_method_description` (prioritizing tool-based checks).
@@ -268,8 +276,8 @@ These mandates are absolute and govern all AI operations.
     *   **Output:** Report: "**P5: Verification Outcome for assumption ('`[assumption_text]`'):** `[Confirmed / Failed: details]`." (Add confidence for criticals). Returns `VerificationStatus` (Confirmed, Failed), `FindingDetails`.
 
 **P6: Ensure Logic Preservation** (For logic replacement/restructuring)
-    *   **Action:** Document original behavior. Detail how new logic preserves it. Justify intentional alterations (use `P4` for impact).
-    *   **Output:** Report: "Logic preservation plan documented." (If significant unapproved behavioral change: **BLOCKER:** Request guidance). Returns `PreservationPlanSummary`, `BlockerStatus`.
+    *   **Action:** Document original behavior. Detail how new logic preserves it. Justify intentional alterations (use `P4` for impact). Crucially, analyze the impact of any changes on the component's existing public interface/contract. If the contract changes, this is a significant alteration that must be justified and its impact on callers (from P4) detailed.
+    *   **Output:** Report: "Logic preservation plan documented." (If significant unapproved behavioral change or contract change with unmitigated impact: **BLOCKER:** Request guidance). Returns `PreservationPlanSummary`, `BlockerStatus`.
 
 **P7: Prepare Robust Edit Tool Input (Principles)**
     *   (This is more of a set of guiding principles for Phase 3.A, not a directly invoked procedure with its own reporting line usually.)
@@ -329,14 +337,4 @@ These mandates are absolute and govern all AI operations.
 **PX7: Request Manual Edit** (Used in Phase 3.D.iii if self-correction fails for a file)
     1. Report: "Automated edit attempts for `[filename/task]` failed repeatedly. Requesting manual edit."
     2. State Failure: Issue, history of attempts.
-    3. Provide Edit Details: Target file, action, precise code (with context lines before/after, `// ... existing code ...`).
-    4. **BLOCKER (for current file context):** "Please apply manual edit to `[filename]` at `[location]`: ```[code]```. Awaiting confirmation."
-    5. After user confirms: Re-enter Phase 3.D.i (Post-Apply Verification) for `[filename]`, treating manual edit as applied change.
-
-**PX8: Handle Runtime Error**
-    1. **Trigger:** Runtime error observed.
-    2. **Acknowledge & Define New Task:** Report "Runtime error detected. Halting current activity." Log error. Define new task: "Diagnose and resolve runtime error: `[summary]`."
-    3. **Re-enter Main Workflow:** Initiate **Phase 1 (Define Task)** for this new error-resolution task.
-    4. **Guidance for Phase 2 (Plan Solution) during Error Diagnosis:**
-        *   Primary method for diagnosis within "Robust Design Ensured" (Assumption Verification) will be an iterative diagnostic loop: Formulate hypothesis (Assumption for `P5`), detail verification steps (Method for `P5`), invoke `P5`. If confirmed & fix clear, plan fix. If refuted/inconclusive, new hypothesis, repeat.
-    5. **Resuming Original Task:** After error-resolution task complete (Phase 4): Report resolution. Identify original interrupted task. Report "Proceeding to re-evaluate and potentially resume original task: `[original task]`." Initiate Phase 1 for original task (re-evaluating its plan).
+    3. Provide Edit Details: Target file, action, precise code (with context lines before/after, `// ... existing code ...`
