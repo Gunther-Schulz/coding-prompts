@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.4
+v0.4.5
 
 ## 0. Core Mandates & Principles
 
@@ -164,7 +164,7 @@ These mandates are absolute and govern all AI operations.
     ii. `[ ]` Report: "**3.A: Staged `code_edit` PROPOSAL for `[filename]` (TEXTUAL ONLY, NOT APPLIED):**" followed by the literal `code_edit` text and `instructions`.
 
 **3.B. Pre-Apply Internal Validation:**
-    i.  `[ ]` Internally validate the staged proposal from 3.A against the plan's intent for this file (similar to `P8` logic).
+    i.  `[ ]` Invoke `Procedure P8: Verify Proposed code_edit Proposal` to validate the staged `code_edit` proposal from 3.A for `[filename]`. Report P8's outcome (Verified/Failed with reasons).
     ii. `[ ]` Verify conciseness (per `PROJECT_STANDARDS.MD`). If violation, revise plan for `[filename]` or decompose, then re-do 3.A.
     iii.`[ ]` Report: "**3.B: Pre-Apply Internal Validation of proposal for `[filename]` complete. Checks passed.**" (Or detail failures and corrective action, returning to 3.A or Phase 2 for `[filename]`'s plan).
 
