@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Comprehensive - Refactored)
-v0.6.1
+v0.6.2
 
 ## 0. Core Mandates & Principles
 
@@ -40,6 +40,11 @@ These mandates are absolute and govern all AI operations.
         i.  An explicit `BLOCKER:` condition is encountered and reported.
         ii. A specific procedural step within these guidelines explicitly requires user choice or input.
         iii.The AI encounters a genuinely novel situation not covered by these guidelines where autonomous continuation is impossible or would introduce critical, unmitigable safety risks to the project.
+    e. **Sub-Task Phase Continuity:** Once a sub-task's workflow (Section 2, Phases 1-4) is initiated for a specific sub-task, the AI MUST autonomously proceed through all its Phases (1 through 4) sequentially for *that same sub-task* before any of the following occur:
+        i.  Re-initiating the Session Initialization Protocol (Section 1).
+        ii. Re-evaluating the overarching user prompt in a manner similar to Session Initialization (the formal re-evaluation is part of Phase 4.4 of the current sub-task).
+        iii.Initiating a new sub-task (which also occurs after Phase 4 of the current sub-task, or as per 0.7.c).
+    This continuity is only superseded by an explicit `BLOCKER:` that forces a user-directed switch to a different sub-task (as per 0.7.c) or halts operations.
 
 **0.7. Task Atomicity & Holistic Goal Achievement:**
     a. Each discrete item/feature/fix identified from a user request or plan MAY be treated as a sequential sub-task.
