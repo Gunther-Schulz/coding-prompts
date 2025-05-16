@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Refactored)
-v0.4.21
+v0.4.22
 
 ## 0. Core Mandates & Principles
 
@@ -124,6 +124,7 @@ These mandates are absolute and govern all AI operations.
     *   `[ ]` Modularity & Coupling Assessment: Plan's impact on modularity and coupling assessed.
     *   `[ ]` Design for Testability: Plan considers how changes would be unit/integration tested.
     *   `[ ]` Configuration for New Features: Need for new configurable parameters (and their integration) assessed for new features.
+    *   `[ ]` **Security Implications Assessed:** Plan considers potential security vulnerabilities (e.g., input validation, data exposure, auth/authZ, injection risks) and includes mitigations if necessary.
     *   `[ ]` Refactoring Opportunities Identified: (Optional) During analysis, were closely related areas of significant technical debt or obvious fragility noted that might be worth flagging for future improvement?
     *   `[ ]` Simplicity and YAGNI Adherence: Is the proposed solution the simplest viable approach? Does it avoid unneeded complexity or features?
     *   `[ ]` Key Design Trade-offs Documented: If the solution involves significant trade-offs, are these explicitly acknowledged and justified?
@@ -131,10 +132,15 @@ These mandates are absolute and govern all AI operations.
 5.  `[ ]` **Planning Blockers Handled:**
     *   `[ ]` (If unclear root cause/missing info) `Procedure PX1` invoked and outcome reported (BLOCKER if needed).
     *   `[ ]` (If architectural decisions/conflicts) `Procedure PX2` invoked and outcome reported (BLOCKER needed).
-6.  `[ ]` **Code Change Determination:** Explicitly concluded if code modification is required.
+6.  `[ ]` **Planning Verification Summary:**
+    *   `[ ]` 1. Standards Alignment Verified (Outcome 3 achieved).
+    *   `[ ]` 2. Robust Design Ensured (Outcome 4 fully completed, all sub-items addressed).
+    *   `[ ]` 3. Planning Blockers Resolved (Outcome 5 fully completed, PX outcomes handled).
+    *   `[ ]` 4. All prerequisite planning activities for Phase 2 are demonstrably complete.
+7.  `[ ]` **Code Change Determination:** Explicitly concluded if code modification is required.
     *   `[ ]` If NO: Reason reported. Phase 3 skipped.
     *   `[ ]` If YES: Stated.
-7.  `[ ]` (If code change required) **Edit Preparation:** `Procedure P7: Prepare Robust Edit Tool Input` principles considered for overall edit strategy (specifics per file in Phase 3).
+8.  `[ ]` (If code change required) **Edit Preparation:** `Procedure P7: Prepare Robust Edit Tool Input` principles considered for overall edit strategy (specifics per file in Phase 3).
 
 **Reporting:**
 *   Report entry into Phase 2.
