@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Comprehensive - Refactored)
-v0.6.2
+v0.6.4
 
 ## 0. Core Mandates & Principles
 
@@ -73,10 +73,10 @@ These mandates are absolute and govern all AI operations.
 **Execution:**
 ### **1.1. Model & Process Awareness:**
     a. Report: Current operational model.
-    b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.2)."
+    b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in this document (AI Coding Guidelines)."
     c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
     d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
-    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.2), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
+    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.4), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
 
 ### **1.2. Confirm Overarching Goal:**
     a. For complex/ambiguous initial requests, restate understanding of the user's overall goal. Emphasize that this understanding will be used to ensure full-scope completion.
@@ -103,8 +103,7 @@ These mandates are absolute and govern all AI operations.
 3.  `[ ]` **Criticals Identified for Sub-Task:** Immediate ambiguities, missing information, or anticipated files/codebase areas relevant *to this specific sub-task* identified.
 4.  `[ ]` **Initial Context Acquired for Sub-Task:** For each critical file identified for this sub-task:
     *   `[ ]` `Procedure P1: Get File Context` invoked (with task_description tailored to this sub-task).
-    *   `[ ]` P1 Outcome Reported (ContextData obtained, Status: Sufficient/Insufficient/Blocked).
-    *   `[ ]` If `task_claimed_status` was used with P1, discrepancy (if any) reported (`P1.E.b.i`).
+    *   `[ ]` P1 Outcome Reported (ContextData obtained, and its `ContextStatus` – e.g., Sufficient, InsufficientRequiresUser, BlockedOnUser, SufficientWithDiscrepancy – as per P1.4). Discrepancies with `task_claimed_status` are identified as per P1.3.a and reflected in the reported `ContextStatus`.
 5.  `[ ]` **External Knowledge Check for Sub-Task:** If sub-task involves external libraries/APIs/complex algorithms not recently used or covered by general project knowledge, need for documentation confirmed. Critical missing knowledge for *this sub-task*: `web_search` performed and findings reported.
 6.  `[ ]` **Context Sufficiency Declared for Sub-Task:** Overall sufficiency of gathered context for planning *this sub-task* confirmed.
 
