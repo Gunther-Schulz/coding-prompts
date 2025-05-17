@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Comprehensive - Refactored)
-v0.6.4
+v0.6.5
 
 ## 0. Core Mandates & Principles
 
@@ -76,7 +76,7 @@ These mandates are absolute and govern all AI operations.
     b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in this document (AI Coding Guidelines)."
     c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
     d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
-    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.4), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
+    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
 
 ### **1.2. Confirm Overarching Goal:**
     a. For complex/ambiguous initial requests, restate understanding of the user's overall goal. Emphasize that this understanding will be used to ensure full-scope completion.
@@ -99,7 +99,7 @@ These mandates are absolute and govern all AI operations.
 1.  `[ ]` **Active Blocker Check:** Assessed and reported (HALT if active blockers persist from session init or previous task).
 2.  `[ ]` **Sub-Task Definition:** Current sub-task's specific goal and scope clearly stated (derived from overall plan or user request).
     *   *Guidance for Broad Prompts:* If the overarching user prompt is for a "full deep dive investigation," "integration review," or similar broad architectural assessment, the AI should prioritize defining initial sub-task(s) that collectively ensure a comprehensive review of the application's core architectural elements and their interplay. The AI must use `PROJECT_ARCHITECTURE.MD` and `PROJECT_STANDARDS.MD` (if available) and the nature of the request to identify and analyze these foundational aspects. The aim is to establish a solid structural understanding and address the most central aspects of component assembly and interaction first, before delving into more specific functional areas or peripheral components.
-    *   For subsequent sub-tasks, or for initially narrow user requests, the goal and scope are derived from the overall plan or specific user request. Complex sub-tasks are decomposed if necessary.
+    *   For subsequent sub-tasks, or for initially narrow user requests, the goal and scope are derived from the overall plan or specific user request. Complex sub-tasks are decomposed if necessary. *When decomposing large features, sub-tasks should be designed, as much as possible, to be incrementally integrable. This means aiming for each sub-task completion (after its Phase 3 and P10) to leave the system in a more complete and verifiably stable state, minimizing scenarios where critical integrations remain partially implemented and untestable until many subsequent sub-tasks are finished. The re-assessment in Phase 4 should consider if the current state represents a stable integration point.*
 3.  `[ ]` **Criticals Identified for Sub-Task:** Immediate ambiguities, missing information, or anticipated files/codebase areas relevant *to this specific sub-task* identified.
 4.  `[ ]` **Initial Context Acquired for Sub-Task:** For each critical file identified for this sub-task:
     *   `[ ]` `Procedure P1: Get File Context` invoked (with task_description tailored to this sub-task).
@@ -132,7 +132,7 @@ These mandates are absolute and govern all AI operations.
     *   `[ ]` Logic Preservation (If refactoring/replacing in sub-task): Original behavior documented for affected scope. `Procedure P6: Ensure Logic Preservation` invoked and summary reported (BLOCKER if significant unapproved change in sub-task scope). (P6 to include Interface Contract Stability for affected interfaces).
     *   `[ ]` Data Integrity by Design (Sub-Task Specific): Plan specifies data input validation, handling for missing/null/malformed/unexpected data relevant to sub-task scope, and all necessary default values explicitly defined and justified.
     *   `[ ]` Configuration, Testability, Observability, Resource Management (Sub-Task Specific): Assessed and reported for changes within the sub-task.
-    *   `[ ]` Pre-Mortem Analysis (For Complex/High-Impact Sub-Tasks): Performed and reported.
+    *   `[ ]` Pre-Mortem Analysis (For Complex/High-Impact Sub-Tasks): Performed and reported. *For sub-tasks identified as having high integration risk (e.g., involving multiple modules, core services, or complex external interactions), this analysis must explicitly list the top 3-5 ways the integration of these components could fail and detail how the plan (including P4, P9, and P10 strategies) will specifically mitigate or check for these potential failure modes.*
     *   `[ ]` Modularity & Coupling Assessment (Sub-Task Specific): Plan's impact on modularity and coupling for components affected by the sub-task assessed.
     *   `[ ]` Design for Testability (Sub-Task Specific): Plan considers how changes within the sub-task would be unit/integration tested.
     *   `[ ]` Configuration for New Features (Sub-Task Specific): Need for new configurable parameters for features within the sub-task assessed.
@@ -340,8 +340,14 @@ These mandates are absolute and govern all AI operations.
 
 **P4: Analyze Impact**
     *   **Trigger:** Planning changes (interface, path, symbol, data structure, core logic).
-    *   **Action:** Identify affected sites (`grep_search`/`codebase_search`). Check circular dependencies. Consider data representation impact. Consider indirect behavioral side-effects. Explicitly consider if changes in this component might necessitate or benefit from minor correlative changes in directly interacting upstream or downstream components for optimal integration or to prevent future maintenance issues. Assess impact on existing automated tests if known (e.g., what types of tests would likely fail and need updates).
-    *   **Output:** Report summary of findings and planned mitigations. Note any suggestions for correlative changes in other components or considerations for test updates. Returns `ImpactAnalysisSummary`.
+    *   **Action:**
+        *   Identify affected sites (`grep_search`/`codebase_search`).
+        *   Check circular dependencies.
+        *   Consider data representation impact.
+        *   Consider indirect behavioral side-effects.
+        *   Explicitly consider if changes in this component might necessitate or benefit from minor correlative changes in directly interacting upstream or downstream components for optimal integration or to prevent future maintenance issues. This involves mapping out key interaction points: for each identified interaction, detail the expected inputs, outputs, behaviors, and error handling propagation between the components.
+        *   Assess impact on existing automated tests if known (e.g., what types of tests would likely fail and need updates).
+    *   **Output:** Report summary of findings and planned mitigations. The report MUST explicitly include a "map of interactions" detailing the identified cross-file/cross-module dependencies, interaction points, and the expected behavior of these interactions. Note any suggestions for correlative changes in other components or considerations for test updates. Returns `ImpactAnalysisSummary` (which now includes the detailed map of interactions).
 
 **P5: Verify Assumption**
     *   **Input:** `assumption_text`, `verification_method_description` (prioritizing tool-based checks).
@@ -447,9 +453,9 @@ These mandates are absolute and govern all AI operations.
             iii.Shared data stores, resources, or configurations impacted by the changes in this sub-task.
         c.  Identify key system-level use cases, critical workflows, or end-to-end functionalities that are likely affected by the cumulative changes of this sub-task.
 
-    *(P0) **P10.2: Perform Integration Analysis (for Sub-Task - Proportional Depth - See 0.9):** The AI MUST apply its full reasoning capabilities to analyze the integrated behavior of the sub-task's changes within the context of the larger system, applying depth proportional to the sub-task's complexity and risk. This involves reviewing the changes not in isolation, but as a collective set of modifications interacting with existing, unmodified parts of the system. Consider at least:*
-        a.  **Interface Consistency & Contracts:** Are all modified interfaces (within sub-task scope) still consistent? Are the expectations of their primary consumers still met? Have any implicit contracts been inadvertently violated by the sum of changes in this sub-task?
-        b.  **Data Flow Integrity (End-to-End for Sub-Task Impact):** Trace key data flows initiated or affected by the sub-task. Are data transformations correct? Is data handed off in the expected format?
+    *(P0) **P10.2: Perform Integration Analysis (for Sub-Task - Proportional Depth - See 0.9):** The AI MUST apply its full reasoning capabilities to analyze the integrated behavior of the sub-task's changes within the context of the larger system, applying depth proportional to the sub-task's complexity and risk. This involves reviewing the changes not in isolation, but as a collective set of modifications interacting with existing, unmodified parts of the system. The AI should outline specific scenarios or data flows it will trace (mentally or using tools if available and safe) across the modified components and their key interactors. Consider at least:
+        a.  **Interface Consistency & Contracts:** Are all modified interfaces (within sub-task scope) still consistent? Are the expectations of their primary consumers (as potentially detailed in P4's "map of interactions") still met? Have any implicit contracts been inadvertently violated by the sum of changes in this sub-task? For every key interaction point identified in P4 or P10.1, the AI must explicitly report on how each side of the "integration contract" (expected inputs, outputs, behaviors, error handling) is being met by the implemented changes.
+        b.  **Data Flow Integrity (End-to-End for Sub-Task Impact):** Trace key data flows initiated or affected by the sub-task, particularly those identified in P4. Are data transformations correct? Is data handed off in the expected format? Is the integrity of shared data structures maintained across modules involved in the sub-task?
         c.  **Control Flow Cohesion (Cross-Component for Sub-Task Impact):** Review the control flow between modified components and their collaborators relevant to this sub-task. Are signals, events, or calls sequenced correctly?
         d.  **Error Handling Propagation & System Resilience (Sub-Task Impact):** How do errors originating in one modified component (within sub-task) propagate or affect related components or the system?
         e.  **Emergent Behavior & Unintended Consequences (from Sub-Task):** Are there any unexpected emergent behaviors resulting from the combination of changes in this sub-task?
@@ -461,12 +467,13 @@ These mandates are absolute and govern all AI operations.
         a.  Based on the comprehensive analysis in P10.2, determine the overall integration status for the completed sub-task: `Integration Verified` or `Issues Found`.
         b.  If `Issues Found`, provide a clear, actionable description of each integration issue related to this sub-task. This description should include:
             i.  The nature of the problem.
-            ii. The components, interfaces, or interactions involved.
+            ii. The components, interfaces, or interactions involved (referencing P4's map where applicable).
             iii.The potential impact on the system or user.
             iv. (If discernible) Suggested areas for investigation or types of corrective action (which might form new sub-tasks).
+        c.  The AI must explicitly report what integration points were checked, how they were checked (e.g., scenario traced, contract verified), and the results for each, not just a summary statement.
 
-    *   **Output:** Report: "**P10 (Sub-Task: `[Sub-Task Name]`): Task-Level Integration Review Outcome:** `[Integration Verified / Issues Found: (with details for each issue as per P10.3.b)]`."
-    *   **Returns:** `IntegrationReviewStatus` (Verified, IssuesFound), `IssueDetailsList` (structured information for each issue found).
+    *   **Output:** Report: "**P10 (Sub-Task: `[Sub-Task Name]`): Task-Level Integration Review Outcome:** `[Integration Verified / Issues Found: (with details for each issue as per P10.3.b and explicit check details as per P10.3.c)]`."
+    *   **Returns:** `IntegrationReviewStatus` (Verified, IssuesFound), `IssueDetailsList` (structured information for each issue found, including check details).
 
 ---
 
