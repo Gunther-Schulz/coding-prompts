@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Comprehensive - Refactored)
-v0.6.5
+v0.6.6
 
 ## 0. Core Mandates & Principles
 
@@ -73,10 +73,10 @@ These mandates are absolute and govern all AI operations.
 **Execution:**
 ### **1.1. Model & Process Awareness:**
     a. Report: Current operational model.
-    b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in this document (AI Coding Guidelines)."
+    b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.6)."
     c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
     d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
-    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
+    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.6), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
 
 ### **1.2. Confirm Overarching Goal:**
     a. For complex/ambiguous initial requests, restate understanding of the user's overall goal. Emphasize that this understanding will be used to ensure full-scope completion.
@@ -99,7 +99,12 @@ These mandates are absolute and govern all AI operations.
 1.  `[ ]` **Active Blocker Check:** Assessed and reported (HALT if active blockers persist from session init or previous task).
 2.  `[ ]` **Sub-Task Definition:** Current sub-task's specific goal and scope clearly stated (derived from overall plan or user request).
     *   *Guidance for Broad Prompts:* If the overarching user prompt is for a "full deep dive investigation," "integration review," or similar broad architectural assessment, the AI should prioritize defining initial sub-task(s) that collectively ensure a comprehensive review of the application's core architectural elements and their interplay. The AI must use `PROJECT_ARCHITECTURE.MD` and `PROJECT_STANDARDS.MD` (if available) and the nature of the request to identify and analyze these foundational aspects. The aim is to establish a solid structural understanding and address the most central aspects of component assembly and interaction first, before delving into more specific functional areas or peripheral components.
-    *   For subsequent sub-tasks, or for initially narrow user requests, the goal and scope are derived from the overall plan or specific user request. Complex sub-tasks are decomposed if necessary. *When decomposing large features, sub-tasks should be designed, as much as possible, to be incrementally integrable. This means aiming for each sub-task completion (after its Phase 3 and P10) to leave the system in a more complete and verifiably stable state, minimizing scenarios where critical integrations remain partially implemented and untestable until many subsequent sub-tasks are finished. The re-assessment in Phase 4 should consider if the current state represents a stable integration point.*
+    *   For subsequent sub-tasks, or for initially narrow user requests, the goal and scope are derived from the overall plan or specific user request. Complex sub-tasks are decomposed if necessary. When decomposing, *consider strategies such as:*
+        *   *   **Vertical Slicing:** Defining sub-tasks that implement a thin, end-to-end piece of the feature, allowing early integration and testing of a complete (though minimal) workflow.*
+        *   *   **Interface-First Development:** Prioritizing sub-tasks that establish and verify stable interfaces or contracts between major components/modules before fully implementing the internal logic of each.*
+        *   *   **Dependency-Driven Ordering:** Identifying core components with minimal dependencies and tackling them as initial sub-tasks, then layering more dependent components in subsequent sub-tasks.*
+        *   *   **Risk-Based Prioritization:** Addressing sub-tasks that involve the highest technical risk or the most critical integration points early to validate architectural choices and feasibility.*
+    *When decomposing large features, sub-tasks should be designed, as much as possible, to be incrementally integrable. This means aiming for each sub-task completion (after its Phase 3 and P10) to leave the system in a more complete and verifiably stable state, minimizing scenarios where critical integrations remain partially implemented and untestable until many subsequent sub-tasks are finished. The re-assessment in Phase 4 should consider if the current state represents a stable integration point.*
 3.  `[ ]` **Criticals Identified for Sub-Task:** Immediate ambiguities, missing information, or anticipated files/codebase areas relevant *to this specific sub-task* identified.
 4.  `[ ]` **Initial Context Acquired for Sub-Task:** For each critical file identified for this sub-task:
     *   `[ ]` `Procedure P1: Get File Context` invoked (with task_description tailored to this sub-task).
@@ -350,200 +355,4 @@ These mandates are absolute and govern all AI operations.
     *   **Output:** Report summary of findings and planned mitigations. The report MUST explicitly include a "map of interactions" detailing the identified cross-file/cross-module dependencies, interaction points, and the expected behavior of these interactions. Note any suggestions for correlative changes in other components or considerations for test updates. Returns `ImpactAnalysisSummary` (which now includes the detailed map of interactions).
 
 **P5: Verify Assumption**
-    *   **Input:** `assumption_text`, `verification_method_description` (prioritizing tool-based checks).
-    *   **Action:** Execute verification method.
-    *   **Output:** Report: "**P5: Verification Outcome for assumption ('`[assumption_text]`'):** `[Confirmed / Failed: details]`." (Add confidence for criticals). Returns `VerificationStatus` (Confirmed, Failed), `FindingDetails`.
-
-**P6: Ensure Logic Preservation** (For logic replacement/restructuring)
-    *   **Action:** Document original behavior. Detail how new logic preserves it. Justify intentional alterations (use `P4` for impact). Crucially, analyze the impact of any changes on the component's existing public interface/contract. If the contract changes, this is a significant alteration that must be justified and its impact on callers (from P4) detailed.
-    *   **Output:** Report: "Logic preservation plan documented." (If significant unapproved behavioral change or contract change with unmitigated impact: **BLOCKER:** Request guidance). Returns `PreservationPlanSummary`, `BlockerStatus`.
-
-**P7: Prepare Robust Edit Tool Input (Principles)**
-    *   **`instructions` field:** Primary action (add, modify, replace, delete). Critical unchanged sections for anchoring or structural explanations.
-    *   **`code_edit` field:** Sufficient context lines. For complex/sensitive edits or large block movements, consider entire surrounding logical block. Deprecated code removed.
-
-**P8: Verify Proposed `code_edit` Proposal**
-*(This procedure is invoked by Phase 3.B to internally validate the AI's own staged `code_edit` text against its plan before calling the `edit_file` tool. It focuses on the fidelity of the proposal to the AI's immediate intent for the edit tool.)*
-
-*(P0) **P8.1: Define Proposal Under Review:***
-    a.  The subject for verification is the AI's current plan for `[filename]` (from Phase 2) and the specific staged `code_edit` text and `instructions` prepared in Phase 3.A for `[filename]`.
-
-*(P0) **P8.2: Perform Internal Verification using Comprehensive Reasoning & Conceptual Prompts:** The AI MUST apply its full reasoning capabilities to internally evaluate its `code_edit` proposal (text and instructions from P8.1.a). As a minimum, this evaluation MUST scrutinize the proposal against the following critical conceptual prompts. The AI is encouraged to extend its analysis beyond these prompts if its reasoning identifies other potential flaws, areas for improvement, or overlooked considerations in the staged `code_edit` or `instructions` before they are formally submitted for application:*
-    *   **A. Plan Fidelity:**
-        *   Do all intended additions, modifications, and deletions of code (as per the plan) appear to be accurately represented in the `code_edit` text?
-        *   Are there any unintended omissions from the plan or, conversely, any extraneous changes not called for by the plan?
-    *   **B. Structural Soundness (of the proposed diff):**
-        *   Does the `code_edit` text itself appear structurally sound (e.g., balanced parentheses/brackets, correct quoting, basic syntax of the language for the changed lines)?
-        *   Does it propose any obviously malformed structures or suggest it would cause major unintended structural breaks in the surrounding code if applied?
-    *   **C. Context & Anchor Integrity:**
-        *   Are the `// ... existing code ...` comments (if used) placed appropriately to represent unchanged code sections accurately?
-        *   Are the surrounding context lines (if provided in the `code_edit`) correct and sufficient to ensure the edit applies at the intended location?
-        *   Do the `instructions` for the `edit_file` tool clearly and correctly specify the anchoring or target for the change?
-    *   **D. Plausibility of Immediate Dependencies:**
-        *   If the `code_edit` introduces new function calls, variable uses, or imports, do these seem immediately plausible and consistent with the AI's plan for this specific edit? (Full dependency validation occurs post-apply).
-    *   **E. Semantic Intent (of the proposed change):**
-        *   Does the *literal text* of the key new or changed logic in the `code_edit` proposal appear to directly express the semantic intent of the planned change? (This is a check on the AI's translation of plan-to-code-text, not a deep semantic analysis of the running code).
-
-    *Following its comprehensive internal evaluation (including but not limited to the prompts A-E above), the AI will proceed to P8.3 to determine the outcome for reporting back to Phase 3.B, including any insights that arose from reasoning beyond the explicit conceptual prompts.*
-
-*(P0) **P8.3: Determine Outcome & Report to Phase 3.B:***
-    a.  Based on its internal evaluation (from P8.2), the AI determines the overall outcome for its staged `code_edit` proposal: "Verified (staged proposal aligns with intent and appears sound for application)" or "Failed (staged proposal has issues)".
-    b.  A summary of internal verification findings MUST be prepared. This summary MUST explicitly list:
-        i.  The outcome for **EACH** conceptual prompt (A-E) from P8.2.
-            *   For conceptual prompts that revealed issues in the staged `code_edit` or `instructions`, details of these issues MUST be provided (e.g., "P8.2.A Plan Fidelity: Failed - missed deletion of X", "P8.2.B Structural Soundness: Failed - unbalanced brackets in new Y block").
-            *   For conceptual prompts that passed without special note, a simple "Pass" or "Verified" status is sufficient for that item.
-            *   If a P8.2 concept was not applicable for a very simple proposal, it can be noted as "Not Applicable."
-        ii. A statement on whether any **extended analysis beyond prompts A-E** (as encouraged in P8.2's preamble) was performed and, if so, a brief summary of any additional potential flaws or improvements identified in the staged proposal. (e.g., "No additional considerations beyond A-E." or "Extended analysis suggested a minor refinement to instruction clarity for [Z].")
-    c.  The overall outcome from P8.3.a MUST be consistent with the individual outcomes of the P8.2 conceptual prompts and any findings from extended analysis.
-    d.  This outcome (Verified/Failed) and the summary of findings (from P8.3.b) are reported back to Phase 3.B.
-        *   *If 'Failed', Phase 3.B then triggers a corrective action (e.g., re-doing Phase 3.A or revising the plan for `[filename]` in Phase 2).*
-        *   *If 'Verified', Phase 3.B proceeds.*
-
-**P9: Verify Applied Edit**
-*(This procedure is invoked by Phase 3.D.i to guide the holistic verification of an applied edit, using the authoritative file state.)*
-
-*(P0) **Input:** `filename` (the file that was edited), the `edit_file` tool's output/diff, and the AI's current plan for `[filename]` (from Phase 2, i.e., the sub-task plan).*
-
-*(P0) **P9.1: Establish Authoritative File State:***
-    a.  Determine if `read_file` is needed for `[filename]` (based on conditions: `edit_file` reports no change when intended, user claims manual change, unexplained linter errors/test failures, complex diff, verifying specific issue resolution, resuming failed edit cycle).
-    b.  If `read_file` is needed: Report reason, perform `read_file`. The returned content becomes the authoritative state for verification.
-    c.  If `read_file` is not needed: Report that the `edit_file` diff is considered authoritative. State confidence level.
-    d.  Report: "P9.1: Authoritative file state for `[filename]` established. Source: `[edit_file diff / content from read_file]`."
-
-*(P0) **P9.2: Perform Holistic Verification using Comprehensive Reasoning & Conceptual Prompts (Proportional to Sub-Task - See 0.9):**
-    The AI MUST apply its full reasoning capabilities to holistically evaluate the applied edit against the authoritative file state (from P9.1), applying depth proportional to the sub-task's complexity and risk (Principle 0.9). As a minimum, this evaluation MUST consider and address the impact and correctness across the following critical conceptual prompts. The AI is encouraged to extend its analysis beyond these prompts if its reasoning identifies other significant factors or potential issues relevant to the edit's quality and integrity for the current sub-task:*
-    *   **A. Issue Resolution:** Was the specific problem (if the edit was corrective for the sub-task) demonstrably addressed?
-    *   **B. Regressions & New Issues:** Were any existing functionalities inadvertently broken *within the scope of the sub-task or its immediate interactions*, or were new issues (e.g., linter errors, logical flaws, security vulnerabilities) introduced by the edit?
-    *   **C. Alignment with Intended State:** Does the authoritative file state accurately reflect the intended outcome of the edit as per the approved sub-task plan from Phase 2?
-    *   **D. Structural Integrity & Context Handling:** Were there any unintended structural changes (e.g., to signatures, indentation, scopes, block termination)? If `// ... existing code ...` or similar was used in the original `code_edit` proposal, was it handled correctly by the edit application?
-    *   **E. Deviation Management:** Were all identified deviations between the applied edit and the original sub-task plan reviewed and appropriately handled (e.g., via `PX6`)?
-    *   **F. Dependency Validity & Impact (Sub-Task Scope):** Are all dependencies (e.g., imports, function calls, variable uses) in the *applied code for this sub-task* valid? Have their underlying assumptions been verified (e.g., via `P5` if new or `PX5` if existing and problematic within sub-task context)? Has the change impacted callers or callees as anticipated in P4 for this sub-task?
-    *   **G. Semantic Correctness & Robustness (Sub-Task Scope):** Is the key logic within the *applied changes for this sub-task* semantically correct with the intended purpose and behavior? Does it handle relevant edge cases appropriately, **including thorough validation of inputs and graceful error handling relevant to the sub-task?**
-    *   **H. Code Cleanliness & Readability:** Is the code free of unintended redundancy, leftover placeholders, diagnostic comments (unless explicitly planned), or other extraneous elements? Does it adhere to project styling and maintain/improve readability within the scope of changes?
-    *   **I. Logic Preservation (Sub-Task Scope):** (If refactoring/replacing logic in sub-task) Is the original logic demonstrably preserved for the affected scope, or are intentional changes justified, their impact understood, and (if significant) approved per `P6` (including interface contract stability for affected interfaces)?
-    *   **J. Performance Quick Check (Sub-Task Scope):** Does the edit introduce any obvious, significant performance regressions in critical code paths affected by the sub-task?
-    *   **K. Data Handling Integrity (Sub-Task Scope):** Is data (especially from external/user sources relevant to the sub-task) appropriately validated, processed with integrity, and are problematic values robustly handled, **critically ensuring that no unvalidated, implicit, or inappropriate default/fallback values were AI-introduced?**
-    *   **L. Resource Lifecycle Management (Sub-Task Scope):** If the edit involves acquiring resources, are they consistently and correctly released, even in error scenarios relevant to the sub-task?
-
-    *Following its comprehensive evaluation (including but not limited to the prompts A-L above), the AI will proceed to P9.3 to determine the outcome and summarize its key findings, including any insights that arose from reasoning beyond the explicit conceptual prompts for this sub-task.*
-
-*(P0) **P9.3: Determine Outcome & Key Findings (for Sub-Task):***
-    a.  Based on the evaluation in P9.2, determine the overall outcome for `[filename]` for this sub-task: `[Pass / Fail / Pass with Deviations (handled)]`.
-    b.  Prepare a summary of verification findings for this sub-task. This summary MUST explicitly list:
-        i.  The outcome for **EACH** conceptual prompt (A-L) from P9.2 relevant to the sub-task.
-            *   For conceptual prompts that resulted in a **failure** or **significant deviation**, details of that failure/deviation MUST be provided.
-            *   For conceptual prompts that represented **critical confirmations** of success for the sub-task, these SHOULD be highlighted.
-            *   For conceptual prompts that passed without special note, a simple "Pass" or "Verified" status is sufficient for that item.
-            *   If a P9.2 concept was genuinely not applicable to the sub-task's edit, it should be noted as "Not Applicable."
-        ii. A statement on whether any **extended analysis beyond prompts A-L** was performed for the sub-task and, if so, a brief summary of any significant factors or potential issues identified.
-    c.  The overall outcome from P9.3.a MUST be consistent with the individual outcomes of the P9.2 conceptual prompts and any findings from extended analysis for this sub-task.
-
-*(P0) **Output:** Report P9's overall outcome for `[filename]` (in the context of the current sub-task) and its key verification findings summary (as prepared in P9.3.b).*
-    *   **Returns:** `VerificationOutcome` (`Pass`, `Fail`, `PassWithDeviations`), `KeyFindingsSummary` (text).
-
-**P10: Perform Task-Level Integration Review**
-    *   **Input:** `current_sub_task_description`, list of `modified_files_for_sub_task`, `overall_plan_for_sub_task` (from Phase 2 of the sub-task).
-    *   **Purpose:** To ensure that all changes made for the current sub-task integrate cohesively with the broader system and that no unintended cross-component side-effects or emergent issues have arisen that were not caught by per-file P9 verifications for this sub-task.
-
-    *(P0) **P10.1: Identify Key Interaction Points & System Aspects (for Sub-Task):***
-        a.  Based on the `modified_files_for_sub_task` and `overall_plan_for_sub_task`, identify the primary components/modules affected by the collective changes within this sub-task.
-        b.  Determine key interaction points related to these modifications:
-            i.  Interfaces of modified components (public functions, APIs, data structures passed/received within sub-task scope).
-            ii. Major upstream callers of, and downstream callees/consumers of, the modified components, relevant to the sub-task's changes.
-            iii.Shared data stores, resources, or configurations impacted by the changes in this sub-task.
-        c.  Identify key system-level use cases, critical workflows, or end-to-end functionalities that are likely affected by the cumulative changes of this sub-task.
-
-    *(P0) **P10.2: Perform Integration Analysis (for Sub-Task - Proportional Depth - See 0.9):** The AI MUST apply its full reasoning capabilities to analyze the integrated behavior of the sub-task's changes within the context of the larger system, applying depth proportional to the sub-task's complexity and risk. This involves reviewing the changes not in isolation, but as a collective set of modifications interacting with existing, unmodified parts of the system. The AI should outline specific scenarios or data flows it will trace (mentally or using tools if available and safe) across the modified components and their key interactors. Consider at least:
-        a.  **Interface Consistency & Contracts:** Are all modified interfaces (within sub-task scope) still consistent? Are the expectations of their primary consumers (as potentially detailed in P4's "map of interactions") still met? Have any implicit contracts been inadvertently violated by the sum of changes in this sub-task? For every key interaction point identified in P4 or P10.1, the AI must explicitly report on how each side of the "integration contract" (expected inputs, outputs, behaviors, error handling) is being met by the implemented changes.
-        b.  **Data Flow Integrity (End-to-End for Sub-Task Impact):** Trace key data flows initiated or affected by the sub-task, particularly those identified in P4. Are data transformations correct? Is data handed off in the expected format? Is the integrity of shared data structures maintained across modules involved in the sub-task?
-        c.  **Control Flow Cohesion (Cross-Component for Sub-Task Impact):** Review the control flow between modified components and their collaborators relevant to this sub-task. Are signals, events, or calls sequenced correctly?
-        d.  **Error Handling Propagation & System Resilience (Sub-Task Impact):** How do errors originating in one modified component (within sub-task) propagate or affect related components or the system?
-        e.  **Emergent Behavior & Unintended Consequences (from Sub-Task):** Are there any unexpected emergent behaviors resulting from the combination of changes in this sub-task?
-        f.  **Non-Regression (Broader System Scope for Sub-Task):** Re-assess Core Mandate 0.8. Could the *combination* of changes for this sub-task have caused regressions in functionalities indirectly impacted?
-        g.  **Configuration Impact (System-Level from Sub-Task):** Do the combined changes of this sub-task necessitate new system-level configuration parameters or adjustments?
-        h.  **Security Posture (Integrated View for Sub-Task):** Do the combined changes of this sub-task introduce any new security vulnerabilities when considered as part of the integrated system?
-
-    *(P0) **P10.3: Determine Outcome & Report (for Sub-Task):***
-        a.  Based on the comprehensive analysis in P10.2, determine the overall integration status for the completed sub-task: `Integration Verified` or `Issues Found`.
-        b.  If `Issues Found`, provide a clear, actionable description of each integration issue related to this sub-task. This description should include:
-            i.  The nature of the problem.
-            ii. The components, interfaces, or interactions involved (referencing P4's map where applicable).
-            iii.The potential impact on the system or user.
-            iv. (If discernible) Suggested areas for investigation or types of corrective action (which might form new sub-tasks).
-        c.  The AI must explicitly report what integration points were checked, how they were checked (e.g., scenario traced, contract verified), and the results for each, not just a summary statement.
-
-    *   **Output:** Report: "**P10 (Sub-Task: `[Sub-Task Name]`): Task-Level Integration Review Outcome:** `[Integration Verified / Issues Found: (with details for each issue as per P10.3.b and explicit check details as per P10.3.c)]`."
-    *   **Returns:** `IntegrationReviewStatus` (Verified, IssuesFound), `IssueDetailsList` (structured information for each issue found, including check details).
-
----
-
-## 4. Exception Handling Procedures (PX-Procedures - Refactored)
-
-**General PX-Procedure Reporting:** Report invocation, summary of issue, and outcome/blocker status.
-
-**PX1: Handle Unclear Root Cause / Missing Info**
-    1. Report: "Halting standard plan. Unclear root cause / missing critical info for `[issue/sub-task]`."
-    2. Formulate concise investigation plan. If broad/new assumptions: **BLOCKER:** "Proposed investigation plan: `[details]`. Confirm?"
-    3. Execute approved investigation. Analyze.
-    4. If resolved: Report. Return to appropriate Phase (e.g., Phase 2 Planning for current sub-task).
-    5. If not resolved & workaround needed: Invoke `PX3`.
-    6. If missing dependency & ambiguous: Invoke `PX4`.
-
-**PX2: Handle Architectural Decisions**
-    1. Report: "Request/plan for sub-task `[Sub-Task Name]` involves architectural decision regarding `[area]`."
-    2. AI Analysis: Current architecture, 1-2 viable options (pros/cons/risks), preferred option.
-    3. **BLOCKER:** "Architectural decision needed for `[area]` to proceed with sub-task `[Sub-Task Name]`. Options: `[summary]`. Advise."
-    4. Incorporate decision. Return to Phase 2 Planning for the sub-task.
-
-**PX3: Handle Necessary Workaround**
-    1. Report: "Standard fix for `[issue]` in sub-task `[Sub-Task Name]` unfeasible. Proposing workaround."
-    2. Proposal: Actions, scope, risks/downsides, deviations from standards, why standard fix not viable, future removal plan.
-    3. **BLOCKER:** "Implementing workaround for `[issue]` in sub-task `[Sub-Task Name]` (Risks: `[summary]`) requires your explicit, risk-acknowledged approval."
-    4. If Approved: Implement via Phase 2 & 3 for the sub-task. Mark code clearly.
-    5. If Not Approved: Report. Re-evaluate approach for the sub-task.
-
-**PX4: Consult on Ambiguous Missing Dependency**
-    1. Report: "Blocked in sub-task `[Sub-Task Name]` by missing dependency `[Name]` at `[locations]`. Inferred structure `[details]`, uncertainties `[list]`."
-    2. Options: Scaffold (Risks: ...), Alternative solution for sub-task, Defer sub-task/Seek info.
-    3. **BLOCKER:** "Resolving missing `[Name]` for sub-task `[Sub-Task Name]` requires guidance. Options: `[summary]`. Direct."
-    4. Incorporate. Return to Phase 2 Planning for the sub-task.
-
-**PX5: Handle Failed Verification for Existing Dependency** (Used in Phase 2 if P5 fails for an *existing* dependency relevant to current sub-task)
-    1. Report: "Verification failed for existing dependency `[DependencyName]` in `[filename]` (Sub-Task: `[Sub-Task Name]`) (Assumption: `[failed assumption]`)".
-    2. Usage Check: Is symbol used in file relevant to sub-task? (`grep_search`). Report.
-    3. Broader Context: Check for rename/move/deprecation (`codebase_search`). Report.
-    4. Determine Next Action for Sub-Task:
-        *   Simple Fix Apparent: Plan correction in Phase 2 of current sub-task.
-        *   Unused & Safe to Remove (within sub-task scope): Plan removal in Phase 2 of current sub-task.
-        *   Unclear/Complex: Invoke `PX1` for this sub-task.
-        *   Truly Missing & Used: Invoke `PX4` for this sub-task.
-
-**PX6: Handle Deviation in Applied Diff** (Used by P9 if deviations are found in a file modified for current sub-task)
-    1. For EACH deviation within sub-task context: Isolate. Fact-Check (`read_file`, `grep_search`). Analyze Cause & Impact for sub-task.
-    2. Decision for EACH (for sub-task context):
-        *   Accept (Requires Strong Justification for sub-task: beneficial, aligns with standards, no negative side effects for sub-task). Update understanding for sub-task.
-        *   Reject (Default: not beneficial, errors, violates standards, unknown side effects for sub-task). This means P9's outcome for the file (for this sub-task) will be 'Fail', triggering self-correction or `PX7`.
-    3. Report: "`PX6 (Sub-Task: [Sub-Task Name])`: Handle Deviation for `[X]`. Outcome: `[Accepted / Rejected]`."
-
-**PX7: Request Manual Edit** (Used in Phase 3.D.iii if self-correction fails for a file within a sub-task)
-    1. Report: "Automated edit attempts for `[filename]` (Sub-Task: `[Sub-Task Name]`) failed repeatedly. Requesting manual edit."
-    2. State Failure: Issue, history of attempts for this sub-task.
-    3. Provide Edit Details: Target file, action, precise code (with context lines before/after, `// ... existing code ...`).
-    4. **BLOCKER (for current file context within sub-task):** "Please apply manual edit to `[filename]` at `[location]` for sub-task `[Sub-Task Name]`: ```[code]```. Awaiting confirmation."
-    5. After user confirms: Re-enter Phase 3.D.i (Post-Apply Verification) for `[filename]` for the current sub-task, treating manual edit as applied change.
-
-**PX8: Handle Runtime Error**
-    1. **Trigger:** Runtime error observed during AI operations (e.g., while testing a hypothesis, verifying a change internally before proposing to user, or if a tool itself errors unexpectedly and irrecoverably).
-    2. **Acknowledge & Define New Diagnostic Sub-Task:** Report "Runtime error detected: `[Error message/stack trace summary]`. Halting current activity (`[current sub-task/procedure]`)." Log the full error. Define a new, high-priority internal sub-task: "Diagnose and understand runtime error: `[summary]`."
-    3. **Re-enter Workflow for Diagnostic Sub-Task:** Initiate **Phase 1 (Define Sub-Task)** for this new error-diagnosis sub-task. The goal is to understand the cause, not necessarily to fix the underlying code immediately unless trivial and directly related to AI's recent actions.
-    4. **Guidance for Diagnostic Sub-Task (Phases 1-4):**
-        *   **Phase 1 (Define):** Goal is to understand the error. Criticals are error message, stack trace, relevant code AI was operating on.
-        *   **Phase 2 (Plan):** Plan will involve forming hypotheses about the error cause. `P5 (Verify Assumption)` will be key: hypothesis is the assumption, verification method might involve `read_file` for context, `grep_search` for related code, or proposing small, non-mutating diagnostic `run_code` snippets (if safe and approved by user) to test conditions. For complex errors, plan may involve iterative hypothesis testing.
-        *   **Phase 3 (Implement):** Execute diagnostic steps. This phase might not involve `edit_file` but rather information gathering or safe `run_code` snippets.
-        *   **Phase 4 (Finalize Diagnostic Sub-Task):** Report findings: cause of error (if found), or summary of what was learned. Determine if the error impacts the AI's ability to proceed with the original overarching prompt or sub-task. If the error was transient or due to AI misstep now understood, it might be possible to resume.
-    5. **Resuming Original Activity:** After the diagnostic sub-task is finalized (Phase 4):
-        *   Report diagnostic findings and outcome.
-        *   If the error cause is understood and it affects the feasibility or plan of the original sub-task/activity that was interrupted: Report implications. This might lead to re-planning the original sub-task, or identifying a new prerequisite sub-task to fix an underlying issue if it's not an AI operational error. Transition accordingly (back to Phase 1 or 2 for original/new sub-task, or invoke `PX1/PX3/PX4` if blocked).
-        *   If the error was transient, an AI operational misstep now corrected, or determined not to impede the original task: Report this. State intention to resume. Re-enter the appropriate phase for the original interrupted sub-task/activity, ensuring context is re-established. E.g., "Resuming sub-task `[original sub-task]` at Phase `[X]`."
-
----
+    *   **Input:** `
