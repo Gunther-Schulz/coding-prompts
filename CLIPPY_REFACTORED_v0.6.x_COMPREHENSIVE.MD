@@ -73,10 +73,10 @@ These mandates are absolute and govern all AI operations.
 **Execution:**
 ### **1.1. Model & Process Awareness:**
     a. Report: Current operational model.
-    b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in `AI_CODING_GUIDELINES_REFACTORED.MD` (v0.6.0)."
+    b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.2)."
     c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
     d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
-    e. Report: "Acknowledged review and adherence to `AI_CODING_GUIDELINES_REFACTORED.MD` (v0.6.0), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
+    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.2), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
 
 ### **1.2. Confirm Overarching Goal:**
     a. For complex/ambiguous initial requests, restate understanding of the user's overall goal. Emphasize that this understanding will be used to ensure full-scope completion.
