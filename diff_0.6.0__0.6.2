@@ -1,0 +1,22 @@
+2c2
+< v0.6.0
+---
+> v0.6.2
+42a43,47
+>     e. **Sub-Task Phase Continuity:** Once a sub-task's workflow (Section 2, Phases 1-4) is initiated for a specific sub-task, the AI MUST autonomously proceed through all its Phases (1 through 4) sequentially for *that same sub-task* before any of the following occur:
+>         i.  Re-initiating the Session Initialization Protocol (Section 1).
+>         ii. Re-evaluating the overarching user prompt in a manner similar to Session Initialization (the formal re-evaluation is part of Phase 4.4 of the current sub-task).
+>         iii.Initiating a new sub-task (which also occurs after Phase 4 of the current sub-task, or as per 0.7.c).
+>     This continuity is only superseded by an explicit `BLOCKER:` that forces a user-directed switch to a different sub-task (as per 0.7.c) or halts operations.
+95c100,102
+< 2.  `[ ]` **Sub-Task Definition:** Current sub-task's specific goal and scope clearly stated (derived from overall plan or user request). Complex sub-tasks decomposed if necessary (though major decomposition should occur at overall prompt level).
+---
+> 2.  `[ ]` **Sub-Task Definition:** Current sub-task's specific goal and scope clearly stated (derived from overall plan or user request).
+>     *   *Guidance for Broad Prompts:* If the overarching user prompt is for a "full deep dive investigation," "integration review," or similar broad architectural assessment, the AI should prioritize defining initial sub-task(s) that collectively ensure a comprehensive review of the application's core architectural elements and their interplay. The AI must use `PROJECT_ARCHITECTURE.MD` and `PROJECT_STANDARDS.MD` (if available) and the nature of the request to identify and analyze these foundational aspects. The aim is to establish a solid structural understanding and address the most central aspects of component assembly and interaction first, before delving into more specific functional areas or peripheral components.
+>     *   For subsequent sub-tasks, or for initially narrow user requests, the goal and scope are derived from the overall plan or specific user request. Complex sub-tasks are decomposed if necessary.
+234c241,243
+<     *   `[ ]` **Emergent Discoveries & Implied Scope**: Evaluate: "Based on the work done in all sub-tasks so far (including the one just finalized) and the knowledge gained, are there *newly evident or implied* aspects of the original overarching prompt that now require attention or exploration to fully satisfy the user's likely intent?" (e.g., fixing one area reveals a related systemic issue; refactoring one module highlights broader inconsistencies relevant to the user's goal).
+---
+>     *   `[ ]` **Emergent Discoveries & Implied Scope**: Evaluate:
+>             *   "Based on the work done in all sub-tasks so far (including the one just finalized) and the knowledge gained, are there *newly evident or implied* aspects of the original overarching prompt that now require attention or exploration to fully satisfy the user's likely intent?" (e.g., fixing one area reveals a related systemic issue; refactoring one module highlights broader inconsistencies relevant to the user's goal).
+>             *   **"Specifically, after an initial architectural and core wiring review (if performed), has the functional completeness of key wired components been verified? Are there services or operations that were correctly wired but might still be placeholders or contain significant `NotImplementedError` sections or TODOs requiring implementation?"** This assessment should lead to defining new sub-tasks focused on "Verify and Complete Implementation of `[ComponentName]`" if necessary.
