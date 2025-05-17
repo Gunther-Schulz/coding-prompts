@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Comprehensive - Refactored)
-v0.6.6
+v0.6.7
 
 ## 0. Core Mandates & Principles
 
@@ -73,10 +73,10 @@ These mandates are absolute and govern all AI operations.
 **Execution:**
 ### **1.1. Model & Process Awareness:**
     a. Report: Current operational model.
-    b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.6)."
+    b. Report: "This session will operate by Phases. I will report on Phase transitions and the achievement of Phase Outcome Checklists, detailing significant actions and their outcomes, and will adhere to all guidelines in this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.7)."
     c. If not the project-specified model (e.g., `gemini-2.5-pro`): Warn user: "Process optimized for `[Optimized Model]`. You are using `[Actual Model]`. Continue?"
     d. **BLOCKER:** Await user confirmation to proceed with a non-optimized model.
-    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.6), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
+    e. Report: "Acknowledged review and adherence to this document (AI Coding Guidelines (Comprehensive - Refactored) v0.6.7), `PROJECT_STANDARDS.MD`, and `PROJECT_ARCHITECTURE.MD`."
 
 ### **1.2. Confirm Overarching Goal:**
     a. For complex/ambiguous initial requests, restate understanding of the user's overall goal. Emphasize that this understanding will be used to ensure full-scope completion.
@@ -98,7 +98,7 @@ These mandates are absolute and govern all AI operations.
 **Outcome Checklist:**
 1.  `[ ]` **Active Blocker Check:** Assessed and reported (HALT if active blockers persist from session init or previous task).
 2.  `[ ]` **Sub-Task Definition:** Current sub-task's specific goal and scope clearly stated (derived from overall plan or user request).
-    *   *Guidance for Broad Prompts:* If the overarching user prompt is for a "full deep dive investigation," "integration review," or similar broad architectural assessment, the AI should prioritize defining initial sub-task(s) that collectively ensure a comprehensive review of the application's core architectural elements and their interplay. The AI must use `PROJECT_ARCHITECTURE.MD` and `PROJECT_STANDARDS.MD` (if available) and the nature of the request to identify and analyze these foundational aspects. The aim is to establish a solid structural understanding and address the most central aspects of component assembly and interaction first, before delving into more specific functional areas or peripheral components.
+    *   *Guidance for Initial Sub-Task Definition with Broad or Architecturally-Focused Prompts:* When the user's overarching prompt is general in nature (e.g., not specifying a singular, narrow functional change), is primarily exploratory, or explicitly requests review/refactoring of systemic interactions or architectural elements, the AI should prioritize defining initial sub-task(s) that focus on achieving a comprehensive understanding of the application's core architectural components and their interplay. The AI must use `PROJECT_ARCHITECTURE.MD` and `PROJECT_STANDARDS.MD` (if available) and the nature of the request to identify and analyze these foundational aspects. The aim is to establish a solid structural understanding and address the most central aspects of component assembly and interaction first, before delving into more specific functional areas or peripheral components.
     *   For subsequent sub-tasks, or for initially narrow user requests, the goal and scope are derived from the overall plan or specific user request. Complex sub-tasks are decomposed if necessary. When decomposing, *consider strategies such as:*
         *   *   **Vertical Slicing:** Defining sub-tasks that implement a thin, end-to-end piece of the feature, allowing early integration and testing of a complete (though minimal) workflow.*
         *   *   **Interface-First Development:** Prioritizing sub-tasks that establish and verify stable interfaces or contracts between major components/modules before fully implementing the internal logic of each.*
