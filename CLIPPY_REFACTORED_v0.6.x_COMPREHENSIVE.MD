@@ -1,5 +1,5 @@
 # AI Coding Guidelines (Comprehensive - Refactored)
-v0.6.8
+v0.6.9
 
 ## 0. Core Mandates & Principles
 
@@ -91,31 +91,38 @@ These mandates are absolute and govern all AI operations.
 **Iterate this entire section for each defined sub-task. For broad user prompts, new sub-tasks may be identified and added to the queue during Phase 4 of a preceding sub-task.**
 
 ---
-**Phase 1: Define Sub-Task & Gather Initial Context**
+**Phase 1: Analyze Request, Define Sub-Task & Gather Initial Context**
 ---
-**Purpose:** To clearly establish the current sub-task's scope, identify necessary information and files, and ensure a foundational understanding of the relevant codebase areas for this specific sub-task.
+**Purpose:** To analyze the overarching request, perform strategic decomposition if needed, clearly establish the current sub-task's scope, identify necessary information for it, and ensure a foundational understanding of the relevant codebase areas for this specific sub-task.
 
 **Outcome Checklist:**
 1.  `[ ]` **Active Blocker Check:** Assessed and reported (HALT if active blockers persist from session init or previous task).
-2.  `[ ]` **Sub-Task Definition:** Current sub-task's specific goal and scope clearly stated (derived from overall plan or user request).
-    *   *Guidance for Initial Sub-Task Definition with Broad or Architecturally-Focused Prompts:* When the user's overarching prompt is general in nature (e.g., not specifying a singular, narrow functional change), is primarily exploratory, or explicitly requests review/refactoring of systemic interactions or architectural elements, the AI should prioritize defining initial sub-task(s) that focus on achieving a comprehensive understanding of the application's core architectural components and their interplay. The AI must use `PROJECT_ARCHITECTURE.MD` and `PROJECT_STANDARDS.MD` (if available) and the nature of the request to identify and analyze these foundational aspects. The aim is to establish a solid structural understanding and address the most central aspects of component assembly and interaction first, before delving into more specific functional areas or peripheral components.
-    *   For subsequent sub-tasks, or for initially narrow user requests, the goal and scope are derived from the overall plan or specific user request. Complex sub-tasks are decomposed if necessary. When decomposing, *consider strategies such as:*
-        *   *   **Vertical Slicing:** Defining sub-tasks that implement a thin, end-to-end piece of the feature, allowing early integration and testing of a complete (though minimal) workflow.*
-        *   *   **Interface-First Development:** Prioritizing sub-tasks that establish and verify stable interfaces or contracts between major components/modules before fully implementing the internal logic of each.*
-        *   *   **Dependency-Driven Ordering:** Identifying core components with minimal dependencies and tackling them as initial sub-tasks, then layering more dependent components in subsequent sub-tasks.*
-        *   *   **Risk-Based Prioritization:** Addressing sub-tasks that involve the highest technical risk or the most critical integration points early to validate architectural choices and feasibility.*
-    *When decomposing large features, sub-tasks should be designed, as much as possible, to be incrementally integrable. This means aiming for each sub-task completion (after its Phase 3 and P10) to leave the system in a more complete and verifiably stable state, minimizing scenarios where critical integrations remain partially implemented and untestable until many subsequent sub-tasks are finished. The re-assessment in Phase 4 should consider if the current state represents a stable integration point.*
-3.  `[ ]` **Criticals Identified for Sub-Task:** Immediate ambiguities, missing information, or anticipated files/codebase areas relevant *to this specific sub-task* identified.
-4.  `[ ]` **Initial Context Acquired for Sub-Task:** For each critical file identified for this sub-task:
-    *   `[ ]` `Procedure P1: Get File Context` invoked (with task_description tailored to this sub-task).
-    *   `[ ]` P1 Outcome Reported (ContextData obtained, and its `ContextStatus` – e.g., Sufficient, InsufficientRequiresUser, BlockedOnUser, SufficientWithDiscrepancy – as per P1.4). Discrepancies with `task_claimed_status` are identified as per P1.3.a and reflected in the reported `ContextStatus`.
-5.  `[ ]` **External Knowledge Check for Sub-Task:** If sub-task involves external libraries/APIs/complex algorithms not recently used or covered by general project knowledge, need for documentation confirmed. Critical missing knowledge for *this sub-task*: `web_search` performed and findings reported.
-6.  `[ ]` **Context Sufficiency Declared for Sub-Task:** Overall sufficiency of gathered context for planning *this sub-task* confirmed.
+2.  `[ ]` **Analyze Overarching Prompt & Determine Decomposition Needs:**
+    *   `[ ]` Review the overarching user prompt (confirmed in Session Initialization 1.2 or from a previous Phase 4 re-assessment).
+    *   `[ ]` *Assess Prompt Nature:* Is the prompt narrow and directly actionable as a single sub-task, OR is it broad/exploratory, architectural in focus, or a large feature requiring decomposition? Report this assessment.
+    *   `[ ]` *(Conditional: If prompt requires decomposition)* **Perform Strategic Decomposition:**
+        *   `[ ]` Apply guidance from "*Guidance for Initial Sub-Task Definition with Broad or Architecturally-Focused Prompts*" (i.e., focus on core architecture first if applicable, before specific feature elements - see item 2 details from previous version, now integrated here for direct application during decomposition).
+        *   `[ ]` Apply decomposition strategies (e.g., Vertical Slicing, Interface-First Development, Dependency-Driven Ordering, Risk-Based Prioritization) to outline a sequence of potential sub-tasks. The aim is for these sub-tasks to be incrementally integrable.
+        *   `[ ]` Report the high-level decomposition plan (e.g., the sequence of proposed sub-tasks).
+        *   `[ ]` Identify and select the *first* (or next) sub-task from this decomposition plan to be the **current sub-task**.
+3.  `[ ]` **Define *Current* Sub-Task's Goal and Scope:**
+    *   `[ ]` Clearly state the specific goal and precise scope for the **current sub-task** (this is either the directly actionable narrow prompt, or the sub-task selected from the decomposition in step 2).
+4.  `[ ]` **Identify Critical Information & Files for *Current* Sub-Task:**
+    *   `[ ]` Identify immediate ambiguities, missing information, or anticipated files/codebase areas relevant *to this specific current sub-task*.
+5.  `[ ]` **Acquire Initial Context for *Current* Sub-Task:**
+    *   `[ ]` For each critical file identified for the *current sub-task*:
+        *   `[ ]` `Procedure P1: Get File Context` invoked (with task_description tailored to this current sub-task).
+        *   `[ ]` P1 Outcome Reported (ContextData obtained, and its `ContextStatus` – e.g., Sufficient, InsufficientRequiresUser, BlockedOnUser, SufficientWithDiscrepancy – as per P1.4). Discrepancies with `task_claimed_status` are identified as per P1.3.a and reflected in the reported `ContextStatus`.
+6.  `[ ]` **Perform External Knowledge Check for *Current* Sub-Task:**
+    *   `[ ]` If the *current sub-task* involves external libraries/APIs/complex algorithms not recently used or covered by general project knowledge, need for documentation confirmed. Critical missing knowledge for *this current sub-task*: `web_search` performed and findings reported.
+7.  `[ ]` **Declare Context Sufficiency for *Current* Sub-Task:**
+    *   `[ ]` Overall sufficiency of gathered context for planning *this specific current sub-task* confirmed.
 
 **Reporting:**
-*   Report entry into Phase 1 for the current sub-task (e.g., "Phase 1 for Sub-Task: Refactor `UserService.ts`").
-*   Report on each checklist item's achievement, including P1 outcomes for each file and `web_search` findings specific to this sub-task.
-*   Report completion of Phase 1 for the sub-task.
+*   Report entry into Phase 1, specifying the overarching prompt if it's the start of a new multi-sub-task effort.
+*   Report on each checklist item's achievement, including the outcome of the "Assess Prompt Nature" and, if performed, the "Strategic Decomposition" and the selected *current sub-task*.
+*   Subsequent reporting focuses on the *current sub-task*.
+*   Report completion of Phase 1 for the *current sub-task*.
 
 ---
 **Phase 2: Plan Solution for Sub-Task**
